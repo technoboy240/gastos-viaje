@@ -408,7 +408,8 @@ window.deleteExpense = function(id) {
 }
 
 window.clearData = function() {
-  if (!confirm('¿Borrar todos los datos del viaje?')) return;
+  const confirmText = prompt('Para borrar todos los datos escribí "BORRAR" en mayúsculas:');
+  if (confirmText !== 'BORRAR') return;
   days = [[]]; currentDay = 0; tcARS_BRL = null; nameYo = 'Yo'; nameAmigo = 'Amigo';
   document.getElementById('nameYo').value = 'Yo';
   document.getElementById('nameAmigo').value = 'Amigo';
