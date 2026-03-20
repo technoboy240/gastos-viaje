@@ -278,8 +278,11 @@ function save() {
   saveTimer = setTimeout(async () => {
     setSyncStatus('loading', 'Guardando...');
     try {
+      // Firestore no soporta arrays anidados — guardamos cada día como clave separada
+      const daysObj = {};
+      days.forEach((d, i) => { daysObj['day_' + i] = d; });
       await setDoc(docRef, {
-        days, currentDay, nameYo, nameAmigo, displayCurrency,
+        daysObj, daysCount: days.length, currentDay, nameYo, nameAmigo, displayCurrency,
         tcARS_BRL: tcARS_BRL || null,
         aporteYo: document.getElementById('aporte-yo').value || '',
         aporteAmigo: document.getElementById('aporte-amigo').value || ''
@@ -294,7 +297,15 @@ function save() {
 
 function loadFromData(data) {
   if (!data) return;
-  days = data.days || [[]];
+  // Reconstruir days desde daysObj
+  if (data.daysObj) {
+    days = [];
+    for (let i = 0; i < (data.daysCount || 1); i++) {
+      days.push(data.daysObj['day_' + i] || []);
+    }
+  } else {
+    days = [[]];
+  }
   currentDay = data.currentDay || 0;
   nameYo = data.nameYo || 'Yo';
   nameAmigo = data.nameAmigo || 'Amigo';
