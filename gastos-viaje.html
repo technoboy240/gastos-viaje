@@ -102,6 +102,27 @@
   .name-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .name-inputs input { padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); background: var(--bg); outline: none; transition: border-color 0.2s; }
   .name-inputs input:focus { border-color: var(--accent); background: white; }
+
+  @media (max-width: 480px) {
+    header { padding: 20px 16px 16px; }
+    header h1 { font-size: 22px; }
+    .container { padding: 16px 12px; }
+    .card { padding: 16px 14px; margin-bottom: 14px; }
+    .form-row { grid-template-columns: 1fr 1fr; }
+    .form-row > div:last-child { grid-column: 1 / -1; }
+    .form-row input, .form-row select { padding: 12px; font-size: 16px; }
+    .inv-metric .value { font-size: 16px; }
+    .inv-block input { font-size: 20px; }
+    .day-summary { grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+    .sum-block .val { font-size: 15px; }
+    .sum-block .lbl { font-size: 10px; }
+    .expense-table th { font-size: 10px; padding: 0 4px 8px; }
+    .expense-table td { padding: 10px 4px; font-size: 13px; }
+    .total-card .spent-val { font-size: 20px; }
+    .balance-box .result { font-size: 14px; }
+    .global-balance .res { font-size: 15px; }
+    .btn-add { padding: 14px; font-size: 16px; }
+  }
 </style>
 </head>
 <body>
