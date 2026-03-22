@@ -197,6 +197,7 @@
     </select>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-cancel" style="color:#c42a00;border-color:#f8d0bc !important;" onclick="deleteFromModal()">Borrar</button>
       <button class="btn-save" onclick="saveEdit()">Guardar</button>
     </div>
   </div>
@@ -567,6 +568,17 @@ window.openEdit = function(id) {
   document.getElementById('edit-opt-amigo').textContent = nameAmigo;
   document.getElementById('editModal').classList.add('open');
 }
+window.deleteFromModal = function() {
+  if (!editingId) return;
+  if (!confirm('¿Borrar este gasto?')) return;
+  for (let d of days) {
+    const idx = d.findIndex(x => x.id === editingId);
+    if (idx !== -1) { d.splice(idx, 1); break; }
+  }
+  closeModal();
+  renderAll(); save();
+}
+
 window.closeModal = function() {
   document.getElementById('editModal').classList.remove('open');
   editingId = null;
@@ -656,7 +668,6 @@ function renderExpenses() {
       <td style="text-align:right;font-family:'Syne',sans-serif;font-weight:600">${displayAmt(e.monto, e.moneda)}</td>
       <td style="white-space:nowrap">
         <button class="btn-edit" onclick="openEdit(${e.id})">✏️</button>
-        <button class="btn-del" onclick="deleteExpense(${e.id})">✕</button>
       </td>
     </tr>`;
   });
