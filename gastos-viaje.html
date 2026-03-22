@@ -40,11 +40,21 @@
   .inv-metric .value.bad { color: #c42a00; }
   .progress-bar { height: 8px; background: var(--border); border-radius: 4px; margin-top: 14px; overflow: hidden; }
   .progress-fill { height: 100%; border-radius: 4px; background: var(--accent); transition: width 0.4s ease; }
+
+  /* Formulario */
   .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr 2fr; gap: 10px; align-items: end; margin-bottom: 10px; }
-  .form-row label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px; }
-  .form-row input, .form-row select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text); background: var(--bg); outline: none; transition: border-color 0.2s; }
-  .form-row input:focus, .form-row select:focus { border-color: var(--accent); background: white; }
+  .form-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: end; margin-bottom: 10px; }
+  .form-row label, .form-row2 label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px; }
+  .form-row input, .form-row select, .form-row2 input, .form-row2 select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text); background: var(--bg); outline: none; transition: border-color 0.2s; }
+  .form-row input:focus, .form-row select:focus, .form-row2 input:focus, .form-row2 select:focus { border-color: var(--accent); background: white; }
   select.moneda-ars { border-color: #d4b8f0; color: var(--ars); }
+
+  /* Toggle compartido/individual */
+  .tipo-toggle { display: flex; gap: 0; border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .tipo-btn { flex: 1; padding: 10px 8px; border: none; background: var(--bg); color: var(--muted); font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.15s; letter-spacing: 0.5px; }
+  .tipo-btn.active-comp { background: var(--accent2); color: white; }
+  .tipo-btn.active-indiv { background: var(--ars); color: white; }
+
   .btn-add { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px; transition: opacity 0.15s, transform 0.1s; margin-top: 6px; }
   .btn-add:hover { opacity: 0.88; }
   .btn-add:active { transform: scale(0.98); }
@@ -59,18 +69,27 @@
   .day-tab:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
   .btn-newday { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 20px; border: 1.5px dashed var(--accent); background: transparent; color: var(--accent); cursor: pointer; transition: all 0.15s; letter-spacing: 0.5px; }
   .btn-newday:hover { background: var(--accent); color: white; }
+
+  /* Tabla */
   .expense-table { width: 100%; border-collapse: collapse; }
-  .expense-table th { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); padding: 0 8px 10px; text-align: left; border-bottom: 1.5px solid var(--border); }
-  .expense-table td { padding: 10px 8px; font-size: 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .expense-table th { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); padding: 0 6px 10px; text-align: left; border-bottom: 1.5px solid var(--border); }
+  .expense-table td { padding: 10px 6px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
   .expense-table tr:last-child td { border-bottom: none; }
   .expense-table tr:hover td { background: var(--bg); }
-  .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; font-family: 'Syne', sans-serif; letter-spacing: 0.5px; }
+  .expense-table tr.indiv-row td { opacity: 0.75; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; font-family: 'Syne', sans-serif; letter-spacing: 0.5px; }
   .badge-yo { background: #fff0eb; color: var(--accent); }
   .badge-amigo { background: #ebf2ff; color: var(--accent2); }
-  .badge-moneda-brl { background: #fff0eb; color: var(--accent); font-size: 10px; padding: 1px 7px; margin-left: 4px; }
-  .badge-moneda-ars { background: #f3eaff; color: var(--ars); font-size: 10px; padding: 1px 7px; margin-left: 4px; }
-  .btn-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 2px 6px; border-radius: 6px; transition: color 0.15s, background 0.15s; }
-  .btn-del:hover { color: #c42a00; background: #fff0eb; }
+  .badge-moneda-brl { background: #fff0eb; color: var(--accent); font-size: 9px; padding: 1px 6px; margin-left: 3px; }
+  .badge-moneda-ars { background: #f3eaff; color: var(--ars); font-size: 9px; padding: 1px 6px; margin-left: 3px; }
+  .badge-indiv { background: #f3eaff; color: var(--ars); font-size: 9px; padding: 1px 6px; margin-left: 3px; }
+  .badge-cat { background: var(--bg); color: var(--muted); border: 1px solid var(--border); font-size: 9px; padding: 1px 6px; margin-left: 3px; }
+  .btn-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 15px; padding: 2px 4px; border-radius: 6px; transition: color 0.15s; }
+  .btn-del:hover { color: #c42a00; }
+  .btn-edit { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 15px; padding: 2px 4px; border-radius: 6px; transition: color 0.15s; }
+  .btn-edit:hover { color: var(--accent2); }
+
+  /* Resumen día */
   .day-summary { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 16px; padding-top: 16px; border-top: 1.5px solid var(--border); }
   .sum-block { text-align: center; }
   .sum-block .lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
@@ -84,6 +103,8 @@
   .balance-box .result.neutral { color: var(--success); }
   .balance-box .result.yo-paga { color: var(--accent); }
   .balance-box .result.amigo-paga { color: var(--accent2); }
+
+  /* Resumen general */
   .total-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .total-card { text-align: center; padding: 16px; border-radius: 12px; border: 1.5px solid var(--border); }
   .total-card.yo { border-color: #f8d0bc; background: #fff8f5; }
@@ -92,12 +113,36 @@
   .total-card.yo .persona { color: var(--accent); }
   .total-card.amigo .persona { color: var(--accent2); }
   .total-card .spent { font-size: 12px; color: var(--muted); margin-bottom: 2px; }
-  .total-card .spent-val { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+  .total-card .spent-val { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 4px; }
   .total-card.yo .spent-val { color: var(--accent); }
   .total-card.amigo .spent-val { color: var(--accent2); }
+  .total-card .indiv-line { font-size: 11px; color: var(--ars); margin-top: 6px; }
   .global-balance { margin-top: 16px; padding: 16px; border-radius: 12px; background: var(--text); color: white; text-align: center; }
   .global-balance .lbl { font-size: 12px; opacity: 0.6; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
   .global-balance .res { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; }
+
+  /* Gráfico */
+  .chart-wrap { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+  .chart-wrap canvas { width: 160px !important; height: 160px !important; flex-shrink: 0; }
+  .chart-legend { flex: 1; min-width: 140px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .legend-label { font-size: 13px; color: var(--text); flex: 1; }
+  .legend-val { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); }
+  .legend-pct { font-size: 11px; color: var(--muted); margin-left: 4px; }
+
+  /* Modal edición */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: white; border-radius: 16px; padding: 24px; width: 100%; max-width: 400px; }
+  .modal h3 { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+  .modal label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px; margin-top: 12px; }
+  .modal select, .modal input { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text); background: var(--bg); outline: none; }
+  .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
+  .modal-btns button { flex: 1; padding: 12px; border-radius: 10px; border: none; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .btn-cancel { background: var(--bg); color: var(--muted); border: 1.5px solid var(--border) !important; }
+  .btn-save { background: var(--accent); color: white; }
+
   .empty-msg { text-align: center; color: var(--muted); font-size: 14px; padding: 20px 0; }
   .name-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .name-inputs input { padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); background: var(--bg); outline: none; transition: border-color 0.2s; }
@@ -110,22 +155,52 @@
     .card { padding: 16px 14px; margin-bottom: 14px; }
     .form-row { grid-template-columns: 1fr 1fr; }
     .form-row > div:last-child { grid-column: 1 / -1; }
-    .form-row input, .form-row select { padding: 12px; font-size: 16px; }
+    .form-row input, .form-row select, .form-row2 input, .form-row2 select { padding: 12px; font-size: 16px; }
     .inv-metric .value { font-size: 16px; }
     .inv-block input { font-size: 20px; }
-    .day-summary { grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+    .day-summary { gap: 6px; }
     .sum-block .val { font-size: 15px; }
     .sum-block .lbl { font-size: 10px; }
     .expense-table th { font-size: 10px; padding: 0 4px 8px; }
-    .expense-table td { padding: 10px 4px; font-size: 13px; }
-    .total-card .spent-val { font-size: 20px; }
+    .expense-table td { padding: 10px 4px; font-size: 12px; }
+    .total-card .spent-val { font-size: 18px; }
     .balance-box .result { font-size: 14px; }
-    .global-balance .res { font-size: 15px; }
     .btn-add { padding: 14px; font-size: 16px; }
+    .chart-wrap { flex-direction: column; align-items: flex-start; }
   }
 </style>
 </head>
 <body>
+
+<!-- Modal edición -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <h3>Editar gasto</h3>
+    <label>Descripción</label>
+    <input type="text" id="edit-desc">
+    <label>Categoría</label>
+    <select id="edit-cat">
+      <option value="Hospedaje">🏨 Hospedaje</option>
+      <option value="Comida">🍽️ Comida</option>
+      <option value="Transporte">🚌 Transporte</option>
+      <option value="Otros">📦 Otros</option>
+    </select>
+    <label>Tipo</label>
+    <select id="edit-tipo">
+      <option value="compartido">Compartido</option>
+      <option value="individual">Individual</option>
+    </select>
+    <label>Pagó</label>
+    <select id="edit-quien">
+      <option value="yo" id="edit-opt-yo">Yo</option>
+      <option value="amigo" id="edit-opt-amigo">Amigo</option>
+    </select>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-save" onclick="saveEdit()">Guardar</button>
+    </div>
+  </div>
+</div>
 
 <div class="sync-bar">
   <span class="sync-dot" id="sync-dot"></span>
@@ -164,7 +239,7 @@
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
       <span style="font-size:14px;color:var(--muted);">1 BRL =</span>
       <input type="number" id="tc-manual-val" placeholder="Ej: 250" step="0.01" min="0"
-        style="width:130px;padding:8px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--ars);background:var(--bg);outline:none;transition:border-color 0.2s;"
+        style="width:130px;padding:8px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--ars);background:var(--bg);outline:none;"
         oninput="applyManualTC()" onfocus="this.style.borderColor='var(--ars)'" onblur="this.style.borderColor='var(--border)'">
       <span style="font-size:14px;color:var(--muted);">ARS</span>
     </div>
@@ -197,10 +272,8 @@
 
   <div class="card">
     <div class="card-title">Registro de gastos</div>
-    <div class="day-tabs" id="dayTabs">
-      <button class="day-tab active" onclick="selectDay(0)">Día 1</button>
-      <button class="btn-newday" onclick="addDay()">+ Día</button>
-    </div>
+    <div class="day-tabs" id="dayTabs"></div>
+
     <div class="form-row">
       <div>
         <label>Pagó</label>
@@ -225,8 +298,27 @@
         <input type="text" id="f-desc" placeholder="Ej: almuerzo, taxi...">
       </div>
     </div>
+    <div class="form-row2">
+      <div>
+        <label>Categoría</label>
+        <select id="f-cat">
+          <option value="Hospedaje">🏨 Hospedaje</option>
+          <option value="Comida">🍽️ Comida</option>
+          <option value="Transporte">🚌 Transporte</option>
+          <option value="Otros">📦 Otros</option>
+        </select>
+      </div>
+      <div>
+        <label>Tipo</label>
+        <div class="tipo-toggle">
+          <button class="tipo-btn active-comp" id="btn-comp" onclick="setTipo('compartido')">Compartido</button>
+          <button class="tipo-btn" id="btn-indiv" onclick="setTipo('individual')">Individual</button>
+        </div>
+      </div>
+    </div>
     <div id="conversion-preview" style="font-size:12px;color:var(--ars);margin-bottom:8px;min-height:18px;padding-left:2px;"></div>
     <button class="btn-add" onclick="addExpense()">+ Agregar gasto</button>
+
     <div style="margin-top:18px;">
       <div class="currency-toggle">
         <span>Ver en:</span>
@@ -243,27 +335,38 @@
     <div class="total-grid">
       <div class="total-card yo">
         <div class="persona" id="lbl-total-yo">YO</div>
-        <div class="spent">Pagué</div>
+        <div class="spent">Total pagué</div>
         <div class="spent-val" id="total-pago-yo">R$0</div>
         <div style="font-size:12px;color:var(--muted);">Me corresponde</div>
-        <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--accent)" id="total-corr-yo">R$0</div>
+        <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--accent)" id="total-corr-yo">R$0</div>
+        <div class="indiv-line" id="total-indiv-yo"></div>
       </div>
       <div class="total-card amigo">
         <div class="persona" id="lbl-total-amigo">AMIGO</div>
-        <div class="spent">Pagó</div>
+        <div class="spent">Total pagó</div>
         <div class="spent-val" id="total-pago-amigo">R$0</div>
         <div style="font-size:12px;color:var(--muted);">Le corresponde</div>
-        <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--accent2)" id="total-corr-amigo">R$0</div>
+        <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--accent2)" id="total-corr-amigo">R$0</div>
+        <div class="indiv-line" id="total-indiv-amigo"></div>
       </div>
     </div>
     <div class="global-balance">
-      <div class="lbl">Liquidación final</div>
+      <div class="lbl">Liquidación final (solo gastos compartidos)</div>
       <div class="res" id="liquidacion">Sin gastos aún</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Gastos por categoría</div>
+    <div class="chart-wrap">
+      <canvas id="pieChart" width="160" height="160"></canvas>
+      <div class="chart-legend" id="chartLegend"></div>
     </div>
   </div>
 
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -287,8 +390,16 @@ let nameYo = 'Yo';
 let nameAmigo = 'Amigo';
 let tcARS_BRL = null;
 let displayCurrency = 'BRL';
+let tipoActual = 'compartido';
 let saveTimer = null;
+let editingId = null;
+let pieChartInstance = null;
 
+const CATS = ['Hospedaje','Comida','Transporte','Otros'];
+const CAT_COLORS = ['#1a7ae8','#e8521a','#1a7a3a','#6b3fa0'];
+const CAT_ICONS = {'Hospedaje':'🏨','Comida':'🍽️','Transporte':'🚌','Otros':'📦'};
+
+// ── Sync ──────────────────────────────────────────────────────
 function setSyncStatus(state, msg) {
   document.getElementById('sync-dot').className = 'sync-dot ' + state;
   document.getElementById('sync-msg').textContent = msg;
@@ -299,7 +410,6 @@ function save() {
   saveTimer = setTimeout(async () => {
     setSyncStatus('loading', 'Guardando...');
     try {
-      // Firestore no soporta arrays anidados — guardamos cada día como clave separada
       const daysObj = {};
       days.forEach((d, i) => { daysObj['day_' + i] = d; });
       await setDoc(docRef, {
@@ -318,15 +428,18 @@ function save() {
 
 function loadFromData(data) {
   if (!data) return;
-  // Reconstruir days desde daysObj
   if (data.daysObj) {
     days = [];
     for (let i = 0; i < (data.daysCount || 1); i++) {
       days.push(data.daysObj['day_' + i] || []);
     }
-  } else {
-    days = [[]];
-  }
+  } else { days = [[]]; }
+  // Migrar gastos viejos sin categoría/tipo
+  days = days.map(day => day.map(e => ({
+    ...e,
+    cat: e.cat || 'Otros',
+    tipo: e.tipo || 'compartido'
+  })));
   currentDay = data.currentDay || 0;
   nameYo = data.nameYo || 'Yo';
   nameAmigo = data.nameAmigo || 'Amigo';
@@ -347,10 +460,9 @@ function loadFromData(data) {
 onSnapshot(docRef, (snap) => {
   setSyncStatus('ok', 'Sincronizado ✓');
   if (snap.exists()) loadFromData(snap.data());
-}, () => {
-  setSyncStatus('err', 'Sin conexión');
-});
+}, () => { setSyncStatus('err', 'Sin conexión'); });
 
+// ── Formato ───────────────────────────────────────────────────
 function fmt(n) { return n.toLocaleString('es-AR', {minimumFractionDigits:2, maximumFractionDigits:2}); }
 function fmtARS(n) { return n.toLocaleString('es-AR', {minimumFractionDigits:0, maximumFractionDigits:0}); }
 function arsToBrl(v) { return tcARS_BRL ? v * tcARS_BRL : 0; }
@@ -363,11 +475,11 @@ function displayAmt(m, mon) {
 function sym() { return displayCurrency === 'BRL' ? 'R$' : '$'; }
 function cv(v) { return displayCurrency === 'BRL' ? fmt(v) : fmtARS(brlToArs(v)); }
 
+// ── TC ────────────────────────────────────────────────────────
 function setTCStatus(state, msg) {
   document.getElementById('tc-dot').className = 'tc-dot ' + state;
   document.getElementById('tc-msg').textContent = msg;
 }
-
 window.applyManualTC = function() {
   const val = parseFloat(document.getElementById('tc-manual-val').value);
   if (!val || val <= 0) { tcARS_BRL = null; setTCStatus('', 'Ingresá el tipo de cambio'); document.getElementById('tc-ars-equiv').textContent = ''; return; }
@@ -377,6 +489,14 @@ window.applyManualTC = function() {
   renderAll(); save();
 }
 
+// ── Tipo compartido/individual ────────────────────────────────
+window.setTipo = function(t) {
+  tipoActual = t;
+  document.getElementById('btn-comp').className = 'tipo-btn' + (t === 'compartido' ? ' active-comp' : '');
+  document.getElementById('btn-indiv').className = 'tipo-btn' + (t === 'individual' ? ' active-indiv' : '');
+}
+
+// ── Moneda display ────────────────────────────────────────────
 window.setCurrency = function(cur) {
   displayCurrency = cur;
   document.getElementById('btn-brl').className = 'curr-btn' + (cur === 'BRL' ? ' active-brl' : '');
@@ -384,17 +504,21 @@ window.setCurrency = function(cur) {
   renderAll(); save();
 }
 
+// ── Nombres ───────────────────────────────────────────────────
 window.updateNames = function() {
   nameYo = document.getElementById('nameYo').value || 'Yo';
   nameAmigo = document.getElementById('nameAmigo').value || 'Amigo';
   renderAll(); save();
 }
 
+// ── Inversión ─────────────────────────────────────────────────
 window.updateInv = function() { renderInv(); save(); }
 
+// ── Días ──────────────────────────────────────────────────────
 window.addDay = function() { days.push([]); currentDay = days.length - 1; renderAll(); save(); }
 window.selectDay = function(i) { currentDay = i; renderDayTabs(); renderExpenses(); }
 
+// ── Formulario ────────────────────────────────────────────────
 window.onMonedaChange = function() {
   document.getElementById('f-moneda').className = document.getElementById('f-moneda').value === 'ARS' ? 'moneda-ars' : '';
   updateConversionPreview();
@@ -413,10 +537,12 @@ window.addExpense = function() {
   const moneda = document.getElementById('f-moneda').value;
   const monto = parseFloat(document.getElementById('f-monto').value);
   const desc = document.getElementById('f-desc').value.trim();
+  const cat = document.getElementById('f-cat').value;
+  const tipo = tipoActual;
   if (!monto || monto <= 0) { alert('Ingresá un monto válido'); return; }
   if (!desc) { alert('Agregá una descripción'); return; }
   if (moneda === 'ARS' && !tcARS_BRL) { alert('Ingresá primero el tipo de cambio'); return; }
-  days[currentDay].push({ quien, monto, moneda, desc, id: Date.now() });
+  days[currentDay].push({ quien, monto, moneda, desc, cat, tipo, id: Date.now() });
   document.getElementById('f-monto').value = '';
   document.getElementById('f-desc').value = '';
   document.getElementById('conversion-preview').textContent = '';
@@ -428,6 +554,40 @@ window.deleteExpense = function(id) {
   renderAll(); save();
 }
 
+// ── Modal edición ─────────────────────────────────────────────
+window.openEdit = function(id) {
+  const e = days.flat().find(x => x.id === id);
+  if (!e) return;
+  editingId = id;
+  document.getElementById('edit-desc').value = e.desc;
+  document.getElementById('edit-cat').value = e.cat || 'Otros';
+  document.getElementById('edit-tipo').value = e.tipo || 'compartido';
+  document.getElementById('edit-quien').value = e.quien;
+  document.getElementById('edit-opt-yo').textContent = nameYo;
+  document.getElementById('edit-opt-amigo').textContent = nameAmigo;
+  document.getElementById('editModal').classList.add('open');
+}
+window.closeModal = function() {
+  document.getElementById('editModal').classList.remove('open');
+  editingId = null;
+}
+window.saveEdit = function() {
+  if (!editingId) return;
+  for (let d of days) {
+    const e = d.find(x => x.id === editingId);
+    if (e) {
+      e.desc = document.getElementById('edit-desc').value.trim() || e.desc;
+      e.cat = document.getElementById('edit-cat').value;
+      e.tipo = document.getElementById('edit-tipo').value;
+      e.quien = document.getElementById('edit-quien').value;
+      break;
+    }
+  }
+  closeModal();
+  renderAll(); save();
+}
+
+// ── Borrar todo ───────────────────────────────────────────────
 window.clearData = function() {
   const confirmText = prompt('Para borrar todos los datos escribí "BORRAR" en mayúsculas:');
   if (confirmText !== 'BORRAR') return;
@@ -442,6 +602,7 @@ window.clearData = function() {
   renderAll(); save();
 }
 
+// ── Render ────────────────────────────────────────────────────
 function renderAll() {
   document.getElementById('opt-yo').textContent = nameYo;
   document.getElementById('opt-amigo').textContent = nameAmigo;
@@ -450,7 +611,7 @@ function renderAll() {
   document.getElementById('lbl-total-amigo').textContent = nameAmigo.toUpperCase();
   document.getElementById('btn-brl').className = 'curr-btn' + (displayCurrency === 'BRL' ? ' active-brl' : '');
   document.getElementById('btn-ars').className = 'curr-btn' + (displayCurrency === 'ARS' ? ' active-ars' : '');
-  renderDayTabs(); renderExpenses(); renderSummary(); renderInv();
+  renderDayTabs(); renderExpenses(); renderSummary(); renderInv(); renderChart();
 }
 
 function renderInv() {
@@ -480,49 +641,124 @@ function renderExpenses() {
   const sumDiv = document.getElementById('day-summary');
   const expenses = days[currentDay] || [];
   if (expenses.length === 0) { list.innerHTML = `<div class="empty-msg">Todavía no hay gastos para el Día ${currentDay+1}</div>`; sumDiv.innerHTML = ''; return; }
+
   let html = `<table class="expense-table"><thead><tr><th>Descripción</th><th>Pagó</th><th style="text-align:right">Monto</th><th></th></tr></thead><tbody>`;
   expenses.forEach(e => {
     const bc = e.quien === 'yo' ? 'badge-yo' : 'badge-amigo';
     const bn = e.quien === 'yo' ? nameYo : nameAmigo;
     const mb = e.moneda === 'ARS' ? `<span class="badge badge-moneda-ars">ARS</span>` : `<span class="badge badge-moneda-brl">BRL</span>`;
-    html += `<tr><td>${e.desc} ${mb}</td><td><span class="badge ${bc}">${bn}</span></td><td style="text-align:right;font-family:'Syne',sans-serif;font-weight:600">${displayAmt(e.monto, e.moneda)}</td><td><button class="btn-del" onclick="deleteExpense(${e.id})">✕</button></td></tr>`;
+    const catB = `<span class="badge badge-cat">${CAT_ICONS[e.cat]||'📦'} ${e.cat||'Otros'}</span>`;
+    const indivB = e.tipo === 'individual' ? `<span class="badge badge-indiv">Individual</span>` : '';
+    const rowClass = e.tipo === 'individual' ? 'indiv-row' : '';
+    html += `<tr class="${rowClass}">
+      <td>${e.desc} ${mb}${catB}${indivB}</td>
+      <td><span class="badge ${bc}">${bn}</span></td>
+      <td style="text-align:right;font-family:'Syne',sans-serif;font-weight:600">${displayAmt(e.monto, e.moneda)}</td>
+      <td style="white-space:nowrap">
+        <button class="btn-edit" onclick="openEdit(${e.id})">✏️</button>
+        <button class="btn-del" onclick="deleteExpense(${e.id})">✕</button>
+      </td>
+    </tr>`;
   });
   html += '</tbody></table>';
   list.innerHTML = html;
-  const totalBRL = expenses.reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
-  const yoBRL = expenses.filter(e => e.quien === 'yo').reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
-  const amigoBRL = expenses.filter(e => e.quien === 'amigo').reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
+
+  // Solo gastos compartidos para prorateo
+  const comp = expenses.filter(e => e.tipo !== 'individual');
+  const totalBRL = comp.reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
+  const yoBRL = comp.filter(e => e.quien === 'yo').reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
+  const amigoBRL = comp.filter(e => e.quien === 'amigo').reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
   const mitad = totalBRL / 2;
   const diff = yoBRL - mitad;
   let bHtml = '', bClass = '';
-  if (Math.abs(diff) < 0.01) { bHtml = '✓ Están empatados, sin deuda'; bClass = 'neutral'; }
+  if (comp.length === 0) { bHtml = 'Sin gastos compartidos hoy'; bClass = 'neutral'; }
+  else if (Math.abs(diff) < 0.01) { bHtml = '✓ Están empatados, sin deuda'; bClass = 'neutral'; }
   else if (diff > 0) { bHtml = `${nameAmigo} le debe a ${nameYo}: <strong>${sym()} ${cv(Math.abs(diff))}</strong>`; bClass = 'amigo-paga'; }
   else { bHtml = `${nameYo} le debe a ${nameAmigo}: <strong>${sym()} ${cv(Math.abs(diff))}</strong>`; bClass = 'yo-paga'; }
+
+  // Totales día (todos los gastos)
+  const totalDiaYoBRL = expenses.filter(e => e.quien === 'yo').reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
+  const totalDiaAmigoBRL = expenses.filter(e => e.quien === 'amigo').reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
+  const totalDiaBRL = expenses.reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
+
   sumDiv.innerHTML = `<div class="day-summary">
-    <div class="sum-block"><div class="lbl">${nameYo} pagó</div><div class="val yo">${sym()} ${cv(yoBRL)}</div></div>
-    <div class="sum-block"><div class="lbl">${nameAmigo} pagó</div><div class="val amigo">${sym()} ${cv(amigoBRL)}</div></div>
-    <div class="sum-block"><div class="lbl">Total día</div><div class="val total">${sym()} ${cv(totalBRL)}</div></div>
+    <div class="sum-block"><div class="lbl">${nameYo} pagó</div><div class="val yo">${sym()} ${cv(totalDiaYoBRL)}</div></div>
+    <div class="sum-block"><div class="lbl">${nameAmigo} pagó</div><div class="val amigo">${sym()} ${cv(totalDiaAmigoBRL)}</div></div>
+    <div class="sum-block"><div class="lbl">Total día</div><div class="val total">${sym()} ${cv(totalDiaBRL)}</div></div>
   </div>
-  <div class="balance-box"><div class="lbl">Prorateo del día — cada uno paga ${sym()} ${cv(mitad)}</div><div class="result ${bClass}">${bHtml}</div></div>`;
+  <div class="balance-box"><div class="lbl">Prorateo (compartidos) — cada uno paga ${sym()} ${cv(mitad)}</div><div class="result ${bClass}">${bHtml}</div></div>`;
 }
 
 function renderSummary() {
   const all = days.flat();
-  const totalBRL = all.reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
-  const yoBRL = all.filter(e => e.quien === 'yo').reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
-  const amigoBRL = all.filter(e => e.quien === 'amigo').reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
+  const comp = all.filter(e => e.tipo !== 'individual');
+  const totalBRL = comp.reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
+  const yoCompBRL = comp.filter(e => e.quien === 'yo').reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
+  const amigoCompBRL = comp.filter(e => e.quien === 'amigo').reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
   const mitad = totalBRL / 2;
-  const diff = yoBRL - mitad;
-  document.getElementById('total-pago-yo').textContent = `${sym()} ${cv(yoBRL)}`;
-  document.getElementById('total-pago-amigo').textContent = `${sym()} ${cv(amigoBRL)}`;
+  const diff = yoCompBRL - mitad;
+
+  // Totales incluyendo individuales
+  const yoTotalBRL = all.filter(e => e.quien === 'yo').reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
+  const amigoTotalBRL = all.filter(e => e.quien === 'amigo').reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
+  const yoIndivBRL = all.filter(e => e.quien === 'yo' && e.tipo === 'individual').reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
+  const amigoIndivBRL = all.filter(e => e.quien === 'amigo' && e.tipo === 'individual').reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
+
+  document.getElementById('total-pago-yo').textContent = `${sym()} ${cv(yoTotalBRL)}`;
+  document.getElementById('total-pago-amigo').textContent = `${sym()} ${cv(amigoTotalBRL)}`;
   document.getElementById('total-corr-yo').textContent = `${sym()} ${cv(mitad)}`;
   document.getElementById('total-corr-amigo').textContent = `${sym()} ${cv(mitad)}`;
+  document.getElementById('total-indiv-yo').textContent = yoIndivBRL > 0 ? `Individual: ${sym()} ${cv(yoIndivBRL)}` : '';
+  document.getElementById('total-indiv-amigo').textContent = amigoIndivBRL > 0 ? `Individual: ${sym()} ${cv(amigoIndivBRL)}` : '';
+
   const liq = document.getElementById('liquidacion');
-  if (totalBRL === 0) { liq.textContent = 'Sin gastos aún'; liq.style.color = 'white'; }
+  if (totalBRL === 0) { liq.textContent = 'Sin gastos compartidos aún'; liq.style.color = 'white'; }
   else if (Math.abs(diff) < 0.01) { liq.textContent = '✓ Todo en orden, sin deudas'; liq.style.color = '#7fffc4'; }
   else if (diff > 0) { liq.innerHTML = `${nameAmigo} le debe a ${nameYo} <strong>${sym()} ${cv(Math.abs(diff))}</strong>`; liq.style.color = '#9ec8ff'; }
   else { liq.innerHTML = `${nameYo} le debe a ${nameAmigo} <strong>${sym()} ${cv(Math.abs(diff))}</strong>`; liq.style.color = '#ffb89e'; }
 }
+
+function renderChart() {
+  const all = days.flat();
+  const totals = CATS.map(cat => all.filter(e => (e.cat || 'Otros') === cat).reduce((s, e) => s + toBRL(e.monto, e.moneda), 0));
+  const grandTotal = totals.reduce((a, b) => a + b, 0);
+
+  const legend = document.getElementById('chartLegend');
+  if (grandTotal === 0) {
+    legend.innerHTML = `<div style="color:var(--muted);font-size:13px;">Aún no hay gastos</div>`;
+    if (pieChartInstance) { pieChartInstance.destroy(); pieChartInstance = null; }
+    return;
+  }
+
+  // Chart
+  const ctx = document.getElementById('pieChart').getContext('2d');
+  if (pieChartInstance) pieChartInstance.destroy();
+  pieChartInstance = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: CATS,
+      datasets: [{ data: totals, backgroundColor: CAT_COLORS, borderWidth: 2, borderColor: '#fff' }]
+    },
+    options: {
+      plugins: { legend: { display: false }, tooltip: { enabled: false } },
+      cutout: '60%',
+      animation: { animateRotate: true }
+    }
+  });
+
+  // Leyenda
+  legend.innerHTML = CATS.map((cat, i) => {
+    if (totals[i] === 0) return '';
+    const pct = Math.round((totals[i] / grandTotal) * 100);
+    return `<div class="legend-item">
+      <div class="legend-dot" style="background:${CAT_COLORS[i]}"></div>
+      <span class="legend-label">${CAT_ICONS[cat]} ${cat}</span>
+      <span class="legend-val">${sym()} ${cv(totals[i])}</span>
+      <span class="legend-pct">${pct}%</span>
+    </div>`;
+  }).join('');
+}
+
 </script>
 </body>
 </html>
