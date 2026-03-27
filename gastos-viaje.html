@@ -411,6 +411,7 @@ let saveTimer = null;
 let editingId = null;
 let pieChartInstance = null;
 let ingresos = [];
+let dayDates = [''];
 
 const CATS = ['Hospedaje','Comida','Transporte','Otros'];
 const CAT_COLORS = ['#1a7ae8','#e8521a','#1a7a3a','#6b3fa0'];
@@ -432,7 +433,7 @@ function save() {
       await setDoc(docRef, {
         daysObj, daysCount: days.length, currentDay, nameYo, nameAmigo, displayCurrency,
         tcARS_BRL: tcARS_BRL || null,
-        ingresos,
+        ingresos, dayDates,
         aporteYo: document.getElementById('aporte-yo').value || '',
         aporteAmigo: document.getElementById('aporte-amigo').value || ''
       });
@@ -464,6 +465,7 @@ function loadFromData(data) {
   displayCurrency = data.displayCurrency || 'BRL';
   tcARS_BRL = data.tcARS_BRL || null;
   ingresos = data.ingresos || [];
+  dayDates = data.dayDates || days.map(() => '');
   document.getElementById('nameYo').value = nameYo;
   document.getElementById('nameAmigo').value = nameAmigo;
   if (data.aporteYo) document.getElementById('aporte-yo').value = data.aporteYo;
@@ -551,8 +553,15 @@ window.deleteIngreso = function(id) {
 window.updateInv = function() { renderInv(); save(); }
 
 // ── Días ──────────────────────────────────────────────────────
-window.addDay = function() { days.push([]); currentDay = days.length - 1; renderAll(); save(); }
+window.addDay = function() {
+  days.push([]);
+  const today = new Date().toISOString().split('T')[0];
+  dayDates.push(today);
+  currentDay = days.length - 1;
+  renderAll(); save();
+}
 window.selectDay = function(i) { currentDay = i; renderDayTabs(); renderExpenses(); }
+window.updateDayDate = function(i, val) { dayDates[i] = val; renderDayTabs(); save(); }
 
 // ── Formulario ────────────────────────────────────────────────
 window.onMonedaChange = function() {
@@ -638,7 +647,7 @@ window.saveEdit = function() {
 window.clearData = function() {
   const confirmText = prompt('Para borrar todos los datos escribí "BORRAR" en mayúsculas:');
   if (confirmText !== 'BORRAR') return;
-  days = [[]]; currentDay = 0; tcARS_BRL = null; nameYo = 'Yo'; nameAmigo = 'Amigo'; ingresos = [];
+  days = [[]]; currentDay = 0; tcARS_BRL = null; nameYo = 'Yo'; nameAmigo = 'Amigo'; ingresos = []; dayDates = [''];
   document.getElementById('nameYo').value = 'Yo';
   document.getElementById('nameAmigo').value = 'Amigo';
   document.getElementById('aporte-yo').value = '';
@@ -688,9 +697,27 @@ function renderInv() {
     </div>`).join('');
 }
 
+function fmtDate(d) {
+  if (!d) return '';
+  const [y, m, day] = d.split('-');
+  const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  return `${parseInt(day)} ${meses[parseInt(m)-1]}`;
+}
+
 function renderDayTabs() {
   let html = '';
-  days.forEach((_, i) => { html += `<button class="day-tab ${i === currentDay ? 'active' : ''}" onclick="selectDay(${i})">Día ${i+1}</button>`; });
+  days.forEach((_, i) => {
+    const fecha = fmtDate(dayDates[i]);
+    const dateInput = i === currentDay
+      ? `<input type="date" value="${dayDates[i]||''}" onchange="updateDayDate(${i}, this.value)"
+           style="position:absolute;opacity:0;width:100%;height:100%;top:0;left:0;cursor:pointer;" title="Cambiar fecha">`
+      : '';
+    html += `<button class="day-tab ${i === currentDay ? 'active' : ''}" onclick="selectDay(${i})" style="position:relative;line-height:1.2;padding:6px 14px 5px;">
+      <span style="display:block;font-size:12px;">Día ${i+1}</span>
+      <span style="display:block;font-size:10px;opacity:0.65;">${fecha || 'sin fecha'}</span>
+      ${dateInput}
+    </button>`;
+  });
   html += `<button class="btn-newday" onclick="addDay()">+ Día</button>`;
   document.getElementById('dayTabs').innerHTML = html;
 }
