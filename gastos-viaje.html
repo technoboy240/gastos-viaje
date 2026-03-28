@@ -412,6 +412,7 @@ let editingId = null;
 let pieChartInstance = null;
 let ingresos = [];
 let dayDates = [''];
+let dayLabels = ['Día 1'];
 
 const CATS = ['Hospedaje','Comida','Transporte','Otros'];
 const CAT_COLORS = ['#1a7ae8','#e8521a','#1a7a3a','#6b3fa0'];
@@ -433,7 +434,7 @@ function save() {
       await setDoc(docRef, {
         daysObj, daysCount: days.length, currentDay, nameYo, nameAmigo, displayCurrency,
         tcARS_BRL: tcARS_BRL || null,
-        ingresos, dayDates,
+        ingresos, dayDates, dayLabels,
         aporteYo: document.getElementById('aporte-yo').value || '',
         aporteAmigo: document.getElementById('aporte-amigo').value || ''
       });
@@ -466,6 +467,7 @@ function loadFromData(data) {
   tcARS_BRL = data.tcARS_BRL || null;
   ingresos = data.ingresos || [];
   dayDates = data.dayDates || days.map(() => '');
+  dayLabels = data.dayLabels || days.map((_, i) => `Día ${i + 1}`);
   document.getElementById('nameYo').value = nameYo;
   document.getElementById('nameAmigo').value = nameAmigo;
   if (data.aporteYo) document.getElementById('aporte-yo').value = data.aporteYo;
@@ -557,11 +559,13 @@ window.addDay = function() {
   days.push([]);
   const today = new Date().toISOString().split('T')[0];
   dayDates.push(today);
+  dayLabels.push(`Día ${days.length}`);
   currentDay = days.length - 1;
   renderAll(); save();
 }
 window.selectDay = function(i) { currentDay = i; renderDayTabs(); renderExpenses(); }
 window.updateDayDate = function(i, val) { dayDates[i] = val; renderDayTabs(); save(); }
+window.updateDayLabel = function(i, val) { dayLabels[i] = val; save(); }
 
 // ── Formulario ────────────────────────────────────────────────
 window.onMonedaChange = function() {
@@ -647,7 +651,7 @@ window.saveEdit = function() {
 window.clearData = function() {
   const confirmText = prompt('Para borrar todos los datos escribí "BORRAR" en mayúsculas:');
   if (confirmText !== 'BORRAR') return;
-  days = [[]]; currentDay = 0; tcARS_BRL = null; nameYo = 'Yo'; nameAmigo = 'Amigo'; ingresos = []; dayDates = [''];
+  days = [[]]; currentDay = 0; tcARS_BRL = null; nameYo = 'Yo'; nameAmigo = 'Amigo'; ingresos = []; dayDates = ['']; dayLabels = ['Día 1'];
   document.getElementById('nameYo').value = 'Yo';
   document.getElementById('nameAmigo').value = 'Amigo';
   document.getElementById('aporte-yo').value = '';
@@ -708,15 +712,29 @@ function renderDayTabs() {
   let html = '';
   days.forEach((_, i) => {
     const fecha = fmtDate(dayDates[i]);
-    const dateInput = i === currentDay
-      ? `<input type="date" value="${dayDates[i]||''}" onchange="updateDayDate(${i}, this.value)"
-           style="position:absolute;opacity:0;width:100%;height:100%;top:0;left:0;cursor:pointer;" title="Cambiar fecha">`
-      : '';
-    html += `<button class="day-tab ${i === currentDay ? 'active' : ''}" onclick="selectDay(${i})" style="position:relative;line-height:1.2;padding:6px 14px 5px;">
-      <span style="display:block;font-size:12px;">Día ${i+1}</span>
-      <span style="display:block;font-size:10px;opacity:0.65;">${fecha || 'sin fecha'}</span>
-      ${dateInput}
-    </button>`;
+    const label = dayLabels[i] || `Día ${i + 1}`;
+    if (i === currentDay) {
+      // Tab activo: label editable + date picker oculto para la fecha
+      html += `<div class="day-tab active" style="position:relative;line-height:1.2;padding:5px 10px 4px;display:inline-flex;flex-direction:column;align-items:center;gap:1px;">
+        <input
+          type="text"
+          value="${label.replace(/"/g, '&quot;')}"
+          onchange="updateDayLabel(${i}, this.value)"
+          onclick="event.stopPropagation()"
+          style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.5px;background:transparent;border:none;border-bottom:1.5px solid rgba(255,255,255,0.5);color:white;outline:none;text-align:center;width:100px;padding:0 0 1px;"
+          title="Editá el nombre del día">
+        <span style="display:block;font-size:10px;opacity:0.65;cursor:pointer;" title="Cambiar fecha" onclick="event.stopPropagation();this.nextElementSibling.showPicker()">
+          ${fecha || 'sin fecha'}
+        </span>
+        <input type="date" value="${dayDates[i]||''}" onchange="updateDayDate(${i}, this.value)"
+          style="position:absolute;opacity:0;width:1px;height:1px;top:0;left:0;pointer-events:none;">
+      </div>`;
+    } else {
+      html += `<button class="day-tab" onclick="selectDay(${i})" style="line-height:1.2;padding:6px 14px 5px;">
+        <span style="display:block;font-size:12px;">${label}</span>
+        <span style="display:block;font-size:10px;opacity:0.65;">${fecha || 'sin fecha'}</span>
+      </button>`;
+    }
   });
   html += `<button class="btn-newday" onclick="addDay()">+ Día</button>`;
   document.getElementById('dayTabs').innerHTML = html;
@@ -726,7 +744,7 @@ function renderExpenses() {
   const list = document.getElementById('expense-list');
   const sumDiv = document.getElementById('day-summary');
   const expenses = days[currentDay] || [];
-  if (expenses.length === 0) { list.innerHTML = `<div class="empty-msg">Todavía no hay gastos para el Día ${currentDay+1}</div>`; sumDiv.innerHTML = ''; return; }
+  if (expenses.length === 0) { list.innerHTML = `<div class="empty-msg">Todavía no hay gastos para ${dayLabels[currentDay] || 'este día'}</div>`; sumDiv.innerHTML = ''; return; }
 
   let html = `<table class="expense-table"><thead><tr><th>Descripción</th><th>Pagó</th><th style="text-align:right">Monto</th><th></th></tr></thead><tbody>`;
   expenses.forEach(e => {
