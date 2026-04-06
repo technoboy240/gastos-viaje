@@ -174,8 +174,36 @@
 </head>
 <body>
 
-<!-- Modal edición -->
+<!-- Modal editar gasto -->
 <div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <h3>Editar gasto</h3>
+    <label>Descripción</label>
+    <input type="text" id="edit-desc">
+    <label>Categoría</label>
+    <select id="edit-cat">
+      <option value="Hospedaje">🏨 Hospedaje</option>
+      <option value="Comida">🍽️ Comida</option>
+      <option value="Transporte">🚌 Transporte</option>
+      <option value="Otros">📦 Otros</option>
+    </select>
+    <label>Tipo</label>
+    <select id="edit-tipo">
+      <option value="compartido">Compartido</option>
+      <option value="individual">Individual</option>
+    </select>
+    <label>Pagó</label>
+    <select id="edit-quien">
+      <option value="yo" id="edit-opt-yo">Yo</option>
+      <option value="amigo" id="edit-opt-amigo">Amigo</option>
+    </select>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-cancel" style="color:#c42a00;border-color:#f8d0bc !important;" onclick="deleteFromModal()">Borrar</button>
+      <button class="btn-save" onclick="saveEdit()">Guardar</button>
+    </div>
+  </div>
+</div>
 
 <!-- Modal lista completa de ingresos -->
 <div class="modal-overlay" id="ingresosModal">
@@ -202,34 +230,6 @@
       <button class="btn-cancel" onclick="closeEditIngreso()">Cancelar</button>
       <button class="btn-cancel" style="color:#c42a00;border-color:#f8d0bc !important;" onclick="deleteIngresoFromModal()">Borrar</button>
       <button class="btn-save" onclick="saveEditIngreso()">Guardar</button>
-    </div>
-  </div>
-</div>
-  <div class="modal">
-    <h3>Editar gasto</h3>
-    <label>Descripción</label>
-    <input type="text" id="edit-desc">
-    <label>Categoría</label>
-    <select id="edit-cat">
-      <option value="Hospedaje">🏨 Hospedaje</option>
-      <option value="Comida">🍽️ Comida</option>
-      <option value="Transporte">🚌 Transporte</option>
-      <option value="Otros">📦 Otros</option>
-    </select>
-    <label>Tipo</label>
-    <select id="edit-tipo">
-      <option value="compartido">Compartido</option>
-      <option value="individual">Individual</option>
-    </select>
-    <label>Pagó</label>
-    <select id="edit-quien">
-      <option value="yo" id="edit-opt-yo">Yo</option>
-      <option value="amigo" id="edit-opt-amigo">Amigo</option>
-    </select>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
-      <button class="btn-cancel" style="color:#c42a00;border-color:#f8d0bc !important;" onclick="deleteFromModal()">Borrar</button>
-      <button class="btn-save" onclick="saveEdit()">Guardar</button>
     </div>
   </div>
 </div>
