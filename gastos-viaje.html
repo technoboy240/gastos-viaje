@@ -144,6 +144,8 @@
   .btn-save { background: var(--accent); color: white; }
 
   .empty-msg { text-align: center; color: var(--muted); font-size: 14px; padding: 20px 0; }
+  .btn-ver-ingresos { background: none; border: 1.5px solid var(--border); border-radius: 20px; padding: 5px 14px; font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: var(--muted); cursor: pointer; letter-spacing: 0.5px; transition: all 0.15s; display: block; margin: 6px auto 0; }
+  .btn-ver-ingresos:hover { border-color: var(--success); color: var(--success); }
   .name-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .name-inputs input { padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); background: var(--bg); outline: none; transition: border-color 0.2s; }
   .name-inputs input:focus { border-color: var(--accent); background: white; }
@@ -174,6 +176,35 @@
 
 <!-- Modal edición -->
 <div class="modal-overlay" id="editModal">
+
+<!-- Modal lista completa de ingresos -->
+<div class="modal-overlay" id="ingresosModal">
+  <div class="modal">
+    <h3>Todos los ingresos extra</h3>
+    <div id="ingresos-modal-list" style="display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow-y:auto;margin-bottom:4px;"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeIngresosModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal editar ingreso -->
+<div class="modal-overlay" id="editIngresoModal">
+  <div class="modal">
+    <h3>Editar ingreso</h3>
+    <label>Descripción</label>
+    <input type="text" id="ei-desc">
+    <label>Monto (R$)</label>
+    <input type="number" id="ei-monto" min="0" step="0.01">
+    <label>Fecha</label>
+    <input type="date" id="ei-fecha">
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeEditIngreso()">Cancelar</button>
+      <button class="btn-cancel" style="color:#c42a00;border-color:#f8d0bc !important;" onclick="deleteIngresoFromModal()">Borrar</button>
+      <button class="btn-save" onclick="saveEditIngreso()">Guardar</button>
+    </div>
+  </div>
+</div>
   <div class="modal">
     <h3>Editar gasto</h3>
     <label>Descripción</label>
@@ -266,7 +297,7 @@
     <div style="border-top:1.5px solid var(--border);margin-top:18px;padding-top:16px;">
       <div class="card-title" style="margin-bottom:10px;">Ingresos extra</div>
       <div id="ingresos-list" style="margin-bottom:12px;display:flex;flex-direction:column;gap:8px;"></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:end;">
         <div>
           <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Descripción</label>
           <input type="text" id="ingreso-desc" placeholder="Ej: trabajo extra..." style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);outline:none;">
@@ -274,6 +305,10 @@
         <div>
           <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Monto (R$)</label>
           <input type="number" id="ingreso-monto" placeholder="0.00" min="0" step="0.01" style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);outline:none;">
+        </div>
+        <div>
+          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Fecha</label>
+          <input type="date" id="ingreso-fecha" style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);outline:none;">
         </div>
         <button onclick="addIngreso()" style="padding:9px 14px;background:#1a7a3a;color:white;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;">+ Sumar</button>
       </div>
@@ -535,20 +570,82 @@ window.updateNames = function() {
 }
 
 // ── Ingresos extra ────────────────────────────────────────────
+let editingIngresoId = null;
+
 window.addIngreso = function() {
   const desc = document.getElementById('ingreso-desc').value.trim();
   const monto = parseFloat(document.getElementById('ingreso-monto').value);
+  const fecha = document.getElementById('ingreso-fecha').value || '';
   if (!monto || monto <= 0) { alert('Ingresá un monto válido'); return; }
   if (!desc) { alert('Agregá una descripción'); return; }
-  ingresos.push({ desc, monto, id: Date.now() });
+  ingresos.push({ desc, monto, fecha, id: Date.now() });
   document.getElementById('ingreso-desc').value = '';
   document.getElementById('ingreso-monto').value = '';
+  document.getElementById('ingreso-fecha').value = '';
   renderInv(); save();
 }
 
 window.deleteIngreso = function(id) {
   ingresos = ingresos.filter(i => i.id !== id);
-  renderInv(); save();
+  renderInv(); renderIngresosModalList(); save();
+}
+
+window.openEditIngreso = function(id) {
+  const ing = ingresos.find(i => i.id === id);
+  if (!ing) return;
+  editingIngresoId = id;
+  document.getElementById('ei-desc').value = ing.desc;
+  document.getElementById('ei-monto').value = ing.monto;
+  document.getElementById('ei-fecha').value = ing.fecha || '';
+  document.getElementById('editIngresoModal').classList.add('open');
+}
+window.closeEditIngreso = function() {
+  document.getElementById('editIngresoModal').classList.remove('open');
+  editingIngresoId = null;
+}
+window.saveEditIngreso = function() {
+  if (!editingIngresoId) return;
+  const ing = ingresos.find(i => i.id === editingIngresoId);
+  if (ing) {
+    ing.desc = document.getElementById('ei-desc').value.trim() || ing.desc;
+    ing.monto = parseFloat(document.getElementById('ei-monto').value) || ing.monto;
+    ing.fecha = document.getElementById('ei-fecha').value || '';
+  }
+  closeEditIngreso();
+  renderInv(); renderIngresosModalList(); save();
+}
+window.deleteIngresoFromModal = function() {
+  if (!editingIngresoId) return;
+  if (!confirm('¿Borrar este ingreso?')) return;
+  ingresos = ingresos.filter(i => i.id !== editingIngresoId);
+  closeEditIngreso();
+  renderInv(); renderIngresosModalList(); save();
+}
+window.openIngresosModal = function() {
+  renderIngresosModalList();
+  document.getElementById('ingresosModal').classList.add('open');
+}
+window.closeIngresosModal = function() {
+  document.getElementById('ingresosModal').classList.remove('open');
+}
+function renderIngresosModalList() {
+  const el = document.getElementById('ingresos-modal-list');
+  if (!el) return;
+  if (ingresos.length === 0) { el.innerHTML = '<div class="empty-msg">Sin ingresos extra</div>'; return; }
+  el.innerHTML = ingresos.map(i => ingresoRow(i)).join('');
+}
+function ingresoRow(i) {
+  const fechaStr = i.fecha ? fmtDate(i.fecha) : '';
+  return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#f0f7f0;border-radius:10px;border:1px solid #c8e6c8;">
+    <div>
+      <span style="font-size:13px;color:#1a7a3a;">${i.desc}</span>
+      ${fechaStr ? `<span style="font-size:11px;color:var(--muted);margin-left:6px;">${fechaStr}</span>` : ''}
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="font-size:13px;font-weight:700;color:#1a7a3a;">+ R$ ${fmt(i.monto)}</span>
+      <button onclick="openEditIngreso(${i.id})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:0 2px;" title="Editar">✏️</button>
+    </div>
+  </div>`;
 }
 
 // ── Inversión ─────────────────────────────────────────────────
@@ -691,14 +788,10 @@ function renderInv() {
 
   const listEl = document.getElementById('ingresos-list');
   if (ingresos.length === 0) { listEl.innerHTML = ''; return; }
-  listEl.innerHTML = ingresos.map(i => `
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#f0f7f0;border-radius:10px;border:1px solid #c8e6c8;">
-      <span style="font-size:13px;color:#1a7a3a;">${i.desc}</span>
-      <div style="display:flex;align-items:center;gap:8px;">
-        <span style="font-size:13px;font-weight:700;color:#1a7a3a;">+ R$ ${fmt(i.monto)}</span>
-        <button onclick="deleteIngreso(${i.id})" style="background:none;border:none;color:#888;cursor:pointer;font-size:14px;padding:0 2px;">✕</button>
-      </div>
-    </div>`).join('');
+  const visibles = ingresos.slice(-3);
+  const hayMas = ingresos.length > 3;
+  listEl.innerHTML = visibles.map(i => ingresoRow(i)).join('') +
+    (hayMas ? `<button class="btn-ver-ingresos" onclick="openIngresosModal()">Ver todos (${ingresos.length}) ↗</button>` : '');
 }
 
 function fmtDate(d) {
