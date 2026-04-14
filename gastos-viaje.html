@@ -17,29 +17,38 @@
   .container { max-width: 680px; margin: 0 auto; padding: 24px 16px; }
   .card { background: var(--card); border-radius: 16px; border: 1.5px solid var(--border); padding: 20px; margin-bottom: 18px; }
   .card-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 14px; }
+  
+  /* Sync Bar */
   .sync-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: #111; color: white; font-size: 12px; font-family: 'Syne', sans-serif; letter-spacing: 0.5px; }
   .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #555; flex-shrink: 0; }
   .sync-dot.ok { background: #4cff91; }
   .sync-dot.err { background: #ff6b6b; }
   .sync-dot.loading { background: #ffc84c; animation: pulse 1s infinite; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-  .tc-status { font-size: 12px; color: var(--muted); margin-top: 10px; display: flex; align-items: center; gap: 6px; }
-  .tc-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); display: inline-block; flex-shrink:0; }
-  .tc-dot.ok { background: var(--success); }
-  .inv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .inv-block label { font-size: 13px; color: var(--muted); display: block; margin-bottom: 4px; }
-  .inv-block input { width: 100%; font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; border: none; border-bottom: 2px solid var(--border); background: transparent; color: var(--text); padding: 4px 0; outline: none; transition: border-color 0.2s; }
-  .inv-block input:focus { border-color: var(--accent); }
-  .inv-block input::placeholder { color: var(--border); }
-  .inv-summary { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 16px; }
-  .inv-metric { text-align: center; }
-  .inv-metric .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-  .inv-metric .value { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; }
-  .inv-metric .value.good { color: var(--success); }
-  .inv-metric .value.warn { color: #c47a00; }
-  .inv-metric .value.bad { color: #c42a00; }
-  .progress-bar { height: 8px; background: var(--border); border-radius: 4px; margin-top: 14px; overflow: hidden; }
-  .progress-fill { height: 100%; border-radius: 4px; background: var(--accent); transition: width 0.4s ease; }
+
+  /* Inversion & Ahorros */
+  .stats-header { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
+  .stat-item { text-align: center; }
+  .stat-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .stat-value { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; }
+  .stat-value.good { color: var(--success); }
+  .stat-value.warn { color: #c47a00; }
+  .stat-value.bad { color: #c42a00; }
+
+  .inv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
+  .inv-block label { font-size: 11px; color: var(--muted); display: block; margin-bottom: 2px; }
+  .inv-block input { width: 100%; font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; border: none; border-bottom: 1.5px solid var(--border); background: transparent; padding: 4px 0; outline: none; }
+  
+  /* Ahorros Control */
+  .ahorro-main { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-top: 5px; }
+  .ahorro-display { flex: 1; }
+  .ahorro-val { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: var(--success); }
+  .ahorro-ctrl { display: flex; align-items: center; gap: 8px; }
+  .ahorro-input { width: 80px; padding: 8px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Syne', sans-serif; font-weight: 700; text-align: center; outline: none; }
+  .btn-mod { width: 36px; height: 36px; border-radius: 10px; border: none; font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; cursor: pointer; color: white; transition: transform 0.1s; }
+  .btn-mod.plus { background: var(--success); }
+  .btn-mod.minus { background: var(--accent); }
+  .btn-mod:active { transform: scale(0.9); }
 
   /* Formulario */
   .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr 2fr; gap: 10px; align-items: end; margin-bottom: 10px; }
@@ -47,139 +56,48 @@
   .form-row label, .form-row2 label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px; }
   .form-row input, .form-row select, .form-row2 input, .form-row2 select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text); background: var(--bg); outline: none; transition: border-color 0.2s; }
   .form-row input:focus, .form-row select:focus, .form-row2 input:focus, .form-row2 select:focus { border-color: var(--accent); background: white; }
-  select.moneda-ars { border-color: #d4b8f0; color: var(--ars); }
 
-  /* Toggle compartido/individual */
-  .tipo-toggle { display: flex; gap: 0; border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; }
-  .tipo-btn { flex: 1; padding: 10px 8px; border: none; background: var(--bg); color: var(--muted); font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.15s; letter-spacing: 0.5px; }
-  .tipo-btn.active-comp { background: var(--accent2); color: white; }
-  .tipo-btn.active-indiv { background: var(--ars); color: white; }
-
-  .btn-add { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px; transition: opacity 0.15s, transform 0.1s; margin-top: 6px; }
+  /* UI Elements */
+  .btn-add { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px; transition: opacity 0.15s; margin-top: 6px; }
   .btn-add:hover { opacity: 0.88; }
-  .btn-add:active { transform: scale(0.98); }
   .currency-toggle { display: flex; gap: 6px; align-items: center; margin-bottom: 16px; }
-  .currency-toggle span { font-size: 12px; color: var(--muted); font-family: 'Syne', sans-serif; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-right: 4px; }
-  .curr-btn { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; padding: 5px 14px; border-radius: 20px; border: 1.5px solid var(--border); background: white; color: var(--muted); cursor: pointer; transition: all 0.15s; letter-spacing: 0.5px; }
+  .curr-btn { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; padding: 5px 14px; border-radius: 20px; border: 1.5px solid var(--border); background: white; color: var(--muted); cursor: pointer; }
   .curr-btn.active-brl { background: var(--accent); color: white; border-color: var(--accent); }
   .curr-btn.active-ars { background: var(--ars); color: white; border-color: var(--ars); }
-  .day-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
-  .day-tab { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 20px; border: 1.5px solid var(--border); background: white; color: var(--muted); cursor: pointer; transition: all 0.15s; letter-spacing: 0.5px; }
+  .day-tab { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 20px; border: 1.5px solid var(--border); background: white; color: var(--muted); cursor: pointer; }
   .day-tab.active { background: var(--text); color: white; border-color: var(--text); }
-  .day-tab:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
-  .btn-newday { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 20px; border: 1.5px dashed var(--accent); background: transparent; color: var(--accent); cursor: pointer; transition: all 0.15s; letter-spacing: 0.5px; }
-  .btn-newday:hover { background: var(--accent); color: white; }
 
-  /* Tabla */
+  /* Table */
   .expense-table { width: 100%; border-collapse: collapse; }
-  .expense-table th { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); padding: 0 6px 10px; text-align: left; border-bottom: 1.5px solid var(--border); }
+  .expense-table th { font-family: 'Syne', sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); padding: 0 6px 10px; text-align: left; border-bottom: 1.5px solid var(--border); }
   .expense-table td { padding: 10px 6px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-  .expense-table tr:last-child td { border-bottom: none; }
-  .expense-table tr:hover td { background: var(--bg); }
-  .expense-table tr.indiv-row td { opacity: 0.75; }
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; font-family: 'Syne', sans-serif; letter-spacing: 0.5px; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; font-family: 'Syne', sans-serif; }
   .badge-yo { background: #fff0eb; color: var(--accent); }
   .badge-amigo { background: #ebf2ff; color: var(--accent2); }
-  .badge-moneda-brl { background: #fff0eb; color: var(--accent); font-size: 9px; padding: 1px 6px; margin-left: 3px; }
-  .badge-moneda-ars { background: #f3eaff; color: var(--ars); font-size: 9px; padding: 1px 6px; margin-left: 3px; }
-  .badge-indiv { background: #f3eaff; color: var(--ars); font-size: 9px; padding: 1px 6px; margin-left: 3px; }
-  .badge-cat { background: var(--bg); color: var(--muted); border: 1px solid var(--border); font-size: 9px; padding: 1px 6px; margin-left: 3px; }
-  .btn-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 15px; padding: 2px 4px; border-radius: 6px; transition: color 0.15s; }
-  .btn-del:hover { color: #c42a00; }
-  .btn-edit { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 15px; padding: 2px 4px; border-radius: 6px; transition: color 0.15s; }
-  .btn-edit:hover { color: var(--accent2); }
 
-  /* Resumen día */
-  .day-summary { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 16px; padding-top: 16px; border-top: 1.5px solid var(--border); }
-  .sum-block { text-align: center; }
-  .sum-block .lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-  .sum-block .val { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; }
-  .sum-block .val.yo { color: var(--accent); }
-  .sum-block .val.amigo { color: var(--accent2); }
-  .sum-block .val.total { color: var(--text); }
-  .balance-box { margin-top: 14px; padding: 14px; border-radius: 12px; background: var(--bg); border: 1.5px solid var(--border); text-align: center; }
-  .balance-box .lbl { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
-  .balance-box .result { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; }
-  .balance-box .result.neutral { color: var(--success); }
-  .balance-box .result.yo-paga { color: var(--accent); }
-  .balance-box .result.amigo-paga { color: var(--accent2); }
-
-  /* Resumen general */
-  .total-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .total-card { text-align: center; padding: 16px; border-radius: 12px; border: 1.5px solid var(--border); }
-  .total-card.yo { border-color: #f8d0bc; background: #fff8f5; }
-  .total-card.amigo { border-color: #bcd5f8; background: #f5f8ff; }
-  .total-card .persona { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
-  .total-card.yo .persona { color: var(--accent); }
-  .total-card.amigo .persona { color: var(--accent2); }
-  .total-card .spent { font-size: 12px; color: var(--muted); margin-bottom: 2px; }
-  .total-card .spent-val { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 4px; }
-  .total-card.yo .spent-val { color: var(--accent); }
-  .total-card.amigo .spent-val { color: var(--accent2); }
-  .total-card .indiv-line { font-size: 11px; color: var(--ars); margin-top: 6px; }
+  /* Global Balance */
   .global-balance { margin-top: 16px; padding: 16px; border-radius: 12px; background: var(--text); color: white; text-align: center; }
-  .global-balance .lbl { font-size: 12px; opacity: 0.6; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
   .global-balance .res { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; }
 
-  /* Gráfico */
-  .chart-wrap { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
-  .chart-wrap canvas { width: 160px !important; height: 160px !important; flex-shrink: 0; }
-  .chart-legend { flex: 1; min-width: 140px; }
-  .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-  .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
-  .legend-label { font-size: 13px; color: var(--text); flex: 1; }
-  .legend-val { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); }
-  .legend-pct { font-size: 11px; color: var(--muted); margin-left: 4px; }
-
-  /* Modal edición */
+  /* Modals */
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
   .modal-overlay.open { display: flex; }
   .modal { background: white; border-radius: 16px; padding: 24px; width: 100%; max-width: 400px; }
-  .modal h3 { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 16px; }
-  .modal label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px; margin-top: 12px; }
-  .modal select, .modal input { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text); background: var(--bg); outline: none; }
-  .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
-  .modal-btns button { flex: 1; padding: 12px; border-radius: 10px; border: none; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
-  .btn-cancel { background: var(--bg); color: var(--muted); border: 1.5px solid var(--border) !important; }
-  .btn-save { background: var(--accent); color: white; }
-
-  .empty-msg { text-align: center; color: var(--muted); font-size: 14px; padding: 20px 0; }
-  .btn-ver-ingresos { background: none; border: 1.5px solid var(--border); border-radius: 20px; padding: 5px 14px; font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: var(--muted); cursor: pointer; letter-spacing: 0.5px; transition: all 0.15s; display: block; margin: 6px auto 0; }
-  .btn-ver-ingresos:hover { border-color: var(--success); color: var(--success); }
-  .name-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .name-inputs input { padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); background: var(--bg); outline: none; transition: border-color 0.2s; }
-  .name-inputs input:focus { border-color: var(--accent); background: white; }
 
   @media (max-width: 480px) {
-    header { padding: 20px 16px 16px; }
-    header h1 { font-size: 22px; }
-    .container { padding: 16px 12px; }
-    .card { padding: 16px 14px; margin-bottom: 14px; }
     .form-row { grid-template-columns: 1fr 1fr; }
     .form-row > div:last-child { grid-column: 1 / -1; }
-    .form-row input, .form-row select, .form-row2 input, .form-row2 select { padding: 12px; font-size: 16px; }
-    .inv-metric .value { font-size: 16px; }
-    .inv-block input { font-size: 20px; }
-    .day-summary { gap: 6px; }
-    .sum-block .val { font-size: 15px; }
-    .sum-block .lbl { font-size: 10px; }
-    .expense-table th { font-size: 10px; padding: 0 4px 8px; }
-    .expense-table td { padding: 10px 4px; font-size: 12px; }
-    .total-card .spent-val { font-size: 18px; }
-    .balance-box .result { font-size: 14px; }
-    .btn-add { padding: 14px; font-size: 16px; }
-    .chart-wrap { flex-direction: column; align-items: flex-start; }
+    .ahorro-main { flex-direction: column; align-items: stretch; gap: 10px; }
+    .ahorro-ctrl { justify-content: center; }
   }
 </style>
 </head>
 <body>
 
-<!-- Modal editar gasto -->
 <div class="modal-overlay" id="editModal">
   <div class="modal">
     <h3>Editar gasto</h3>
-    <label>Descripción</label>
-    <input type="text" id="edit-desc">
+    <label>Descripción</label><input type="text" id="edit-desc">
     <label>Categoría</label>
     <select id="edit-cat">
       <option value="Hospedaje">🏨 Hospedaje</option>
@@ -197,227 +115,154 @@
       <option value="yo" id="edit-opt-yo">Yo</option>
       <option value="amigo" id="edit-opt-amigo">Amigo</option>
     </select>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
-      <button class="btn-cancel" style="color:#c42a00;border-color:#f8d0bc !important;" onclick="deleteFromModal()">Borrar</button>
-      <button class="btn-save" onclick="saveEdit()">Guardar</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal lista completa de ingresos -->
-<div class="modal-overlay" id="ingresosModal">
-  <div class="modal">
-    <h3>Todos los ingresos extra</h3>
-    <div id="ingresos-modal-list" style="display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow-y:auto;margin-bottom:4px;"></div>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeIngresosModal()">Cerrar</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal editar ingreso -->
-<div class="modal-overlay" id="editIngresoModal">
-  <div class="modal">
-    <h3>Editar ingreso</h3>
-    <label>Descripción</label>
-    <input type="text" id="ei-desc">
-    <label>Monto (R$)</label>
-    <input type="number" id="ei-monto" min="0" step="0.01">
-    <label>Fecha</label>
-    <input type="date" id="ei-fecha">
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeEditIngreso()">Cancelar</button>
-      <button class="btn-cancel" style="color:#c42a00;border-color:#f8d0bc !important;" onclick="deleteIngresoFromModal()">Borrar</button>
-      <button class="btn-save" onclick="saveEditIngreso()">Guardar</button>
+    <div class="modal-btns" style="display:flex;gap:10px;margin-top:20px;">
+      <button class="btn-cancel" onclick="closeModal()" style="flex:1;padding:12px;border-radius:10px;border:1.5px solid var(--border);">Cancelar</button>
+      <button class="btn-save" onclick="saveEdit()" style="flex:1;padding:12px;border-radius:10px;border:none;background:var(--accent);color:white;font-weight:700;">Guardar</button>
     </div>
   </div>
 </div>
 
 <div class="sync-bar">
   <span class="sync-dot" id="sync-dot"></span>
-  <span id="sync-msg">Conectando con la nube...</span>
+  <span id="sync-msg">Conectando...</span>
 </div>
 
 <header>
   <div>
-    <div style="font-size:12px;color:#888;letter-spacing:1.5px;font-family:'Syne',sans-serif;text-transform:uppercase;margin-bottom:4px;">Viaje</div>
-    <h1>Gastos<br>del Viaje</h1>
+    <div style="font-size:12px;color:#888;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">Dashboard</div>
+    <h1>Gastos del<br>Viaje 🇧🇷</h1>
   </div>
-  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
-    <div style="font-size:36px;line-height:1;">🇧🇷</div>
-    <button onclick="clearData()" style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.5px;padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,0.25);background:transparent;color:rgba(255,255,255,0.55);cursor:pointer;">Borrar todo</button>
-  </div>
+  <button onclick="clearData()" style="font-size:11px;border-radius:20px;border:1px solid rgba(255,255,255,0.25);background:transparent;color:rgba(255,255,255,0.5);padding:4px 10px;cursor:pointer;">Reset</button>
 </header>
 
 <div class="container">
 
   <div class="card">
-    <div class="card-title">¿Cómo se llaman?</div>
-    <div class="name-inputs">
-      <div>
-        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Vos</label>
-        <input type="text" id="nameYo" placeholder="Tu nombre" oninput="updateNames()" value="Yo">
+    <div class="card-title">💵 Tus Ahorros Actuales</div>
+    <div class="ahorro-main">
+      <div class="ahorro-display">
+        <div class="ahorro-val" id="ahorro-display-val">R$ 0,00</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;" id="ahorro-sub">Saldo disponible para gastar</div>
       </div>
-      <div>
-        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Tu amigo/a</label>
-        <input type="text" id="nameAmigo" placeholder="Nombre amigo/a" oninput="updateNames()" value="Amigo">
+      <div class="ahorro-ctrl">
+        <input type="number" id="input-mod-ahorro" class="ahorro-input" placeholder="0">
+        <button class="btn-mod minus" onclick="modificarAhorro('sub')">−</button>
+        <button class="btn-mod plus" onclick="modificarAhorro('add')">+</button>
       </div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title">Tipo de cambio</div>
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="font-size:14px;color:var(--muted);">1 BRL =</span>
-      <input type="number" id="tc-manual-val" placeholder="Ej: 250" step="0.01" min="0"
-        style="width:130px;padding:8px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--ars);background:var(--bg);outline:none;"
-        oninput="applyManualTC()" onfocus="this.style.borderColor='var(--ars)'" onblur="this.style.borderColor='var(--border)'">
-      <span style="font-size:14px;color:var(--muted);">ARS</span>
+    <div class="card-title">📊 Estado de la Inversión</div>
+    
+    <div class="stats-header">
+      <div class="stat-item">
+        <div class="stat-label">Presupuesto</div>
+        <div class="stat-value" id="inv-total">R$0</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Gastado</div>
+        <div class="stat-value warn" id="inv-gastado">R$0</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Restante</div>
+        <div class="stat-value good" id="inv-restante">R$0</div>
+      </div>
     </div>
-    <div class="tc-status">
-      <span class="tc-dot" id="tc-dot"></span>
-      <span id="tc-msg">Ingresá el tipo de cambio</span>
-      <span id="tc-ars-equiv" style="margin-left:6px;color:var(--accent);font-family:'Syne',sans-serif;font-weight:700;font-size:12px;"></span>
-    </div>
-  </div>
 
-  <div class="card">
-    <div class="card-title">Inversión inicial</div>
+    <div class="progress-bar" style="height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:20px;">
+      <div class="progress-fill" id="inv-progress" style="width:0%;height:100%;background:var(--accent);transition:width 0.4s;"></div>
+    </div>
+
     <div class="inv-grid">
       <div class="inv-block">
-        <label>Tu aporte (R$)</label>
-        <input type="number" id="aporte-yo" placeholder="0" oninput="updateInv()" min="0">
+        <label>Aporte Yo (R$)</label>
+        <input type="number" id="aporte-yo" placeholder="0" oninput="updateInv()">
       </div>
       <div class="inv-block">
-        <label id="lbl-aporte-amigo">Aporte amigo (R$)</label>
-        <input type="number" id="aporte-amigo" placeholder="0" oninput="updateInv()" min="0">
+        <label id="lbl-aporte-amigo">Aporte Amigo (R$)</label>
+        <input type="number" id="aporte-amigo" placeholder="0" oninput="updateInv()">
       </div>
     </div>
-    <div style="border-top:1.5px solid var(--border);margin-top:18px;padding-top:16px;">
-      <div class="card-title" style="margin-bottom:10px;">Ingresos extra</div>
-      <div id="ingresos-list" style="margin-bottom:12px;display:flex;flex-direction:column;gap:8px;"></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:end;">
-        <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Descripción</label>
-          <input type="text" id="ingreso-desc" placeholder="Ej: trabajo extra..." style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);outline:none;">
+
+    <div style="margin-top:20px; padding-top:15px; border-top:1px dashed var(--border);">
+        <div class="card-title" style="font-size:11px;">➕ Ingresos Extra</div>
+        <div id="ingresos-list" style="margin-bottom:10px;"></div>
+        <div style="display:grid;grid-template-columns: 2fr 1fr auto; gap:8px;">
+            <input type="text" id="ingreso-desc" placeholder="Descripción..." style="padding:8px;border-radius:8px;border:1.5px solid var(--border);outline:none;font-size:13px;">
+            <input type="number" id="ingreso-monto" placeholder="Monto R$" style="padding:8px;border-radius:8px;border:1.5px solid var(--border);outline:none;font-size:13px;">
+            <button onclick="addIngreso()" style="padding:0 15px;background:var(--success);color:white;border:none;border-radius:8px;font-weight:700;">+</button>
         </div>
-        <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Monto (R$)</label>
-          <input type="number" id="ingreso-monto" placeholder="0.00" min="0" step="0.01" style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);outline:none;">
-        </div>
-        <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Fecha</label>
-          <input type="date" id="ingreso-fecha" style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);outline:none;">
-        </div>
-        <button onclick="addIngreso()" style="padding:9px 14px;background:#1a7a3a;color:white;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;">+ Sumar</button>
-      </div>
     </div>
-    <div class="inv-summary" style="margin-top:18px;">
-      <div class="inv-metric"><div class="label">Total</div><div class="value" id="inv-total">R$0</div></div>
-      <div class="inv-metric"><div class="label">Gastado</div><div class="value warn" id="inv-gastado">R$0</div></div>
-      <div class="inv-metric"><div class="label">Restante</div><div class="value good" id="inv-restante">R$0</div></div>
-    </div>
-    <div class="progress-bar"><div class="progress-fill" id="inv-progress" style="width:0%"></div></div>
   </div>
 
   <div class="card">
-    <div class="card-title">Registro de gastos</div>
-    <div class="day-tabs" id="dayTabs"></div>
+    <div class="card-title">💱 Configuración</div>
+    <div style="display:grid;grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:15px;">
+        <div>
+            <label style="font-size:11px;color:var(--muted);display:block;">Tu Nombre</label>
+            <input type="text" id="nameYo" value="Yo" oninput="updateNames()" style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--border);">
+        </div>
+        <div>
+            <label style="font-size:11px;color:var(--muted);display:block;">Amigo/a</label>
+            <input type="text" id="nameAmigo" value="Amigo" oninput="updateNames()" style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--border);">
+        </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span style="font-size:13px;">1 BRL =</span>
+      <input type="number" id="tc-manual-val" placeholder="ARS" step="0.01" oninput="applyManualTC()" 
+             style="width:100px;padding:8px;border-radius:8px;border:1.5px solid var(--border);font-weight:700;color:var(--ars);">
+      <span id="tc-ars-equiv" style="font-size:11px;color:var(--accent);font-weight:700;"></span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📝 Registro de Gastos</div>
+    <div class="day-tabs" id="dayTabs" style="display:flex;gap:8px;margin-bottom:15px;overflow-x:auto;padding-bottom:5px;"></div>
 
     <div class="form-row">
-      <div>
-        <label>Pagó</label>
-        <select id="f-quien">
-          <option value="yo" id="opt-yo">Yo</option>
-          <option value="amigo" id="opt-amigo">Amigo</option>
-        </select>
-      </div>
-      <div>
-        <label>Moneda</label>
-        <select id="f-moneda" onchange="onMonedaChange()">
-          <option value="BRL">R$ Reales</option>
-          <option value="ARS">$ Pesos</option>
-        </select>
-      </div>
-      <div>
-        <label>Monto</label>
-        <input type="number" id="f-monto" placeholder="0.00" min="0" step="0.01" oninput="updateConversionPreview()">
-      </div>
-      <div>
-        <label>Descripción</label>
-        <input type="text" id="f-desc" placeholder="Ej: almuerzo, taxi...">
-      </div>
+      <div><label>Pagó</label><select id="f-quien"><option value="yo" id="opt-yo">Yo</option><option value="amigo" id="opt-amigo">Amigo</option></select></div>
+      <div><label>Moneda</label><select id="f-moneda" onchange="onMonedaChange()"><option value="BRL">R$ Reales</option><option value="ARS">$ Pesos</option></select></div>
+      <div><label>Monto</label><input type="number" id="f-monto" placeholder="0.00" oninput="updateConversionPreview()"></div>
+      <div><label>Descripción</label><input type="text" id="f-desc" placeholder="Ej: Pizza"></div>
     </div>
+    
     <div class="form-row2">
-      <div>
-        <label>Categoría</label>
+      <div><label>Categoría</label>
         <select id="f-cat">
-          <option value="Hospedaje">🏨 Hospedaje</option>
-          <option value="Comida">🍽️ Comida</option>
-          <option value="Transporte">🚌 Transporte</option>
-          <option value="Otros">📦 Otros</option>
+          <option value="Hospedaje">🏨 Hospedaje</option><option value="Comida">🍽️ Comida</option><option value="Transporte">🚌 Transporte</option><option value="Otros">📦 Otros</option>
         </select>
       </div>
-      <div>
-        <label>Tipo</label>
-        <div class="tipo-toggle">
-          <button class="tipo-btn active-comp" id="btn-comp" onclick="setTipo('compartido')">Compartido</button>
-          <button class="tipo-btn" id="btn-indiv" onclick="setTipo('individual')">Individual</button>
+      <div><label>Tipo</label>
+        <div style="display:flex;border:1.5px solid var(--border);border-radius:10px;overflow:hidden;">
+            <button class="tipo-btn active-comp" id="btn-comp" onclick="setTipo('compartido')" style="flex:1;padding:10px;border:none;background:var(--bg);cursor:pointer;font-size:12px;">Compartido</button>
+            <button class="tipo-btn" id="btn-indiv" onclick="setTipo('individual')" style="flex:1;padding:10px;border:none;background:var(--bg);cursor:pointer;font-size:12px;">Individual</button>
         </div>
       </div>
     </div>
-    <div id="conversion-preview" style="font-size:12px;color:var(--ars);margin-bottom:8px;min-height:18px;padding-left:2px;"></div>
-    <button class="btn-add" onclick="addExpense()">+ Agregar gasto</button>
+    <div id="conversion-preview" style="font-size:11px;color:var(--ars);margin-bottom:10px;height:14px;"></div>
+    <button class="btn-add" onclick="addExpense()">+ Agregar Gasto</button>
 
-    <div style="margin-top:18px;">
-      <div class="currency-toggle">
-        <span>Ver en:</span>
+    <div class="currency-toggle" style="margin-top:20px;">
+        <span style="font-size:11px;color:var(--muted);text-transform:uppercase;">Ver todo en:</span>
         <button class="curr-btn active-brl" id="btn-brl" onclick="setCurrency('BRL')">R$ Reales</button>
         <button class="curr-btn" id="btn-ars" onclick="setCurrency('ARS')">$ Pesos</button>
-      </div>
     </div>
+
     <div id="expense-list"></div>
     <div id="day-summary"></div>
   </div>
 
   <div class="card">
-    <div class="card-title">Resumen del viaje</div>
-    <div class="total-grid">
-      <div class="total-card yo">
-        <div class="persona" id="lbl-total-yo">YO</div>
-        <div class="spent">Total pagué</div>
-        <div class="spent-val" id="total-pago-yo">R$0</div>
-        <div style="font-size:12px;color:var(--muted);">Me corresponde</div>
-        <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--accent)" id="total-corr-yo">R$0</div>
-        <div class="indiv-line" id="total-indiv-yo"></div>
-      </div>
-      <div class="total-card amigo">
-        <div class="persona" id="lbl-total-amigo">AMIGO</div>
-        <div class="spent">Total pagó</div>
-        <div class="spent-val" id="total-pago-amigo">R$0</div>
-        <div style="font-size:12px;color:var(--muted);">Le corresponde</div>
-        <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--accent2)" id="total-corr-amigo">R$0</div>
-        <div class="indiv-line" id="total-indiv-amigo"></div>
-      </div>
-    </div>
+    <div class="card-title">🏁 Liquidación Final</div>
     <div class="global-balance">
-      <div class="lbl">Liquidación final (solo gastos compartidos)</div>
-      <div class="res" id="liquidacion">Sin gastos aún</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">Gastos por categoría</div>
-    <div class="chart-wrap">
-      <canvas id="pieChart" width="160" height="160"></canvas>
-      <div class="chart-legend" id="chartLegend"></div>
+      <div style="font-size:11px;opacity:0.6;margin-bottom:5px;">SÓLO GASTOS COMPARTIDOS</div>
+      <div class="res" id="liquidacion">Cargando...</div>
     </div>
   </div>
 
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -435,6 +280,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const docRef = doc(db, "viaje", "datos");
 
+// Estado
 let days = [[]];
 let currentDay = 0;
 let nameYo = 'Yo';
@@ -442,24 +288,27 @@ let nameAmigo = 'Amigo';
 let tcARS_BRL = null;
 let displayCurrency = 'BRL';
 let tipoActual = 'compartido';
-let saveTimer = null;
-let editingId = null;
-let pieChartInstance = null;
+let ahorros = 0;
 let ingresos = [];
 let dayDates = [''];
 let dayLabels = ['Día 1'];
+let saveTimer = null;
+let editingId = null;
 
-const CATS = ['Hospedaje','Comida','Transporte','Otros'];
-const CAT_COLORS = ['#1a7ae8','#e8521a','#1a7a3a','#6b3fa0'];
-const CAT_ICONS = {'Hospedaje':'🏨','Comida':'🍽️','Transporte':'🚌','Otros':'📦'};
+// Helpers
+const fmt = (n) => n.toLocaleString('es-AR', {minimumFractionDigits:2, maximumFractionDigits:2});
+const fmtARS = (n) => n.toLocaleString('es-AR', {minimumFractionDigits:0, maximumFractionDigits:0});
+const sym = () => displayCurrency === 'BRL' ? 'R$' : '$';
+const cv = (v) => displayCurrency === 'BRL' ? fmt(v) : fmtARS(tcARS_BRL ? v / tcARS_BRL : 0);
+const toBRL = (m, mon) => mon === 'BRL' ? m : (tcARS_BRL ? m * tcARS_BRL : 0);
 
-// ── Sync ──────────────────────────────────────────────────────
+// Sincronización
 function setSyncStatus(state, msg) {
   document.getElementById('sync-dot').className = 'sync-dot ' + state;
   document.getElementById('sync-msg').textContent = msg;
 }
 
-function save() {
+async function save() {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(async () => {
     setSyncStatus('loading', 'Guardando...');
@@ -469,490 +318,217 @@ function save() {
       await setDoc(docRef, {
         daysObj, daysCount: days.length, currentDay, nameYo, nameAmigo, displayCurrency,
         tcARS_BRL: tcARS_BRL || null,
-        ingresos, dayDates, dayLabels,
+        ingresos, dayDates, dayLabels, ahorros,
         aporteYo: document.getElementById('aporte-yo').value || '',
         aporteAmigo: document.getElementById('aporte-amigo').value || ''
       });
-      setSyncStatus('ok', 'Guardado en la nube ✓');
-    } catch(e) {
-      console.error('Firestore error:', e);
-      setSyncStatus('err', 'Error al guardar — chequeá internet');
-    }
-  }, 800);
-}
-
-function loadFromData(data) {
-  if (!data) return;
-  if (data.daysObj) {
-    days = [];
-    for (let i = 0; i < (data.daysCount || 1); i++) {
-      days.push(data.daysObj['day_' + i] || []);
-    }
-  } else { days = [[]]; }
-  // Migrar gastos viejos sin categoría/tipo
-  days = days.map(day => day.map(e => ({
-    ...e,
-    cat: e.cat || 'Otros',
-    tipo: e.tipo || 'compartido'
-  })));
-  currentDay = data.currentDay || 0;
-  nameYo = data.nameYo || 'Yo';
-  nameAmigo = data.nameAmigo || 'Amigo';
-  displayCurrency = data.displayCurrency || 'BRL';
-  tcARS_BRL = data.tcARS_BRL || null;
-  ingresos = data.ingresos || [];
-  dayDates = data.dayDates || days.map(() => '');
-  dayLabels = data.dayLabels || days.map((_, i) => `Día ${i + 1}`);
-  document.getElementById('nameYo').value = nameYo;
-  document.getElementById('nameAmigo').value = nameAmigo;
-  if (data.aporteYo) document.getElementById('aporte-yo').value = data.aporteYo;
-  if (data.aporteAmigo) document.getElementById('aporte-amigo').value = data.aporteAmigo;
-  if (tcARS_BRL) {
-    document.getElementById('tc-manual-val').value = (1 / tcARS_BRL).toFixed(2);
-    document.getElementById('tc-ars-equiv').textContent = `→ 1 ARS = R$ ${tcARS_BRL.toFixed(4)}`;
-    setTCStatus('ok', 'Tipo de cambio cargado');
-  }
-  renderAll();
+      setSyncStatus('ok', 'Sincronizado');
+    } catch(e) { setSyncStatus('err', 'Error red'); }
+  }, 1000);
 }
 
 onSnapshot(docRef, (snap) => {
-  setSyncStatus('ok', 'Sincronizado ✓');
-  if (snap.exists()) loadFromData(snap.data());
-}, () => { setSyncStatus('err', 'Sin conexión'); });
-
-// ── Formato ───────────────────────────────────────────────────
-function fmt(n) { return n.toLocaleString('es-AR', {minimumFractionDigits:2, maximumFractionDigits:2}); }
-function fmtARS(n) { return n.toLocaleString('es-AR', {minimumFractionDigits:0, maximumFractionDigits:0}); }
-function arsToBrl(v) { return tcARS_BRL ? v * tcARS_BRL : 0; }
-function brlToArs(v) { return tcARS_BRL ? v / tcARS_BRL : 0; }
-function toBRL(m, mon) { return mon === 'BRL' ? m : arsToBrl(m); }
-function displayAmt(m, mon) {
-  if (displayCurrency === 'BRL') return `R$ ${fmt(mon === 'BRL' ? m : arsToBrl(m))}`;
-  return `$ ${fmtARS(mon === 'ARS' ? m : brlToArs(m))}`;
-}
-function sym() { return displayCurrency === 'BRL' ? 'R$' : '$'; }
-function cv(v) { return displayCurrency === 'BRL' ? fmt(v) : fmtARS(brlToArs(v)); }
-
-// ── TC ────────────────────────────────────────────────────────
-function setTCStatus(state, msg) {
-  document.getElementById('tc-dot').className = 'tc-dot ' + state;
-  document.getElementById('tc-msg').textContent = msg;
-}
-window.applyManualTC = function() {
-  const val = parseFloat(document.getElementById('tc-manual-val').value);
-  if (!val || val <= 0) { tcARS_BRL = null; setTCStatus('', 'Ingresá el tipo de cambio'); document.getElementById('tc-ars-equiv').textContent = ''; return; }
-  tcARS_BRL = 1 / val;
-  document.getElementById('tc-ars-equiv').textContent = `→ 1 ARS = R$ ${tcARS_BRL.toFixed(4)}`;
-  setTCStatus('ok', 'Tipo de cambio listo');
-  renderAll(); save();
-}
-
-// ── Tipo compartido/individual ────────────────────────────────
-window.setTipo = function(t) {
-  tipoActual = t;
-  document.getElementById('btn-comp').className = 'tipo-btn' + (t === 'compartido' ? ' active-comp' : '');
-  document.getElementById('btn-indiv').className = 'tipo-btn' + (t === 'individual' ? ' active-indiv' : '');
-}
-
-// ── Moneda display ────────────────────────────────────────────
-window.setCurrency = function(cur) {
-  displayCurrency = cur;
-  document.getElementById('btn-brl').className = 'curr-btn' + (cur === 'BRL' ? ' active-brl' : '');
-  document.getElementById('btn-ars').className = 'curr-btn' + (cur === 'ARS' ? ' active-ars' : '');
-  renderAll(); save();
-}
-
-// ── Nombres ───────────────────────────────────────────────────
-window.updateNames = function() {
-  nameYo = document.getElementById('nameYo').value || 'Yo';
-  nameAmigo = document.getElementById('nameAmigo').value || 'Amigo';
-  renderAll(); save();
-}
-
-// ── Ingresos extra ────────────────────────────────────────────
-let editingIngresoId = null;
-
-window.addIngreso = function() {
-  const desc = document.getElementById('ingreso-desc').value.trim();
-  const monto = parseFloat(document.getElementById('ingreso-monto').value);
-  const fecha = document.getElementById('ingreso-fecha').value || '';
-  if (!monto || monto <= 0) { alert('Ingresá un monto válido'); return; }
-  if (!desc) { alert('Agregá una descripción'); return; }
-  ingresos.push({ desc, monto, fecha, id: Date.now() });
-  document.getElementById('ingreso-desc').value = '';
-  document.getElementById('ingreso-monto').value = '';
-  document.getElementById('ingreso-fecha').value = '';
-  renderInv(); save();
-}
-
-window.deleteIngreso = function(id) {
-  ingresos = ingresos.filter(i => i.id !== id);
-  renderInv(); renderIngresosModalList(); save();
-}
-
-window.openEditIngreso = function(id) {
-  const ing = ingresos.find(i => i.id === id);
-  if (!ing) return;
-  editingIngresoId = id;
-  document.getElementById('ei-desc').value = ing.desc;
-  document.getElementById('ei-monto').value = ing.monto;
-  document.getElementById('ei-fecha').value = ing.fecha || '';
-  document.getElementById('editIngresoModal').classList.add('open');
-}
-window.closeEditIngreso = function() {
-  document.getElementById('editIngresoModal').classList.remove('open');
-  editingIngresoId = null;
-}
-window.saveEditIngreso = function() {
-  if (!editingIngresoId) return;
-  const ing = ingresos.find(i => i.id === editingIngresoId);
-  if (ing) {
-    ing.desc = document.getElementById('ei-desc').value.trim() || ing.desc;
-    ing.monto = parseFloat(document.getElementById('ei-monto').value) || ing.monto;
-    ing.fecha = document.getElementById('ei-fecha').value || '';
+  if (snap.exists()) {
+    const data = snap.data();
+    if (data.daysObj) {
+      days = [];
+      for (let i = 0; i < (data.daysCount || 1); i++) { days.push(data.daysObj['day_' + i] || []); }
+    }
+    ahorros = data.ahorros || 0;
+    nameYo = data.nameYo || 'Yo';
+    nameAmigo = data.nameAmigo || 'Amigo';
+    tcARS_BRL = data.tcARS_BRL || null;
+    ingresos = data.ingresos || [];
+    dayDates = data.dayDates || days.map(()=>'');
+    dayLabels = data.dayLabels || days.map((_,i)=>`Día ${i+1}`);
+    document.getElementById('nameYo').value = nameYo;
+    document.getElementById('nameAmigo').value = nameAmigo;
+    document.getElementById('aporte-yo').value = data.aporteYo || '';
+    document.getElementById('aporte-amigo').value = data.aporteAmigo || '';
+    if (tcARS_BRL) document.getElementById('tc-manual-val').value = (1 / tcARS_BRL).toFixed(2);
+    renderAll();
+    setSyncStatus('ok', 'Sincronizado');
   }
-  closeEditIngreso();
-  renderInv(); renderIngresosModalList(); save();
-}
-window.deleteIngresoFromModal = function() {
-  if (!editingIngresoId) return;
-  if (!confirm('¿Borrar este ingreso?')) return;
-  ingresos = ingresos.filter(i => i.id !== editingIngresoId);
-  closeEditIngreso();
-  renderInv(); renderIngresosModalList(); save();
-}
-window.openIngresosModal = function() {
-  renderIngresosModalList();
-  document.getElementById('ingresosModal').classList.add('open');
-}
-window.closeIngresosModal = function() {
-  document.getElementById('ingresosModal').classList.remove('open');
-}
-function renderIngresosModalList() {
-  const el = document.getElementById('ingresos-modal-list');
-  if (!el) return;
-  if (ingresos.length === 0) { el.innerHTML = '<div class="empty-msg">Sin ingresos extra</div>'; return; }
-  el.innerHTML = ingresos.map(i => ingresoRow(i)).join('');
-}
-function ingresoRow(i) {
-  const fechaStr = i.fecha ? fmtDate(i.fecha) : '';
-  return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#f0f7f0;border-radius:10px;border:1px solid #c8e6c8;">
-    <div>
-      <span style="font-size:13px;color:#1a7a3a;">${i.desc}</span>
-      ${fechaStr ? `<span style="font-size:11px;color:var(--muted);margin-left:6px;">${fechaStr}</span>` : ''}
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;">
-      <span style="font-size:13px;font-weight:700;color:#1a7a3a;">+ R$ ${fmt(i.monto)}</span>
-      <button onclick="openEditIngreso(${i.id})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:0 2px;" title="Editar">✏️</button>
-    </div>
-  </div>`;
+});
+
+// Ahorros Logic
+window.modificarAhorro = function(op) {
+    const valInput = document.getElementById('input-mod-ahorro');
+    const monto = parseFloat(valInput.value) || 0;
+    if (monto <= 0) return;
+
+    // Convertimos el monto ingresado a Reales si estamos viendo en ARS, 
+    // para que la base de datos siempre esté en la moneda local (BRL)
+    let montoReal = (displayCurrency === 'BRL') ? monto : (monto * tcARS_BRL);
+    
+    if (op === 'add') ahorros += montoReal;
+    else ahorros -= montoReal;
+    
+    valInput.value = '';
+    renderSavings();
+    save();
 }
 
-// ── Inversión ─────────────────────────────────────────────────
+function renderSavings() {
+    document.getElementById('ahorro-display-val').textContent = `${sym()} ${cv(ahorros)}`;
+    // Actualizar el texto secundario
+    const equiv = displayCurrency === 'BRL' ? 
+        `≈ $ ${fmtARS(tcARS_BRL ? ahorros / tcARS_BRL : 0)} ARS` : 
+        `≈ R$ ${fmt(ahorros)} BRL`;
+    document.getElementById('ahorro-sub').textContent = equiv;
+}
+
+// Inversión Logic
 window.updateInv = function() { renderInv(); save(); }
 
-// ── Días ──────────────────────────────────────────────────────
-window.addDay = function() {
-  days.push([]);
-  const today = new Date().toISOString().split('T')[0];
-  dayDates.push(today);
-  dayLabels.push(`Día ${days.length}`);
-  currentDay = days.length - 1;
-  renderAll(); save();
-}
-window.selectDay = function(i) { currentDay = i; renderDayTabs(); renderExpenses(); }
-window.updateDayDate = function(i, val) { dayDates[i] = val; renderDayTabs(); save(); }
-window.updateDayLabel = function(i, val) { dayLabels[i] = val; save(); }
-
-// ── Formulario ────────────────────────────────────────────────
-window.onMonedaChange = function() {
-  document.getElementById('f-moneda').className = document.getElementById('f-moneda').value === 'ARS' ? 'moneda-ars' : '';
-  updateConversionPreview();
-}
-window.updateConversionPreview = function() {
-  const mon = document.getElementById('f-moneda').value;
-  const m = parseFloat(document.getElementById('f-monto').value) || 0;
-  const p = document.getElementById('conversion-preview');
-  if (mon === 'ARS' && m > 0 && tcARS_BRL) p.textContent = `≈ R$ ${fmt(arsToBrl(m))} en reales`;
-  else if (mon === 'BRL' && m > 0 && tcARS_BRL) p.textContent = `≈ $ ${fmtARS(brlToArs(m))} en pesos`;
-  else p.textContent = '';
-}
-
-window.addExpense = function() {
-  const quien = document.getElementById('f-quien').value;
-  const moneda = document.getElementById('f-moneda').value;
-  const monto = parseFloat(document.getElementById('f-monto').value);
-  const desc = document.getElementById('f-desc').value.trim();
-  const cat = document.getElementById('f-cat').value;
-  const tipo = tipoActual;
-  if (!monto || monto <= 0) { alert('Ingresá un monto válido'); return; }
-  if (!desc) { alert('Agregá una descripción'); return; }
-  if (moneda === 'ARS' && !tcARS_BRL) { alert('Ingresá primero el tipo de cambio'); return; }
-  days[currentDay].push({ quien, monto, moneda, desc, cat, tipo, id: Date.now() });
-  document.getElementById('f-monto').value = '';
-  document.getElementById('f-desc').value = '';
-  document.getElementById('conversion-preview').textContent = '';
-  renderAll(); save();
-}
-
-window.deleteExpense = function(id) {
-  days[currentDay] = days[currentDay].filter(e => e.id !== id);
-  renderAll(); save();
-}
-
-// ── Modal edición ─────────────────────────────────────────────
-window.openEdit = function(id) {
-  const e = days.flat().find(x => x.id === id);
-  if (!e) return;
-  editingId = id;
-  document.getElementById('edit-desc').value = e.desc;
-  document.getElementById('edit-cat').value = e.cat || 'Otros';
-  document.getElementById('edit-tipo').value = e.tipo || 'compartido';
-  document.getElementById('edit-quien').value = e.quien;
-  document.getElementById('edit-opt-yo').textContent = nameYo;
-  document.getElementById('edit-opt-amigo').textContent = nameAmigo;
-  document.getElementById('editModal').classList.add('open');
-}
-window.deleteFromModal = function() {
-  if (!editingId) return;
-  if (!confirm('¿Borrar este gasto?')) return;
-  for (let d of days) {
-    const idx = d.findIndex(x => x.id === editingId);
-    if (idx !== -1) { d.splice(idx, 1); break; }
-  }
-  closeModal();
-  renderAll(); save();
-}
-
-window.closeModal = function() {
-  document.getElementById('editModal').classList.remove('open');
-  editingId = null;
-}
-window.saveEdit = function() {
-  if (!editingId) return;
-  for (let d of days) {
-    const e = d.find(x => x.id === editingId);
-    if (e) {
-      e.desc = document.getElementById('edit-desc').value.trim() || e.desc;
-      e.cat = document.getElementById('edit-cat').value;
-      e.tipo = document.getElementById('edit-tipo').value;
-      e.quien = document.getElementById('edit-quien').value;
-      break;
-    }
-  }
-  closeModal();
-  renderAll(); save();
-}
-
-// ── Borrar todo ───────────────────────────────────────────────
-window.clearData = function() {
-  const confirmText = prompt('Para borrar todos los datos escribí "BORRAR" en mayúsculas:');
-  if (confirmText !== 'BORRAR') return;
-  days = [[]]; currentDay = 0; tcARS_BRL = null; nameYo = 'Yo'; nameAmigo = 'Amigo'; ingresos = []; dayDates = ['']; dayLabels = ['Día 1'];
-  document.getElementById('nameYo').value = 'Yo';
-  document.getElementById('nameAmigo').value = 'Amigo';
-  document.getElementById('aporte-yo').value = '';
-  document.getElementById('aporte-amigo').value = '';
-  document.getElementById('tc-manual-val').value = '';
-  document.getElementById('tc-ars-equiv').textContent = '';
-  setTCStatus('', 'Ingresá el tipo de cambio');
-  renderAll(); save();
-}
-
-// ── Render ────────────────────────────────────────────────────
-function renderAll() {
-  document.getElementById('opt-yo').textContent = nameYo;
-  document.getElementById('opt-amigo').textContent = nameAmigo;
-  document.getElementById('lbl-aporte-amigo').textContent = `Aporte ${nameAmigo} (R$)`;
-  document.getElementById('lbl-total-yo').textContent = nameYo.toUpperCase();
-  document.getElementById('lbl-total-amigo').textContent = nameAmigo.toUpperCase();
-  document.getElementById('btn-brl').className = 'curr-btn' + (displayCurrency === 'BRL' ? ' active-brl' : '');
-  document.getElementById('btn-ars').className = 'curr-btn' + (displayCurrency === 'ARS' ? ' active-ars' : '');
-  renderDayTabs(); renderExpenses(); renderSummary(); renderInv(); renderChart();
-}
-
 function renderInv() {
-  const yo = parseFloat(document.getElementById('aporte-yo').value) || 0;
-  const amigo = parseFloat(document.getElementById('aporte-amigo').value) || 0;
-  const totalIngresos = ingresos.reduce((s, i) => s + i.monto, 0);
-  const total = yo + amigo + totalIngresos;
-  const gastado = days.flat().reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
-  const restante = total - gastado;
-  const pct = total > 0 ? Math.min((gastado / total) * 100, 100) : 0;
-  document.getElementById('inv-total').textContent = `${sym()} ${cv(total)}`;
-  document.getElementById('inv-gastado').textContent = `${sym()} ${cv(gastado)}`;
-  document.getElementById('inv-restante').textContent = `${sym()} ${cv(restante)}`;
-  document.getElementById('inv-restante').className = `value ${restante < 0 ? 'bad' : restante < total * 0.2 ? 'warn' : 'good'}`;
-  document.getElementById('inv-progress').style.width = pct + '%';
-  document.getElementById('inv-progress').style.background = pct > 90 ? '#c42a00' : pct > 70 ? '#c47a00' : 'var(--accent)';
-
-  const listEl = document.getElementById('ingresos-list');
-  if (ingresos.length === 0) { listEl.innerHTML = ''; return; }
-  const visibles = ingresos.slice(-3);
-  const hayMas = ingresos.length > 3;
-  listEl.innerHTML = visibles.map(i => ingresoRow(i)).join('') +
-    (hayMas ? `<button class="btn-ver-ingresos" onclick="openIngresosModal()">Ver todos (${ingresos.length}) ↗</button>` : '');
+    const yo = parseFloat(document.getElementById('aporte-yo').value) || 0;
+    const amigo = parseFloat(document.getElementById('aporte-amigo').value) || 0;
+    const totalExtras = ingresos.reduce((s, i) => s + i.monto, 0);
+    const total = yo + amigo + totalExtras;
+    const gastado = days.flat().reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
+    const restante = total - gastado;
+    
+    document.getElementById('inv-total').textContent = `${sym()} ${cv(total)}`;
+    document.getElementById('inv-gastado').textContent = `${sym()} ${cv(gastado)}`;
+    document.getElementById('inv-restante').textContent = `${sym()} ${cv(restante)}`;
+    
+    const pct = total > 0 ? Math.min((gastado / total) * 100, 100) : 0;
+    document.getElementById('inv-progress').style.width = pct + '%';
+    
+    const listEl = document.getElementById('ingresos-list');
+    listEl.innerHTML = ingresos.map(i => `
+        <div style="display:flex; justify-content:space-between; font-size:12px; padding:4px 0; border-bottom:1px solid #f0f0f0;">
+            <span>${i.desc}</span>
+            <span style="font-weight:700; color:var(--success)">+ R$ ${fmt(i.monto)}</span>
+        </div>
+    `).join('');
 }
 
-function fmtDate(d) {
-  if (!d) return '';
-  const [y, m, day] = d.split('-');
-  const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
-  return `${parseInt(day)} ${meses[parseInt(m)-1]}`;
+// Gastos Logic
+window.addExpense = function() {
+    const quien = document.getElementById('f-quien').value;
+    const moneda = document.getElementById('f-moneda').value;
+    const monto = parseFloat(document.getElementById('f-monto').value);
+    const desc = document.getElementById('f-desc').value.trim();
+    if (!monto || !desc) return;
+    
+    days[currentDay].push({ quien, monto, moneda, desc, cat: document.getElementById('f-cat').value, tipo: tipoActual, id: Date.now() });
+    document.getElementById('f-monto').value = '';
+    document.getElementById('f-desc').value = '';
+    renderAll(); save();
+}
+
+window.applyManualTC = function() {
+    const val = parseFloat(document.getElementById('tc-manual-val').value);
+    if (val > 0) {
+        tcARS_BRL = 1 / val;
+        document.getElementById('tc-ars-equiv').textContent = `1 ARS = R$ ${tcARS_BRL.toFixed(4)}`;
+    } else {
+        tcARS_BRL = null;
+        document.getElementById('tc-ars-equiv').textContent = '';
+    }
+    renderAll(); save();
+}
+
+window.setCurrency = function(c) { displayCurrency = c; renderAll(); save(); }
+window.setTipo = function(t) {
+    tipoActual = t;
+    document.getElementById('btn-comp').style.background = t==='compartido'?'var(--accent2)':'var(--bg)';
+    document.getElementById('btn-comp').style.color = t==='compartido'?'white':'var(--muted)';
+    document.getElementById('btn-indiv').style.background = t==='individual'?'var(--ars)':'var(--bg)';
+    document.getElementById('btn-indiv').style.color = t==='individual'?'white':'var(--muted)';
+}
+
+function renderAll() {
+    document.getElementById('opt-yo').textContent = nameYo;
+    document.getElementById('opt-amigo').textContent = nameAmigo;
+    document.getElementById('lbl-aporte-amigo').textContent = `Aporte ${nameAmigo} (R$)`;
+    
+    document.getElementById('btn-brl').className = 'curr-btn' + (displayCurrency === 'BRL' ? ' active-brl' : '');
+    document.getElementById('btn-ars').className = 'curr-btn' + (displayCurrency === 'ARS' ? ' active-ars' : '');
+
+    renderSavings();
+    renderInv();
+    renderDayTabs();
+    renderExpenses();
+    renderLiquidacion();
 }
 
 function renderDayTabs() {
-  let html = '';
-  days.forEach((_, i) => {
-    const fecha = fmtDate(dayDates[i]);
-    const label = dayLabels[i] || `Día ${i + 1}`;
-    if (i === currentDay) {
-      // Tab activo: label editable + date picker oculto para la fecha
-      html += `<div class="day-tab active" style="position:relative;line-height:1.2;padding:5px 10px 4px;display:inline-flex;flex-direction:column;align-items:center;gap:1px;">
-        <input
-          type="text"
-          value="${label.replace(/"/g, '&quot;')}"
-          onchange="updateDayLabel(${i}, this.value)"
-          onclick="event.stopPropagation()"
-          style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.5px;background:transparent;border:none;border-bottom:1.5px solid rgba(255,255,255,0.5);color:white;outline:none;text-align:center;width:100px;padding:0 0 1px;"
-          title="Editá el nombre del día">
-        <span style="display:block;font-size:10px;opacity:0.65;cursor:pointer;" title="Cambiar fecha" onclick="event.stopPropagation();this.nextElementSibling.showPicker()">
-          ${fecha || 'sin fecha'}
-        </span>
-        <input type="date" value="${dayDates[i]||''}" onchange="updateDayDate(${i}, this.value)"
-          style="position:absolute;opacity:0;width:1px;height:1px;top:0;left:0;pointer-events:none;">
-      </div>`;
-    } else {
-      html += `<button class="day-tab" onclick="selectDay(${i})" style="line-height:1.2;padding:6px 14px 5px;">
-        <span style="display:block;font-size:12px;">${label}</span>
-        <span style="display:block;font-size:10px;opacity:0.65;">${fecha || 'sin fecha'}</span>
-      </button>`;
-    }
-  });
-  html += `<button class="btn-newday" onclick="addDay()">+ Día</button>`;
-  document.getElementById('dayTabs').innerHTML = html;
+    const container = document.getElementById('dayTabs');
+    container.innerHTML = days.map((_, i) => `
+        <button class="day-tab ${i===currentDay?'active':''}" onclick="selectDay(${i})">Día ${i+1}</button>
+    `).join('') + `<button class="day-tab" onclick="addDay()" style="border-style:dashed;">+ Día</button>`;
 }
+
+window.selectDay = (i) => { currentDay = i; renderAll(); }
+window.addDay = () => { days.push([]); currentDay = days.length-1; renderAll(); save(); }
 
 function renderExpenses() {
-  const list = document.getElementById('expense-list');
-  const sumDiv = document.getElementById('day-summary');
-  const expenses = days[currentDay] || [];
-  if (expenses.length === 0) { list.innerHTML = `<div class="empty-msg">Todavía no hay gastos para ${dayLabels[currentDay] || 'este día'}</div>`; sumDiv.innerHTML = ''; return; }
-
-  let html = `<table class="expense-table"><thead><tr><th>Descripción</th><th>Pagó</th><th style="text-align:right">Monto</th><th></th></tr></thead><tbody>`;
-  expenses.forEach(e => {
-    const bc = e.quien === 'yo' ? 'badge-yo' : 'badge-amigo';
-    const bn = e.quien === 'yo' ? nameYo : nameAmigo;
-    const mb = e.moneda === 'ARS' ? `<span class="badge badge-moneda-ars">ARS</span>` : `<span class="badge badge-moneda-brl">BRL</span>`;
-    const catB = `<span class="badge badge-cat">${CAT_ICONS[e.cat]||'📦'} ${e.cat||'Otros'}</span>`;
-    const indivB = e.tipo === 'individual' ? `<span class="badge badge-indiv">Individual</span>` : '';
-    const rowClass = e.tipo === 'individual' ? 'indiv-row' : '';
-    html += `<tr class="${rowClass}">
-      <td>${e.desc} ${mb}${catB}${indivB}</td>
-      <td><span class="badge ${bc}">${bn}</span></td>
-      <td style="text-align:right;font-family:'Syne',sans-serif;font-weight:600">${displayAmt(e.monto, e.moneda)}</td>
-      <td style="white-space:nowrap">
-        <button class="btn-edit" onclick="openEdit(${e.id})">✏️</button>
-      </td>
-    </tr>`;
-  });
-  html += '</tbody></table>';
-  list.innerHTML = html;
-
-  // Solo gastos compartidos para prorateo
-  const comp = expenses.filter(e => e.tipo !== 'individual');
-  const totalBRL = comp.reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
-  const yoBRL = comp.filter(e => e.quien === 'yo').reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
-  const amigoBRL = comp.filter(e => e.quien === 'amigo').reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
-  const mitad = totalBRL / 2;
-  const diff = yoBRL - mitad;
-  let bHtml = '', bClass = '';
-  if (comp.length === 0) { bHtml = 'Sin gastos compartidos hoy'; bClass = 'neutral'; }
-  else if (Math.abs(diff) < 0.01) { bHtml = '✓ Están empatados, sin deuda'; bClass = 'neutral'; }
-  else if (diff > 0) { bHtml = `${nameAmigo} le debe a ${nameYo}: <strong>${sym()} ${cv(Math.abs(diff))}</strong>`; bClass = 'amigo-paga'; }
-  else { bHtml = `${nameYo} le debe a ${nameAmigo}: <strong>${sym()} ${cv(Math.abs(diff))}</strong>`; bClass = 'yo-paga'; }
-
-  // Totales día (todos los gastos)
-  const totalDiaYoBRL = expenses.filter(e => e.quien === 'yo').reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
-  const totalDiaAmigoBRL = expenses.filter(e => e.quien === 'amigo').reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
-  const totalDiaBRL = expenses.reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
-
-  sumDiv.innerHTML = `<div class="day-summary">
-    <div class="sum-block"><div class="lbl">${nameYo} pagó</div><div class="val yo">${sym()} ${cv(totalDiaYoBRL)}</div></div>
-    <div class="sum-block"><div class="lbl">${nameAmigo} pagó</div><div class="val amigo">${sym()} ${cv(totalDiaAmigoBRL)}</div></div>
-    <div class="sum-block"><div class="lbl">Total día</div><div class="val total">${sym()} ${cv(totalDiaBRL)}</div></div>
-  </div>
-  <div class="balance-box"><div class="lbl">Prorateo (compartidos) — cada uno paga ${sym()} ${cv(mitad)}</div><div class="result ${bClass}">${bHtml}</div></div>`;
+    const list = document.getElementById('expense-list');
+    const expenses = days[currentDay] || [];
+    if (expenses.length === 0) { list.innerHTML = '<div style="text-align:center; padding:20px; color:#888;">No hay gastos hoy</div>'; return; }
+    
+    let html = `<table class="expense-table"><thead><tr><th>Qué</th><th>Quién</th><th style="text-align:right">Monto</th></tr></thead><tbody>`;
+    expenses.forEach(e => {
+        html += `<tr>
+            <td>${e.desc} ${e.tipo==='individual'?'<small>(I)</small>':''}</td>
+            <td><span class="badge ${e.quien==='yo'?'badge-yo':'badge-amigo'}">${e.quien==='yo'?nameYo:nameAmigo}</span></td>
+            <td style="text-align:right; font-weight:700;">${sym()} ${cv(toBRL(e.monto, e.moneda))}</td>
+        </tr>`;
+    });
+    list.innerHTML = html + '</tbody></table>';
 }
 
-function renderSummary() {
-  const all = days.flat();
-  const comp = all.filter(e => e.tipo !== 'individual');
-  const totalBRL = comp.reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
-  const yoCompBRL = comp.filter(e => e.quien === 'yo').reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
-  const amigoCompBRL = comp.filter(e => e.quien === 'amigo').reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
-  const mitad = totalBRL / 2;
-  const diff = yoCompBRL - mitad;
+function renderLiquidacion() {
+    const comp = days.flat().filter(e => e.tipo !== 'individual');
+    const totalBRL = comp.reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
+    const yoPagueBRL = comp.filter(e => e.quien === 'yo').reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
+    const cuota = totalBRL / 2;
+    const deuda = yoPagueBRL - cuota;
 
-  // Totales incluyendo individuales
-  const yoTotalBRL = all.filter(e => e.quien === 'yo').reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
-  const amigoTotalBRL = all.filter(e => e.quien === 'amigo').reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
-  const yoIndivBRL = all.filter(e => e.quien === 'yo' && e.tipo === 'individual').reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
-  const amigoIndivBRL = all.filter(e => e.quien === 'amigo' && e.tipo === 'individual').reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
-
-  document.getElementById('total-pago-yo').textContent = `${sym()} ${cv(yoTotalBRL)}`;
-  document.getElementById('total-pago-amigo').textContent = `${sym()} ${cv(amigoTotalBRL)}`;
-  document.getElementById('total-corr-yo').textContent = `${sym()} ${cv(mitad)}`;
-  document.getElementById('total-corr-amigo').textContent = `${sym()} ${cv(mitad)}`;
-  document.getElementById('total-indiv-yo').textContent = yoIndivBRL > 0 ? `Individual: ${sym()} ${cv(yoIndivBRL)}` : '';
-  document.getElementById('total-indiv-amigo').textContent = amigoIndivBRL > 0 ? `Individual: ${sym()} ${cv(amigoIndivBRL)}` : '';
-
-  const liq = document.getElementById('liquidacion');
-  if (totalBRL === 0) { liq.textContent = 'Sin gastos compartidos aún'; liq.style.color = 'white'; }
-  else if (Math.abs(diff) < 0.01) { liq.textContent = '✓ Todo en orden, sin deudas'; liq.style.color = '#7fffc4'; }
-  else if (diff > 0) { liq.innerHTML = `${nameAmigo} le debe a ${nameYo} <strong>${sym()} ${cv(Math.abs(diff))}</strong>`; liq.style.color = '#9ec8ff'; }
-  else { liq.innerHTML = `${nameYo} le debe a ${nameAmigo} <strong>${sym()} ${cv(Math.abs(diff))}</strong>`; liq.style.color = '#ffb89e'; }
+    const el = document.getElementById('liquidacion');
+    if (totalBRL === 0) el.textContent = "Sin gastos compartidos";
+    else if (Math.abs(deuda) < 0.1) el.textContent = "Están empatados ✓";
+    else if (deuda > 0) el.innerHTML = `${nameAmigo} debe a ${nameYo}: <br><strong>${sym()} ${cv(deuda)}</strong>`;
+    else el.innerHTML = `${nameYo} debe a ${nameAmigo}: <br><strong>${sym()} ${cv(Math.abs(deuda))}</strong>`;
 }
 
-function renderChart() {
-  const all = days.flat();
-  const totals = CATS.map(cat => all.filter(e => (e.cat || 'Otros') === cat).reduce((s, e) => s + toBRL(e.monto, e.moneda), 0));
-  const grandTotal = totals.reduce((a, b) => a + b, 0);
+window.onMonedaChange = function() {
+    updateConversionPreview();
+}
+window.updateConversionPreview = function() {
+    const m = parseFloat(document.getElementById('f-monto').value);
+    const mon = document.getElementById('f-moneda').value;
+    const p = document.getElementById('conversion-preview');
+    if (m > 0 && tcARS_BRL) {
+        p.textContent = mon === 'ARS' ? `≈ R$ ${fmt(m * tcARS_BRL)}` : `≈ $ ${fmtARS(m / tcARS_BRL)}`;
+    } else p.textContent = '';
+}
 
-  const legend = document.getElementById('chartLegend');
-  if (grandTotal === 0) {
-    legend.innerHTML = `<div style="color:var(--muted);font-size:13px;">Aún no hay gastos</div>`;
-    if (pieChartInstance) { pieChartInstance.destroy(); pieChartInstance = null; }
-    return;
-  }
-
-  // Chart
-  const ctx = document.getElementById('pieChart').getContext('2d');
-  if (pieChartInstance) pieChartInstance.destroy();
-  pieChartInstance = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: CATS,
-      datasets: [{ data: totals, backgroundColor: CAT_COLORS, borderWidth: 2, borderColor: '#fff' }]
-    },
-    options: {
-      plugins: { legend: { display: false }, tooltip: { enabled: false } },
-      cutout: '60%',
-      animation: { animateRotate: true }
+window.addIngreso = function() {
+    const d = document.getElementById('ingreso-desc').value;
+    const m = parseFloat(document.getElementById('ingreso-monto').value);
+    if (d && m) {
+        ingresos.push({desc: d, monto: m, id: Date.now()});
+        document.getElementById('ingreso-desc').value = '';
+        document.getElementById('ingreso-monto').value = '';
+        renderAll(); save();
     }
-  });
+}
 
-  // Leyenda
-  legend.innerHTML = CATS.map((cat, i) => {
-    if (totals[i] === 0) return '';
-    const pct = Math.round((totals[i] / grandTotal) * 100);
-    return `<div class="legend-item">
-      <div class="legend-dot" style="background:${CAT_COLORS[i]}"></div>
-      <span class="legend-label">${CAT_ICONS[cat]} ${cat}</span>
-      <span class="legend-val">${sym()} ${cv(totals[i])}</span>
-      <span class="legend-pct">${pct}%</span>
-    </div>`;
-  }).join('');
+window.clearData = function() {
+    if (confirm("¿Borrar todo?")) {
+        days=[[]]; currentDay=0; ahorros=0; ingresos=[];
+        renderAll(); save();
+    }
+}
+
+window.updateNames = function() {
+    nameYo = document.getElementById('nameYo').value || 'Yo';
+    nameAmigo = document.getElementById('nameAmigo').value || 'Amigo';
+    renderAll(); save();
 }
 
 </script>
