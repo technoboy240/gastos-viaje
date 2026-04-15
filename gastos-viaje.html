@@ -517,7 +517,7 @@ async function save() {
       const daysObj = {};
       days.forEach((d, i) => { daysObj['day_' + i] = d; });
 
-     await setDoc(docRef, {
+    await setDoc(docRef, {
         daysObj,
         daysCount: days.length,
         currentDay,
@@ -528,9 +528,9 @@ async function save() {
         ingresos,
         dayDates,
         dayLabels,
-        ahorroTotal: ahorroTotal || 0,
-        aporteYo: document.getElementById('aporte-yo').value || '',
-        aporteAmigo: document.getElementById('aporte-amigo').value || ''
+        ahorroTotal: ahorroTotal || 0, // Coma obligatoria aquí
+        aporteYo: document.getElementById('aporte-yo') ? document.getElementById('aporte-yo').value : '',
+        aporteAmigo: document.getElementById('aporte-amigo') ? document.getElementById('aporte-amigo').value : ''
       });
       setSyncStatus('ok', 'Guardado en la nube ✓');
     } catch(e) {
