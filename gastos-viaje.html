@@ -489,7 +489,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script type="module">
-import { getFirestore, doc, setDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -563,11 +563,13 @@ function loadFromData(data) {
     for (let i = 0; i < (data.daysCount || 1); i++) {
       days.push(data.daysObj['day_' + i] || []);
     }
-  } else {
-    days = [[]];
-  }
-
-  // Sincroniza el resto de valores
+   } else { days = [[]]; }
+  // Migrar gastos viejos sin categoría/tipo
+  days = days.map(day => day.map(e => ({
+    ...e,
+    cat: e.cat || 'Otros',
+    tipo: e.tipo || 'compartido'
+  })));
   currentDay = data.currentDay || 0;
   nameYo = data.nameYo || 'Yo';
   nameAmigo = data.nameAmigo || 'Amigo';
