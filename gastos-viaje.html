@@ -509,39 +509,35 @@ function save() {
   }, 800);
 }
 
-function loadFromData(data) {
-  if (!data) return;
-  if (data.daysObj) {
-    days = [];
-    for (let i = 0; i < (data.daysCount || 1); i++) {
-      days.push(data.daysObj['day_' + i] || []);
+async function save() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    setSyncStatus('loading', 'Guardando...');
+    try {
+      const daysObj = {};
+      days.forEach((d, i) => { daysObj['day_' + i] = d; });
+
+      await setDoc(docRef, {
+        daysObj,
+        daysCount: days.length,
+        currentDay,
+        nameYo,
+        nameAmigo,
+        displayCurrency,
+        tcARS_BRL: tcARS_BRL || null,
+        ingresos,
+        dayDates,
+        dayLabels,
+        ahorroTotal: ahorroTotal || 0, // <-- REVISÁ ESTA LÍNEA
+        aporteYo: document.getElementById('aporte-yo').value || '',
+        aporteAmigo: document.getElementById('aporte-amigo').value || ''
+      });
+      setSyncStatus('ok', 'Guardado en la nube ✓');
+    } catch(e) {
+      console.error('Firestore error:', e);
+      setSyncStatus('err', 'Error al guardar');
     }
-  } else { days = [[]]; }
-  // Migrar gastos viejos sin categoría/tipo
-  days = days.map(day => day.map(e => ({
-    ...e,
-    cat: e.cat || 'Otros',
-    tipo: e.tipo || 'compartido'
-  })));
-  currentDay = data.currentDay || 0;
-  nameYo = data.nameYo || 'Yo';
-  nameAmigo = data.nameAmigo || 'Amigo';
-  displayCurrency = data.displayCurrency || 'BRL';
-  tcARS_BRL = data.tcARS_BRL || null;
-  ahorroTotal = data.ahorroTotal || 0;
-  ingresos = data.ingresos || [];
-  dayDates = data.dayDates || days.map(() => '');
-  dayLabels = data.dayLabels || days.map((_, i) => `Día ${i + 1}`);
-  document.getElementById('nameYo').value = nameYo;
-  document.getElementById('nameAmigo').value = nameAmigo;
-  if (data.aporteYo) document.getElementById('aporte-yo').value = data.aporteYo;
-  if (data.aporteAmigo) document.getElementById('aporte-amigo').value = data.aporteAmigo;
-  if (tcARS_BRL) {
-    document.getElementById('tc-manual-val').value = (1 / tcARS_BRL).toFixed(2);
-    document.getElementById('tc-ars-equiv').textContent = `→ 1 ARS = R$ ${tcARS_BRL.toFixed(4)}`;
-    setTCStatus('ok', 'Tipo de cambio cargado');
-  }
-  renderAll();
+  }, 800);
 }
 
 onSnapshot(docRef, (snap) => {
@@ -998,15 +994,18 @@ window.modificarAhorro = function() {
 function renderAhorro() {
   const brlEl = document.getElementById('ahorro-brl');
   const arsEl = document.getElementById('ahorro-ars');
-  if(!brlEl || !arsEl) return;
 
-  brlEl.textContent = `R$ ${fmt(ahorroTotal)}`;
+  // Si los elementos no existen todavía, no hagas nada
+  if (!brlEl || !arsEl) return;
 
-  if (tcARS_BRL) {
-    const totalEnPesos = ahorroTotal / tcARS_BRL;
+  brlEl.textContent = `R$ ${fmt(ahorroTotal || 0)}`;
+
+  // Verificamos que tcARS_BRL exista y no sea cero
+  if (tcARS_BRL && tcARS_BRL !== 0) {
+    const totalEnPesos = (ahorroTotal || 0) / tcARS_BRL;
     arsEl.textContent = `≈ $ ${fmtARS(totalEnPesos)} ARS`;
   } else {
-    arsEl.textContent = "Ingresá TC para ver ARS";
+    arsEl.textContent = "Falta tipo de cambio";
   }
 }
 </script>
