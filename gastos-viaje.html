@@ -415,7 +415,33 @@
     </div>
   </div>
 
-</div>
+<div class="card" style="border-left: 5px solid #1a7a3a;">
+    <div class="card-title">Ahorros acumulados</div>
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+
+      <div style="flex: 1; min-width: 140px;">
+        <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 6px;">Sumar / Restar (R$)</label>
+        <div style="display: flex; gap: 8px;">
+          <input type="number" id="ahorro-input" placeholder="Ej: 50 o -50"
+            style="width: 100%; padding: 10px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'Syne', sans-serif; font-weight: 700;">
+          <button onclick="modificarAhorro()"
+            style="padding: 10px 16px; background: #1a7a3a; color: white; border: none; border-radius: 10px; cursor: pointer; font-family: 'Syne', sans-serif; font-weight: 700;">
+            OK
+          </button>
+        </div>
+      </div>
+
+      <div style="text-align: right;">
+        <div style="font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; color: #1a7a3a;" id="ahorro-brl">
+          R$ 0,00
+        </div>
+        <div style="font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 600; color: var(--ars);" id="ahorro-ars">
+          $ 0 ARS
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script type="module">
@@ -448,6 +474,7 @@ let pieChartInstance = null;
 let ingresos = [];
 let dayDates = [''];
 let dayLabels = ['Día 1'];
+let ahorroTotal = 0;
 
 const CATS = ['Hospedaje','Comida','Transporte','Otros'];
 const CAT_COLORS = ['#1a7ae8','#e8521a','#1a7a3a','#6b3fa0'];
@@ -470,6 +497,7 @@ function save() {
         daysObj, daysCount: days.length, currentDay, nameYo, nameAmigo, displayCurrency,
         tcARS_BRL: tcARS_BRL || null,
         ingresos, dayDates, dayLabels,
+        ahorroTotal
         aporteYo: document.getElementById('aporte-yo').value || '',
         aporteAmigo: document.getElementById('aporte-amigo').value || ''
       });
@@ -500,6 +528,7 @@ function loadFromData(data) {
   nameAmigo = data.nameAmigo || 'Amigo';
   displayCurrency = data.displayCurrency || 'BRL';
   tcARS_BRL = data.tcARS_BRL || null;
+  ahorroTotal = data.ahorroTotal || 0;
   ingresos = data.ingresos || [];
   dayDates = data.dayDates || days.map(() => '');
   dayLabels = data.dayLabels || days.map((_, i) => `Día ${i + 1}`);
@@ -955,6 +984,31 @@ function renderChart() {
   }).join('');
 }
 
+window.modificarAhorro = function() {
+  const input = document.getElementById('ahorro-input');
+  const valor = parseFloat(input.value);
+  if (isNaN(valor)) return;
+
+  ahorroTotal += valor;
+  input.value = '';
+  renderAhorro();
+  save(); // Esto lo manda a la nube
+}
+
+function renderAhorro() {
+  const brlEl = document.getElementById('ahorro-brl');
+  const arsEl = document.getElementById('ahorro-ars');
+  if(!brlEl || !arsEl) return;
+
+  brlEl.textContent = `R$ ${fmt(ahorroTotal)}`;
+
+  if (tcARS_BRL) {
+    const totalEnPesos = ahorroTotal / tcARS_BRL;
+    arsEl.textContent = `≈ $ ${fmtARS(totalEnPesos)} ARS`;
+  } else {
+    arsEl.textContent = "Ingresá TC para ver ARS";
+  }
+}
 </script>
 </body>
 </html>
