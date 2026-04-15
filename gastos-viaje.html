@@ -150,6 +150,39 @@
   .name-inputs input { padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); background: var(--bg); outline: none; transition: border-color 0.2s; }
   .name-inputs input:focus { border-color: var(--accent); background: white; }
 
+  /* Inversión rediseñada */
+  .aportes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .aporte-card { background: var(--bg); border: 1.5px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+  .aporte-card .a-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .aporte-card input { width: 100%; font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; border: none; border-bottom: 2px solid var(--border); background: transparent; color: var(--text); padding: 2px 0 3px; outline: none; transition: border-color 0.2s; }
+  .aporte-card input:focus { border-color: var(--accent); }
+  .aporte-card input::placeholder { color: var(--border); }
+  .aporte-card .a-hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .inv-divider { border: none; border-top: 1.5px solid var(--border); margin: 16px 0; }
+  .inv-subtotal-row { display: flex; justify-content: space-between; align-items: center; padding: 2px 0 0; }
+  .inv-subtotal-row .lbl { font-size: 12px; color: var(--muted); }
+  .inv-subtotal-row .val { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--text); }
+
+  /* Ahorros */
+  .ahorros-hero { background: linear-gradient(135deg, #f0f7f0 0%, #e8f5e8 100%); border: 1.5px solid #c8e6c8; border-radius: 14px; padding: 16px 18px; margin-bottom: 12px; }
+  .ahorros-hero-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .ahorros-amount { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; color: var(--success); line-height: 1; letter-spacing: -0.5px; }
+  .ahorros-ars-eq { font-size: 13px; color: var(--ars); font-family: 'Syne', sans-serif; font-weight: 600; margin-top: 5px; min-height: 18px; }
+  .ahorros-ops { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .btn-ahorro-op { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; padding: 9px 18px; border-radius: 10px; border: none; cursor: pointer; transition: all 0.15s; letter-spacing: 0.3px; }
+  .btn-ahorro-op.pos { background: var(--success); color: white; }
+  .btn-ahorro-op.neg { background: white; color: #c42a00; border: 1.5px solid #f8d0bc; }
+  .btn-ahorro-op:active { transform: scale(0.96); }
+  .ahorro-panel { display: none; margin-top: 12px; gap: 8px; align-items: center; }
+  .ahorro-panel.open { display: flex; }
+  .ahorro-panel input { flex: 1; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text); background: white; outline: none; transition: border-color 0.2s; }
+  .ahorro-panel input:focus { border-color: var(--success); }
+  .btn-ahorro-confirm { padding: 10px 18px; border-radius: 10px; border: none; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+  .btn-ahorro-confirm.pos { background: var(--success); color: white; }
+  .btn-ahorro-confirm.neg { background: #c42a00; color: white; }
+  .btn-ahorro-cancel { padding: 10px 12px; border-radius: 10px; border: 1.5px solid var(--border); background: white; font-family: 'Syne', sans-serif; font-size: 13px; cursor: pointer; color: var(--muted); transition: all 0.15s; }
+  .ahorro-preview { font-size: 12px; color: var(--ars); margin-top: 6px; min-height: 16px; font-family: 'Syne', sans-serif; font-weight: 600; }
+
   @media (max-width: 480px) {
     header { padding: 20px 16px 16px; }
     header h1 { font-size: 22px; }
@@ -284,37 +317,51 @@
 
   <div class="card">
     <div class="card-title">Inversión inicial</div>
-    <div class="inv-grid">
-      <div class="inv-block">
-        <label>Tu aporte (R$)</label>
+
+    <!-- Aportes -->
+    <div class="aportes-grid">
+      <div class="aporte-card">
+        <div class="a-lbl" id="lbl-aporte-yo-card">Tu aporte</div>
         <input type="number" id="aporte-yo" placeholder="0" oninput="updateInv()" min="0">
+        <div class="a-hint">R$ reales</div>
       </div>
-      <div class="inv-block">
-        <label id="lbl-aporte-amigo">Aporte amigo (R$)</label>
+      <div class="aporte-card">
+        <div class="a-lbl" id="lbl-aporte-amigo-card">Aporte amigo</div>
         <input type="number" id="aporte-amigo" placeholder="0" oninput="updateInv()" min="0">
+        <div class="a-hint">R$ reales</div>
       </div>
     </div>
-    <div style="border-top:1.5px solid var(--border);margin-top:18px;padding-top:16px;">
-      <div class="card-title" style="margin-bottom:10px;">Ingresos extra</div>
-      <div id="ingresos-list" style="margin-bottom:12px;display:flex;flex-direction:column;gap:8px;"></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:end;">
-        <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Descripción</label>
-          <input type="text" id="ingreso-desc" placeholder="Ej: trabajo extra..." style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);outline:none;">
-        </div>
-        <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Monto (R$)</label>
-          <input type="number" id="ingreso-monto" placeholder="0.00" min="0" step="0.01" style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);outline:none;">
-        </div>
-        <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Fecha</label>
-          <input type="date" id="ingreso-fecha" style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);outline:none;">
-        </div>
-        <button onclick="addIngreso()" style="padding:9px 14px;background:#1a7a3a;color:white;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;">+ Sumar</button>
-      </div>
+    <div class="inv-subtotal-row" style="margin-top:10px;">
+      <span class="lbl">Subtotal aportes</span>
+      <span class="val" id="aportes-subtotal">R$ 0,00</span>
     </div>
-    <div class="inv-summary" style="margin-top:18px;">
-      <div class="inv-metric"><div class="label">Total</div><div class="value" id="inv-total">R$0</div></div>
+
+    <hr class="inv-divider">
+
+    <!-- Ingresos extra -->
+    <div class="card-title" style="margin-bottom:10px;">Ingresos extra</div>
+    <div id="ingresos-list" style="margin-bottom:12px;display:flex;flex-direction:column;gap:8px;"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:end;">
+      <div>
+        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Descripción</label>
+        <input type="text" id="ingreso-desc" placeholder="Ej: trabajo extra..." style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);outline:none;">
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Monto (R$)</label>
+        <input type="number" id="ingreso-monto" placeholder="0.00" min="0" step="0.01" style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);outline:none;">
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Fecha</label>
+        <input type="date" id="ingreso-fecha" style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);outline:none;">
+      </div>
+      <button onclick="addIngreso()" style="padding:9px 14px;background:#1a7a3a;color:white;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;">+ Sumar</button>
+    </div>
+
+    <hr class="inv-divider">
+
+    <!-- Métricas -->
+    <div class="inv-summary" style="margin-top:0;">
+      <div class="inv-metric"><div class="label">Fondo total</div><div class="value" id="inv-total">R$0</div></div>
       <div class="inv-metric"><div class="label">Gastado</div><div class="value warn" id="inv-gastado">R$0</div></div>
       <div class="inv-metric"><div class="label">Restante</div><div class="value good" id="inv-restante">R$0</div></div>
     </div>
@@ -408,6 +455,29 @@
   </div>
 
   <div class="card">
+    <div class="card-title">Ahorros 🐷</div>
+    <div class="ahorros-hero">
+      <div class="ahorros-hero-top">
+        <div>
+          <div class="ahorros-amount" id="ahorro-display">R$ 0,00</div>
+          <div class="ahorros-ars-eq" id="ahorro-ars-eq"></div>
+        </div>
+        <div class="ahorros-ops">
+          <button class="btn-ahorro-op neg" onclick="abrirAhorro('neg')">− Restar</button>
+          <button class="btn-ahorro-op pos" onclick="abrirAhorro('pos')">+ Sumar</button>
+        </div>
+      </div>
+      <div class="ahorro-panel" id="ahorro-panel">
+        <input type="number" id="ahorro-val" placeholder="Monto en R$..." min="0" step="0.01" oninput="previewAhorro()">
+        <button class="btn-ahorro-confirm pos" id="ahorro-confirm-btn" onclick="confirmarAhorro()">Confirmar</button>
+        <button class="btn-ahorro-cancel" onclick="cerrarAhorro()">✕</button>
+      </div>
+      <div class="ahorro-preview" id="ahorro-preview"></div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);">Tus ahorros actuales en R$. No afectan los gastos del viaje — es un registro separado.</div>
+  </div>
+
+  <div class="card">
     <div class="card-title">Gastos por categoría</div>
     <div class="chart-wrap">
       <canvas id="pieChart" width="160" height="160"></canvas>
@@ -419,7 +489,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, setDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -448,6 +518,8 @@ let pieChartInstance = null;
 let ingresos = [];
 let dayDates = [''];
 let dayLabels = ['Día 1'];
+let ahorro = 0;
+let ahorroOp = 'pos';
 
 const CATS = ['Hospedaje','Comida','Transporte','Otros'];
 const CAT_COLORS = ['#1a7ae8','#e8521a','#1a7a3a','#6b3fa0'];
@@ -469,7 +541,7 @@ function save() {
       await setDoc(docRef, {
         daysObj, daysCount: days.length, currentDay, nameYo, nameAmigo, displayCurrency,
         tcARS_BRL: tcARS_BRL || null,
-        ingresos, dayDates, dayLabels,
+        ingresos, dayDates, dayLabels, ahorro,
         aporteYo: document.getElementById('aporte-yo').value || '',
         aporteAmigo: document.getElementById('aporte-amigo').value || ''
       });
@@ -483,36 +555,29 @@ function save() {
 
 function loadFromData(data) {
   if (!data) return;
+
+  // Reconstruye los días y gastos
   if (data.daysObj) {
     days = [];
     for (let i = 0; i < (data.daysCount || 1); i++) {
       days.push(data.daysObj['day_' + i] || []);
     }
-  } else { days = [[]]; }
-  // Migrar gastos viejos sin categoría/tipo
-  days = days.map(day => day.map(e => ({
-    ...e,
-    cat: e.cat || 'Otros',
-    tipo: e.tipo || 'compartido'
-  })));
+  } else {
+    days = [[]];
+  }
+
+  // Sincroniza el resto de valores
   currentDay = data.currentDay || 0;
   nameYo = data.nameYo || 'Yo';
   nameAmigo = data.nameAmigo || 'Amigo';
   displayCurrency = data.displayCurrency || 'BRL';
   tcARS_BRL = data.tcARS_BRL || null;
   ingresos = data.ingresos || [];
-  dayDates = data.dayDates || days.map(() => '');
-  dayLabels = data.dayLabels || days.map((_, i) => `Día ${i + 1}`);
-  document.getElementById('nameYo').value = nameYo;
-  document.getElementById('nameAmigo').value = nameAmigo;
-  if (data.aporteYo) document.getElementById('aporte-yo').value = data.aporteYo;
-  if (data.aporteAmigo) document.getElementById('aporte-amigo').value = data.aporteAmigo;
-  if (tcARS_BRL) {
-    document.getElementById('tc-manual-val').value = (1 / tcARS_BRL).toFixed(2);
-    document.getElementById('tc-ars-equiv').textContent = `→ 1 ARS = R$ ${tcARS_BRL.toFixed(4)}`;
-    setTCStatus('ok', 'Tipo de cambio cargado');
-  }
+  ahorro = data.ahorro || 0;
+
+  // Actualiza la interfaz visual
   renderAll();
+  renderInv();
 }
 
 onSnapshot(docRef, (snap) => {
@@ -748,7 +813,7 @@ window.saveEdit = function() {
 window.clearData = function() {
   const confirmText = prompt('Para borrar todos los datos escribí "BORRAR" en mayúsculas:');
   if (confirmText !== 'BORRAR') return;
-  days = [[]]; currentDay = 0; tcARS_BRL = null; nameYo = 'Yo'; nameAmigo = 'Amigo'; ingresos = []; dayDates = ['']; dayLabels = ['Día 1'];
+  days = [[]]; currentDay = 0; tcARS_BRL = null; nameYo = 'Yo'; nameAmigo = 'Amigo'; ingresos = []; dayDates = ['']; dayLabels = ['Día 1']; ahorro = 0;
   document.getElementById('nameYo').value = 'Yo';
   document.getElementById('nameAmigo').value = 'Amigo';
   document.getElementById('aporte-yo').value = '';
@@ -763,12 +828,13 @@ window.clearData = function() {
 function renderAll() {
   document.getElementById('opt-yo').textContent = nameYo;
   document.getElementById('opt-amigo').textContent = nameAmigo;
-  document.getElementById('lbl-aporte-amigo').textContent = `Aporte ${nameAmigo} (R$)`;
+  document.getElementById('lbl-aporte-yo-card').textContent = `Aporte de ${nameYo}`;
+  document.getElementById('lbl-aporte-amigo-card').textContent = `Aporte de ${nameAmigo}`;
   document.getElementById('lbl-total-yo').textContent = nameYo.toUpperCase();
   document.getElementById('lbl-total-amigo').textContent = nameAmigo.toUpperCase();
   document.getElementById('btn-brl').className = 'curr-btn' + (displayCurrency === 'BRL' ? ' active-brl' : '');
   document.getElementById('btn-ars').className = 'curr-btn' + (displayCurrency === 'ARS' ? ' active-ars' : '');
-  renderDayTabs(); renderExpenses(); renderSummary(); renderInv(); renderChart();
+  renderDayTabs(); renderExpenses(); renderSummary(); renderInv(); renderChart(); renderAhorro();
 }
 
 function renderInv() {
@@ -779,6 +845,10 @@ function renderInv() {
   const gastado = days.flat().reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
   const restante = total - gastado;
   const pct = total > 0 ? Math.min((gastado / total) * 100, 100) : 0;
+
+  // Subtotal aportes
+  document.getElementById('aportes-subtotal').textContent = `R$ ${fmt(yo + amigo)}`;
+
   document.getElementById('inv-total').textContent = `${sym()} ${cv(total)}`;
   document.getElementById('inv-gastado').textContent = `${sym()} ${cv(gastado)}`;
   document.getElementById('inv-restante').textContent = `${sym()} ${cv(restante)}`;
@@ -953,6 +1023,43 @@ function renderChart() {
       <span class="legend-pct">${pct}%</span>
     </div>`;
   }).join('');
+// ── Ahorros ───────────────────────────────────────────────────
+window.abrirAhorro = function(op) {
+  ahorroOp = op;
+  const panel = document.getElementById('ahorro-panel');
+  const btn = document.getElementById('ahorro-confirm-btn');
+  panel.classList.add('open');
+  btn.className = `btn-ahorro-confirm ${op}`;
+  btn.textContent = op === 'pos' ? '+ Confirmar' : '− Confirmar';
+  document.getElementById('ahorro-val').value = '';
+  document.getElementById('ahorro-preview').textContent = '';
+  setTimeout(() => document.getElementById('ahorro-val').focus(), 50);
+}
+window.cerrarAhorro = function() {
+  document.getElementById('ahorro-panel').classList.remove('open');
+  document.getElementById('ahorro-preview').textContent = '';
+}
+window.previewAhorro = function() {
+  const val = parseFloat(document.getElementById('ahorro-val').value) || 0;
+  const prev = document.getElementById('ahorro-preview');
+  if (!val) { prev.textContent = ''; return; }
+  const nuevo = Math.max(0, ahorro + (ahorroOp === 'pos' ? val : -val));
+  const signo = ahorroOp === 'pos' ? '+' : '−';
+  let txt = `${signo} R$ ${fmt(val)} → quedarían R$ ${fmt(nuevo)}`;
+  if (tcARS_BRL) txt += ` ≈ $ ${fmtARS(brlToArs(nuevo))} ARS`;
+  prev.textContent = txt;
+}
+window.confirmarAhorro = function() {
+  const val = parseFloat(document.getElementById('ahorro-val').value) || 0;
+  if (!val || val <= 0) { alert('Ingresá un monto válido'); return; }
+  ahorro = Math.max(0, ahorro + (ahorroOp === 'pos' ? val : -val));
+  cerrarAhorro();
+  renderAhorro(); save();
+}
+function renderAhorro() {
+  document.getElementById('ahorro-display').textContent = `R$ ${fmt(ahorro)}`;
+  const arsEl = document.getElementById('ahorro-ars-eq');
+  arsEl.textContent = (tcARS_BRL && ahorro > 0) ? `≈ $ ${fmtARS(brlToArs(ahorro))} pesos argentinos` : '';
 }
 
 </script>
