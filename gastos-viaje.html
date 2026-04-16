@@ -184,10 +184,7 @@
   .btn-ahorro-sum:hover { opacity: 0.85; }
   .btn-ahorro-rest { padding: 10px 16px; background: var(--bg); color: #c42a00; border: 1.5px solid #f8d0bc; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity 0.15s; }
   .btn-ahorro-rest:hover { opacity: 0.75; }
-  .ahorro-hist { font-size: 12px; color: var(--muted); margin-top: 10px; display: flex; flex-direction: column; gap: 5px; max-height: 140px; overflow-y: auto; }
-  .ahorro-hist-item { display: flex; justify-content: space-between; background: var(--bg); padding: 5px 10px; border-radius: 8px; border: 1px solid var(--border); }
-  .ahorro-hist-item.suma { border-left: 3px solid var(--success); }
-  .ahorro-hist-item.resta { border-left: 3px solid #c42a00; }
+
 </style>
 </head>
 <body>
@@ -447,7 +444,6 @@
         <button class="btn-ahorro-rest" onclick="ahorroOperar(-1)">− Restar</button>
       </div>
     </div>
-    <div class="ahorro-hist" id="ahorro-hist"></div>
   </div>
 
 </div>
@@ -484,7 +480,6 @@ let ingresos = [];
 let dayDates = [''];
 let dayLabels = ['Día 1'];
 let ahorros = 0;
-let ahorroHist = [];
 
 const CATS = ['Hospedaje','Comida','Transporte','Otros'];
 const CAT_COLORS = ['#1a7ae8','#e8521a','#1a7a3a','#6b3fa0'];
@@ -509,7 +504,7 @@ function save() {
         ingresos, dayDates, dayLabels,
         aporteYo: document.getElementById('aporte-yo').value || '',
         aporteAmigo: document.getElementById('aporte-amigo').value || '',
-        ahorros, ahorroHist
+        ahorros
       });
       setSyncStatus('ok', 'Guardado en la nube ✓');
     } catch(e) {
@@ -542,7 +537,6 @@ function loadFromData(data) {
   dayDates = data.dayDates || days.map(() => '');
   dayLabels = data.dayLabels || days.map((_, i) => `Día ${i + 1}`);
   ahorros = data.ahorros || 0;
-  ahorroHist = data.ahorroHist || [];
   document.getElementById('nameYo').value = nameYo;
   document.getElementById('nameAmigo').value = nameAmigo;
   if (data.aporteYo) document.getElementById('aporte-yo').value = data.aporteYo;
@@ -792,7 +786,7 @@ window.saveEdit = function() {
 window.clearData = function() {
   const confirmText = prompt('Para borrar todos los datos escribí "BORRAR" en mayúsculas:');
   if (confirmText !== 'BORRAR') return;
-  days = [[]]; currentDay = 0; tcARS_BRL = null; nameYo = 'Yo'; nameAmigo = 'Amigo'; ingresos = []; dayDates = ['']; dayLabels = ['Día 1']; ahorros = 0; ahorroHist = [];
+  days = [[]]; currentDay = 0; tcARS_BRL = null; nameYo = 'Yo'; nameAmigo = 'Amigo'; ingresos = []; dayDates = ['']; dayLabels = ['Día 1']; ahorros = 0;
   document.getElementById('nameYo').value = 'Yo';
   document.getElementById('nameAmigo').value = 'Amigo';
   document.getElementById('aporte-yo').value = '';
@@ -1002,11 +996,8 @@ function renderChart() {
 window.ahorroOperar = function(signo) {
   const val = parseFloat(document.getElementById('ahorro-input').value);
   if (!val || val <= 0) { alert('Ingresá un monto válido'); return; }
-  const delta = signo * val;
-  ahorros += delta;
+  ahorros += signo * val;
   if (ahorros < 0) ahorros = 0;
-  ahorroHist.unshift({ delta, ts: Date.now() });
-  if (ahorroHist.length > 20) ahorroHist.pop();
   document.getElementById('ahorro-input').value = '';
   renderAhorro(); save();
 }
@@ -1023,19 +1014,6 @@ function renderAhorro() {
   } else {
     arsEl.textContent = '';
   }
-  const hist = document.getElementById('ahorro-hist');
-  if (!hist) return;
-  if (ahorroHist.length === 0) { hist.innerHTML = ''; return; }
-  hist.innerHTML = ahorroHist.map(h => {
-    const signo = h.delta >= 0 ? '+' : '−';
-    const cls = h.delta >= 0 ? 'suma' : 'resta';
-    const d = new Date(h.ts);
-    const hora = d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
-    return `<div class="ahorro-hist-item ${cls}">
-      <span>${signo} R$ ${fmt(Math.abs(h.delta))}</span>
-      <span>${hora}</span>
-    </div>`;
-  }).join('');
 }
 
 </script>
