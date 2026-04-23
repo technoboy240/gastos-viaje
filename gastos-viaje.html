@@ -376,8 +376,8 @@
       <div>
         <label>Tipo</label>
         <div class="tipo-toggle">
-          <button class="tipo-btn active-comp" id="btn-comp" onclick="setTipo('compartido')">Compartido</button>
-          <button class="tipo-btn" id="btn-indiv" onclick="setTipo('individual')">Individual</button>
+          <button class="tipo-btn" id="btn-comp" onclick="setTipo('compartido')">Compartido</button>
+          <button class="tipo-btn active-indiv" id="btn-indiv" onclick="setTipo('individual')">Individual</button>
         </div>
       </div>
     </div>
@@ -471,7 +471,7 @@ let nameYo = 'Yo';
 let nameAmigo = 'Amigo';
 let tcARS_BRL = null;
 let displayCurrency = 'BRL';
-let tipoActual = 'compartido';
+let tipoActual = 'individual';
 let saveTimer = null;
 let editingId = null;
 let pieChartInstance = null;
@@ -794,6 +794,7 @@ window.clearData = function() {
   document.getElementById('tc-manual-val').value = '';
   document.getElementById('tc-ars-equiv').textContent = '';
   setTCStatus('', 'Ingresá el tipo de cambio');
+  setTipo('individual');
   renderAll(); save();
 }
 
