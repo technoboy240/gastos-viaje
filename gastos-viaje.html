@@ -52,6 +52,7 @@
     padding-left: max(0px, env(safe-area-inset-left, 0px));
     padding-right: max(0px, env(safe-area-inset-right, 0px));
     touch-action: manipulation;
+    overflow-x: clip;
   }
   @media (min-width: 640px) {
     body { font-size: 15px; }
@@ -107,6 +108,8 @@
     padding: 22px 20px;
     margin-bottom: 16px;
     box-shadow: 0 1px 0 rgba(0,0,0,0.03);
+    min-width: 0;
+    max-width: 100%;
   }
   .card-title {
     font-family: 'Syne', system-ui, sans-serif;
@@ -267,14 +270,13 @@
   }
   .curr-btn.active-brl { background: var(--accent); color: #fff; border-color: var(--accent); }
   .curr-btn.active-ars { background: var(--ars); color: #fff; border-color: var(--ars); }
-  .day-tabs {
-    display: flex; gap: 8px; flex-wrap: nowrap; margin-bottom: 16px; align-items: center;
-    overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; scrollbar-width: thin;
-  }
-  .day-tabs > * { flex-shrink: 0; }
-  @media (min-width: 720px) {
-    .day-tabs { flex-wrap: wrap; overflow-x: visible; }
-  }
+  /* Días: fila 1 = solo "Días anteriores"; fila 2 = últimos 3 días + +Día */
+  .day-tabs { display: flex; flex-direction: column; align-items: stretch; gap: 10px; margin-bottom: 16px; }
+  .day-tabs__row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .day-tabs__row--earlier .btn-earlier-days { width: 100%; max-width: 100%; justify-content: center; }
+  .day-tabs__row--earlier { width: 100%; }
+  .day-tabs__row--recent { width: 100%; }
+  .day-tabs__row--recent > * { flex-shrink: 0; }
   .day-tab {
     font-size: 12px; font-weight: 700; padding: 7px 14px; min-height: 40px; border-radius: 999px;
     border: 1px solid var(--border);
@@ -291,9 +293,9 @@
   }
   .btn-newday:hover { background: var(--accent); color: #fff; border-style: solid; }
   .btn-earlier-days {
-    display: inline-block; background: #fff; border: 1px solid var(--border); border-radius: 999px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #fff; border: 1px solid var(--border); border-radius: 999px;
     padding: 6px 14px; min-height: 40px; font-size: 11px; font-weight: 700; color: var(--muted);
-    cursor: pointer; letter-spacing: 0.04em; transition: all 0.12s; align-self: center;
+    cursor: pointer; letter-spacing: 0.04em; transition: all 0.12s; box-sizing: border-box;
   }
   .btn-earlier-days:hover { border-color: var(--info); color: var(--info); }
 
@@ -464,23 +466,43 @@
     .btn-primary, .btn-ahorro-sum, .btn-ahorro-rest, .btn-save { min-height: 48px; }
     .curr-btn, .day-tab, .btn-newday, .btn-earlier-days { min-height: 48px; }
     .global-balance .res { font-size: 16px; }
-    .ahorro-total-block .val { font-size: 26px; }
     .modal select, .modal input { font-size: 16px; }
     .name-inputs input { font-size: 16px; }
     .btn-edit { min-width: 44px; min-height: 44px; font-size: 18px; }
   }
 
-  .ahorro-panel { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
-  .ahorro-total-block { flex: 1; min-width: 120px; }
+  .ahorro-panel {
+    display: flex; flex-direction: column; align-items: stretch; gap: 16px; margin-bottom: 12px;
+  }
+  .ahorro-total-block {
+    min-width: 0; max-width: 100%;
+  }
   .ahorro-total-block .lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
-  .ahorro-total-block .val { font-family: 'Syne', system-ui, sans-serif; font-size: 30px; font-weight: 800; color: var(--success); font-variant-numeric: tabular-nums; }
-  .ahorro-total-block .val-ars { font-size: 13px; color: var(--ars); margin-top: 4px; font-weight: 600; }
-  .ahorro-input-block { display: flex; gap: 10px; align-items: stretch; flex-wrap: wrap; }
-  .ahorro-input-block input { flex: 1 1 7rem; min-width: 0; max-width: 200px; padding: 10px 12px; min-height: 44px; border: 1px solid var(--border); border-radius: 10px; font-size: 16px; color: var(--text); background: #fff; outline: none; transition: border-color 0.12s, box-shadow 0.12s; }
-  @media (max-width: 639px) {
-    .ahorro-input-block { flex-direction: column; align-items: stretch; }
-    .ahorro-input-block input { max-width: none; width: 100%; }
-    .ahorro-input-block .btn-ahorro-sum, .ahorro-input-block .btn-ahorro-rest { width: 100%; }
+  .ahorro-total-block .val {
+    font-family: 'Syne', system-ui, sans-serif;
+    font-size: clamp(1.4rem, 6.5vw, 1.875rem);
+    font-weight: 800; color: var(--success); font-variant-numeric: tabular-nums;
+    line-height: 1.15; max-width: 100%; word-break: break-word;
+  }
+  .ahorro-total-block .val-ars { font-size: 13px; color: var(--ars); margin-top: 4px; font-weight: 600; line-height: 1.35; word-wrap: break-word; overflow-wrap: break-word; }
+  .ahorro-input-block { display: flex; flex-direction: column; gap: 10px; align-items: stretch; min-width: 0; width: 100%; }
+  .ahorro-input-block input {
+    width: 100%; max-width: 100%; min-width: 0;
+    padding: 10px 12px; min-height: 44px; border: 1px solid var(--border); border-radius: 10px; font-size: 16px; color: var(--text);
+    background: #fff; outline: none; transition: border-color 0.12s, box-shadow 0.12s;
+  }
+  .ahorro-btns { display: flex; gap: 10px; flex-direction: row; flex-wrap: wrap; }
+  .ahorro-btns .btn-ahorro-sum, .ahorro-btns .btn-ahorro-rest { flex: 1; min-width: 0; }
+  @media (min-width: 640px) {
+    .ahorro-panel { flex-direction: row; align-items: flex-start; flex-wrap: wrap; }
+    .ahorro-total-block { flex: 1; min-width: 0; }
+    .ahorro-input-block {
+      flex: 1 1 12rem; flex-direction: row; flex-wrap: wrap; align-items: center;
+      justify-content: flex-end;
+    }
+    .ahorro-input-block input { width: auto; max-width: 12rem; flex: 1 1 8rem; }
+    .ahorro-btns { flex: 0 0 auto; flex-wrap: nowrap; }
+    .ahorro-btns .btn-ahorro-sum, .ahorro-btns .btn-ahorro-rest { flex: 0 0 auto; }
   }
   .ahorro-input-block input:focus { border-color: var(--success); box-shadow: 0 0 0 2px rgba(21, 128, 61, 0.22); }
   .btn-ahorro-sum { padding: 10px 16px; min-height: 44px; background: var(--success); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; transition: background 0.12s; }
@@ -495,7 +517,7 @@
 </head>
 <body>
 
-<!-- Modal días anteriores (más de 4 días) -->
+<!-- Modal: días no mostrados en la fila (cuando hay más de 3 días recientes) -->
 <div class="modal-overlay" id="earlierDaysModal">
   <div class="modal">
     <h3>Días anteriores</h3>
@@ -766,8 +788,10 @@
       </div>
       <div class="ahorro-input-block">
         <input type="number" id="ahorro-input" placeholder="R$ 0.00" min="0" step="0.01">
-        <button class="btn-ahorro-sum" onclick="ahorroOperar(1)">+ Sumar</button>
-        <button class="btn-ahorro-rest" onclick="ahorroOperar(-1)">− Restar</button>
+        <div class="ahorro-btns">
+          <button type="button" class="btn-ahorro-sum" onclick="ahorroOperar(1)">+ Sumar</button>
+          <button type="button" class="btn-ahorro-rest" onclick="ahorroOperar(-1)">− Restar</button>
+        </div>
       </div>
     </div>
   </div>
@@ -810,7 +834,7 @@ let ahorros = 0;
 const CATS = ['Hospedaje','Comida','Transporte','Otros'];
 const CAT_COLORS = ['#1a7ae8', '#e8521a', '#15803d', '#6b3fa0'];
 const CAT_ICONS = {'Hospedaje':'🏨','Comida':'🍽️','Transporte':'🚌','Otros':'📦'};
-const MAX_VISIBLE_DAY_TABS = 4;
+const MAX_VISIBLE_DAY_TABS = 3;
 
 function fillCategorySelects() {
   const optionsHtml = CATS.map(c => `<option value="${c}">${CAT_ICONS[c]} ${c}</option>`).join('');
@@ -1277,8 +1301,11 @@ function renderDayTabs() {
   const hasEarlier = firstVisible > 0;
   let html = '';
   if (hasEarlier) {
+    html += `<div class="day-tabs__row day-tabs__row--earlier">`;
     html += `<button type="button" class="btn-earlier-days" onclick="openEarlierDaysModal()">Días anteriores (${firstVisible}) ↗</button>`;
+    html += `</div>`;
   }
+  html += `<div class="day-tabs__row day-tabs__row--recent">`;
   if (currentDay < firstVisible) {
     html += dayTabActiveMarkup(currentDay);
   }
@@ -1287,6 +1314,7 @@ function renderDayTabs() {
     else html += dayTabButtonMarkup(i);
   }
   html += `<button type="button" class="btn-newday" onclick="addDay()">+ Día</button>`;
+  html += `</div>`;
   document.getElementById('dayTabs').innerHTML = html;
 }
 
