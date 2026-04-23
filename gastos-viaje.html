@@ -974,12 +974,12 @@ function renderDayTabs() {
   }
   const endExclusive = n > MAX_INLINE_DAYS ? Math.min(n, start + MAX_INLINE_DAYS) : n;
   let html = '';
-  for (let i = start; i < endExclusive; i++) {
-    html += renderDayTabOne(i);
-  }
   if (n > MAX_INLINE_DAYS) {
     const hidden = n - MAX_INLINE_DAYS;
     html += `<button type="button" class="btn-mas-dias" onclick="openDiasModal()" title="Abrir el listado de todos los días">Ver ${hidden} día${hidden === 1 ? '' : 's'} más…</button>`;
+  }
+  for (let i = start; i < endExclusive; i++) {
+    html += renderDayTabOne(i);
   }
   html += `<button type="button" class="btn-newday" onclick="addDay()">+ Día</button>`;
   document.getElementById('dayTabs').innerHTML = html;
