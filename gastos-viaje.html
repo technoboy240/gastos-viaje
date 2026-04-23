@@ -3,188 +3,381 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a1a1a">
 <title>Gastos del Viaje 🇧🇷</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+  /* Tema claro (viaje / métricas) */
   :root {
-    --bg: #f7f4ee; --card: #ffffff; --accent: #e8521a; --accent2: #1a7ae8;
-    --text: #1a1a1a; --muted: #888; --border: #e0dbd0; --success: #1a7a3a; --ars: #6b3fa0;
+    --ink: #1a1a1a;
+    --bg-0: #f7f4ee;
+    --bg-1: #ffffff;
+    --bg-2: #f0ebe3;
+    --border: #e0dbd0;
+    --text-0: #1a1a1a;
+    --text-1: #4a5568;
+    --text-2: #6b7280;
+    --accent: #e8521a;
+    --accent-hover: #d44512;
+    --success: #15803d;
+    --success-hover: #166534;
+    --info: #1a7ae8;
+    --warn: #c47a00;
+    --danger: #c42a00;
+    --ars: #6b3fa0;
+    --bg: var(--bg-0);
+    --card: var(--bg-1);
+    --text: var(--text-0);
+    --muted: var(--text-2);
+    --yo: var(--accent);
+    --amigo: var(--info);
+    --accent2: var(--info);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 0 0 60px; }
-  header { background: var(--text); color: white; padding: 28px 24px 20px; display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
-  header h1 { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.1; }
-  .container { max-width: 680px; margin: 0 auto; padding: 24px 16px; }
-  .card { background: var(--card); border-radius: 16px; border: 1.5px solid var(--border); padding: 20px; margin-bottom: 18px; }
-  .card-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 14px; }
-  .sync-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: #111; color: white; font-size: 12px; font-family: 'Syne', sans-serif; letter-spacing: 0.5px; }
-  .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #555; flex-shrink: 0; }
-  .sync-dot.ok { background: #4cff91; }
-  .sync-dot.err { background: #ff6b6b; }
-  .sync-dot.loading { background: #ffc84c; animation: pulse 1s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-  .tc-status { font-size: 12px; color: var(--muted); margin-top: 10px; display: flex; align-items: center; gap: 6px; }
+  html { -webkit-font-smoothing: antialiased; }
+  body {
+    font-family: 'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    font-size: 15px; line-height: 1.45;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 64px;
+  }
+  .tabular { font-variant-numeric: tabular-nums; }
+
+  header {
+    position: relative;
+    padding: 28px 24px 24px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    color: #fff;
+    background: linear-gradient(160deg, #2a2a2a 0%, var(--ink) 100%);
+    border-bottom: 1px solid rgba(0,0,0,0.15);
+  }
+  header h1 {
+    font-family: 'Syne', system-ui, sans-serif;
+    font-size: 28px; font-weight: 800; letter-spacing: -0.6px; line-height: 1.1;
+  }
+  .header-kicker {
+    font-size: 12px; color: rgba(255,255,255,0.55);
+    letter-spacing: 0.2em; font-family: 'Syne', system-ui, sans-serif;
+    text-transform: uppercase; margin-bottom: 6px; font-weight: 600;
+  }
+  .header-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+  .header-flag { font-size: 36px; line-height: 1; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.25)); }
+  .btn-header-ghost {
+    font-family: 'Syne', system-ui, sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+    padding: 8px 14px; min-height: 40px; border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.28);
+    background: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.7);
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
+  }
+  .btn-header-ghost:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.45);
+    color: #fff;
+  }
+
+  .container { max-width: 720px; margin: 0 auto; padding: 24px 16px; }
+  .card {
+    background: var(--card);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    padding: 22px 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.03);
+  }
+  .card-title {
+    font-family: 'Syne', system-ui, sans-serif;
+    font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--text-2);
+    margin-bottom: 16px;
+  }
+  .sync-bar {
+    display: flex; align-items: center; gap: 10px; padding: 10px 16px;
+    background: #ece8e0;
+    color: var(--text-1);
+    font-size: 12px; font-family: 'Syne', system-ui, sans-serif; letter-spacing: 0.03em;
+    border-bottom: 1px solid var(--border);
+  }
+  .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #9ca3af; flex-shrink: 0; }
+  .sync-dot.ok { background: var(--success); }
+  .sync-dot.err { background: #ef4444; }
+  .sync-dot.loading { background: #eab308; animation: syncPulse 1.1s ease-in-out infinite; }
+  @keyframes syncPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+  .tc-status { font-size: 12px; color: var(--muted); margin-top: 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .tc-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); display: inline-block; flex-shrink: 0; }
   .tc-dot.ok { background: var(--success); }
-  .inv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .inv-block label { font-size: 13px; color: var(--muted); display: block; margin-bottom: 4px; }
-  .inv-block input { width: 100%; font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; border: none; border-bottom: 2px solid var(--border); background: transparent; color: var(--text); padding: 4px 0; outline: none; transition: border-color 0.2s; }
+  .inv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .inv-block label { font-size: 13px; color: var(--muted); display: block; margin-bottom: 6px; }
+  .inv-block input {
+    width: 100%; font-family: 'Syne', system-ui, sans-serif; font-size: 22px; font-weight: 700;
+    border: none; border-bottom: 2px solid var(--border);
+    background: transparent; color: var(--text);
+    padding: 6px 0; outline: none; transition: border-color 0.12s;
+    font-variant-numeric: tabular-nums;
+  }
   .inv-block input:focus { border-color: var(--accent); }
-  .inv-block input::placeholder { color: var(--border); }
-  .inv-summary { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 16px; }
+  .inv-block input::placeholder { color: #b8b0a0; }
+  .input-tc {
+    width: 130px; padding: 10px 12px; border: 1px solid var(--border) !important; border-radius: 10px;
+    font-family: 'Syne', system-ui, sans-serif; font-size: 18px; font-weight: 700; color: var(--ars) !important;
+    background: #fff !important; outline: none; transition: border-color 0.12s, box-shadow 0.12s;
+  }
+  .input-tc:focus { border-color: var(--ars) !important; box-shadow: 0 0 0 2px rgba(107, 63, 160, 0.22); }
+  .inv-divider { border-top: 1px solid var(--border); margin-top: 20px; padding-top: 18px; }
+  .ingresos-grid { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; align-items: end; }
+  @media (max-width: 700px) {
+    .ingresos-grid { grid-template-columns: 1fr 1fr; }
+    .ingresos-grid .ing-col-wide { grid-column: 1 / -1; }
+    .ingresos-grid .ing-col-btn { grid-column: 1 / -1; }
+  }
+  .ingreso-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 10px 14px; border-radius: 10px;
+    background: #f0fdf4;
+    border: 1px solid #c8e6c8;
+  }
+  .ingreso-row .ingreso-desc { font-size: 13px; color: var(--success); }
+  .ingreso-row .ingreso-monto { font-size: 13px; font-weight: 700; color: var(--success); }
+  .inv-summary { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 18px; }
   .inv-metric { text-align: center; }
-  .inv-metric .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-  .inv-metric .value { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; }
+  .inv-metric .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+  .inv-metric .value { font-family: 'Syne', system-ui, sans-serif; font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
   .inv-metric .value.good { color: var(--success); }
-  .inv-metric .value.warn { color: #c47a00; }
-  .inv-metric .value.bad { color: #c42a00; }
-  .progress-bar { height: 8px; background: var(--border); border-radius: 4px; margin-top: 14px; overflow: hidden; }
-  .progress-fill { height: 100%; border-radius: 4px; background: var(--accent); transition: width 0.4s ease; }
+  .inv-metric .value.warn { color: var(--warn); }
+  .inv-metric .value.bad { color: var(--danger); }
+  .progress-bar { height: 8px; background: #e5e0d7; border-radius: 6px; margin-top: 16px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 6px; background: var(--accent); transition: width 0.35s ease, background 0.2s; }
 
-  /* Formulario */
-  .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr 2fr; gap: 10px; align-items: end; margin-bottom: 10px; }
-  .form-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: end; margin-bottom: 10px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr 2fr; gap: 12px; align-items: end; margin-bottom: 12px; }
+  .form-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: end; margin-bottom: 12px; }
   .form-row label, .form-row2 label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px; }
-  .form-row input, .form-row select, .form-row2 input, .form-row2 select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text); background: var(--bg); outline: none; transition: border-color 0.2s; }
-  .form-row input:focus, .form-row select:focus, .form-row2 input:focus, .form-row2 select:focus { border-color: var(--accent); background: white; }
-  select.moneda-ars { border-color: #d4b8f0; color: var(--ars); }
+  .form-row input, .form-row select, .form-row2 input, .form-row2 select,
+  .ingreso-field {
+    width: 100%; padding: 10px 12px; min-height: 44px;
+    border: 1px solid var(--border); border-radius: 10px;
+    font-size: 15px; line-height: 1.2; color: var(--text);
+    background: #fff;
+    outline: none; transition: border-color 0.12s, background 0.12s, box-shadow 0.12s;
+  }
+  .form-row input::placeholder, .ingreso-field::placeholder { color: #9ca3af; }
+  .form-row input:focus, .form-row select:focus, .form-row2 input:focus, .form-row2 select:focus,
+  .ingreso-field:focus {
+    border-color: var(--info);
+    background: #fff;
+    box-shadow: 0 0 0 2px rgba(26, 122, 232, 0.2);
+  }
+  select.moneda-ars { border-color: #d4b8f0 !important; color: var(--ars) !important; }
 
-  /* Toggle compartido/individual */
-  .tipo-toggle { display: flex; gap: 0; border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; }
-  .tipo-btn { flex: 1; padding: 10px 8px; border: none; background: var(--bg); color: var(--muted); font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.15s; letter-spacing: 0.5px; }
-  .tipo-btn.active-comp { background: var(--accent2); color: white; }
-  .tipo-btn.active-indiv { background: var(--ars); color: white; }
+  .tipo-toggle { display: flex; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .tipo-btn {
+    flex: 1; padding: 10px 8px; min-height: 44px; border: none;
+    background: var(--bg-0); color: var(--muted);
+    font-family: 'Syne', system-ui, sans-serif; font-size: 12px; font-weight: 700;
+    cursor: pointer; transition: background 0.12s, color 0.12s; letter-spacing: 0.04em;
+  }
+  .tipo-btn.active-comp { background: var(--info); color: #fff; }
+  .tipo-btn.active-indiv { background: var(--ars); color: #fff; }
 
-  .btn-add { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px; transition: opacity 0.15s, transform 0.1s; margin-top: 6px; }
-  .btn-add:hover { opacity: 0.88; }
-  .btn-add:active { transform: scale(0.98); }
-  .currency-toggle { display: flex; gap: 6px; align-items: center; margin-bottom: 16px; }
-  .currency-toggle span { font-size: 12px; color: var(--muted); font-family: 'Syne', sans-serif; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-right: 4px; }
-  .curr-btn { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; padding: 5px 14px; border-radius: 20px; border: 1.5px solid var(--border); background: white; color: var(--muted); cursor: pointer; transition: all 0.15s; letter-spacing: 0.5px; }
-  .curr-btn.active-brl { background: var(--accent); color: white; border-color: var(--accent); }
-  .curr-btn.active-ars { background: var(--ars); color: white; border-color: var(--ars); }
-  .day-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
-  .day-tab { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 20px; border: 1.5px solid var(--border); background: white; color: var(--muted); cursor: pointer; transition: all 0.15s; letter-spacing: 0.5px; }
-  .day-tab.active { background: var(--text); color: white; border-color: var(--text); }
+  .btn, .btn-add, .btn-primary, .btn-ahorro-sum, .btn-ahorro-rest, .modal-btns button {
+    font-family: 'Syne', system-ui, sans-serif; font-weight: 700; letter-spacing: 0.03em;
+  }
+  .btn-primary {
+    padding: 10px 16px; min-height: 44px; border: none; border-radius: 10px;
+    background: var(--accent); color: #fff;
+    cursor: pointer; transition: background 0.12s, transform 0.1s;
+    white-space: nowrap;
+  }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-primary:active { transform: scale(0.99); }
+  .btn-primary:focus-visible, .btn-add:focus-visible, .btn-cancel:focus-visible, .btn-save:focus-visible,
+  .curr-btn:focus-visible, .day-tab:focus-visible, .tipo-btn:focus-visible, .btn-header-ghost:focus-visible {
+    outline: none; box-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(26, 122, 232, 0.45);
+  }
+
+  .btn-add {
+    width: 100%; padding: 12px; min-height: 48px;
+    background: var(--accent); color: #fff; border: none; border-radius: 10px;
+    font-size: 15px; cursor: pointer;
+    margin-top: 8px; transition: background 0.12s, transform 0.1s;
+  }
+  .btn-add:hover { background: var(--accent-hover); }
+  .btn-add:active { transform: scale(0.995); }
+  .currency-toggle { display: flex; gap: 8px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+  .currency-toggle span { font-size: 12px; color: var(--muted); font-family: 'Syne', system-ui, sans-serif; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-right: 4px; }
+  .curr-btn {
+    font-size: 12px; font-weight: 700; padding: 8px 16px; min-height: 40px; border-radius: 999px;
+    border: 1px solid var(--border);
+    background: #fff; color: var(--text-1);
+    cursor: pointer; transition: background 0.12s, border-color 0.12s, color 0.12s;
+  }
+  .curr-btn.active-brl { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .curr-btn.active-ars { background: var(--ars); color: #fff; border-color: var(--ars); }
+  .day-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
+  .day-tab {
+    font-size: 12px; font-weight: 700; padding: 7px 14px; min-height: 40px; border-radius: 999px;
+    border: 1px solid var(--border);
+    background: #fff; color: var(--text-1);
+    cursor: pointer; transition: all 0.12s; letter-spacing: 0.03em;
+  }
+  .day-tab.active { background: var(--ink); color: #fff; border-color: var(--ink); }
   .day-tab:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
-  .btn-newday { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 20px; border: 1.5px dashed var(--accent); background: transparent; color: var(--accent); cursor: pointer; transition: all 0.15s; letter-spacing: 0.5px; }
-  .btn-newday:hover { background: var(--accent); color: white; }
-  .btn-earlier-days { display: inline-block; background: none; border: 1.5px solid var(--border); border-radius: 20px; padding: 5px 14px; font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: var(--muted); cursor: pointer; letter-spacing: 0.5px; transition: all 0.15s; align-self: center; }
-  .btn-earlier-days:hover { border-color: var(--accent2); color: var(--accent2); }
+  .btn-newday {
+    font-size: 12px; font-weight: 700; padding: 7px 14px; min-height: 40px; border-radius: 999px;
+    border: 1px dashed var(--accent);
+    background: transparent; color: var(--accent);
+    cursor: pointer; transition: all 0.12s; letter-spacing: 0.03em;
+  }
+  .btn-newday:hover { background: var(--accent); color: #fff; border-style: solid; }
+  .btn-earlier-days {
+    display: inline-block; background: #fff; border: 1px solid var(--border); border-radius: 999px;
+    padding: 6px 14px; min-height: 40px; font-size: 11px; font-weight: 700; color: var(--muted);
+    cursor: pointer; letter-spacing: 0.04em; transition: all 0.12s; align-self: center;
+  }
+  .btn-earlier-days:hover { border-color: var(--info); color: var(--info); }
 
-  /* Tabla */
   .expense-table { width: 100%; border-collapse: collapse; }
-  .expense-table th { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); padding: 0 6px 10px; text-align: left; border-bottom: 1.5px solid var(--border); }
-  .expense-table td { padding: 10px 6px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .expense-table th {
+    font-family: 'Syne', system-ui, sans-serif; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted);
+    padding: 0 8px 10px; text-align: left; border-bottom: 1px solid var(--border);
+  }
+  .expense-table td { padding: 10px 8px; font-size: 14px; border-bottom: 1px solid #eee8df; vertical-align: middle; }
+  .expense-table tr:nth-child(even) td { background: #faf8f4; }
   .expense-table tr:last-child td { border-bottom: none; }
-  .expense-table tr:hover td { background: var(--bg); }
-  .expense-table tr.indiv-row td { opacity: 0.75; }
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; font-family: 'Syne', sans-serif; letter-spacing: 0.5px; }
-  .badge-yo { background: #fff0eb; color: var(--accent); }
-  .badge-amigo { background: #ebf2ff; color: var(--accent2); }
+  .expense-table tr:hover td { background: #f3efe8; }
+  .expense-table tr.indiv-row td { opacity: 0.85; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 600; font-family: 'Syne', system-ui, sans-serif; letter-spacing: 0.03em; }
+  .badge-yo { background: #fff0eb; color: var(--yo); }
+  .badge-amigo { background: #ebf2ff; color: var(--amigo); }
   .badge-moneda-brl { background: #fff0eb; color: var(--accent); font-size: 9px; padding: 1px 6px; margin-left: 3px; }
   .badge-moneda-ars { background: #f3eaff; color: var(--ars); font-size: 9px; padding: 1px 6px; margin-left: 3px; }
   .badge-indiv { background: #f3eaff; color: var(--ars); font-size: 9px; padding: 1px 6px; margin-left: 3px; }
-  .badge-cat { background: var(--bg); color: var(--muted); border: 1px solid var(--border); font-size: 9px; padding: 1px 6px; margin-left: 3px; }
-  .btn-edit { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 15px; padding: 2px 4px; border-radius: 6px; transition: color 0.15s; }
-  .btn-edit:hover { color: var(--accent2); }
+  .badge-cat { background: var(--bg-0); color: var(--text-1); border: 1px solid var(--border); font-size: 9px; padding: 1px 6px; margin-left: 3px; }
+  .btn-edit { background: transparent; border: 1px solid transparent; color: var(--text-1); cursor: pointer; font-size: 15px; padding: 4px 8px; min-width: 36px; min-height: 36px; border-radius: 8px; transition: color 0.12s, background 0.12s, border-color 0.12s; }
+  .btn-edit:hover { color: var(--info); background: #f0f7ff; border-color: #c8d9f0; }
 
-  /* Resumen día */
-  .day-summary { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 16px; padding-top: 16px; border-top: 1.5px solid var(--border); }
+  .day-summary { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
   .sum-block { text-align: center; }
-  .sum-block .lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-  .sum-block .val { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; }
-  .sum-block .val.yo { color: var(--accent); }
-  .sum-block .val.amigo { color: var(--accent2); }
+  .sum-block .lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+  .sum-block .val { font-family: 'Syne', system-ui, sans-serif; font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .sum-block .val.yo { color: var(--yo); }
+  .sum-block .val.amigo { color: var(--amigo); }
   .sum-block .val.total { color: var(--text); }
-  .balance-box { margin-top: 14px; padding: 14px; border-radius: 12px; background: var(--bg); border: 1.5px solid var(--border); text-align: center; }
+  .balance-box { margin-top: 14px; padding: 16px; border-radius: 12px; background: var(--bg-0); border: 1px solid var(--border); text-align: center; }
   .balance-box .lbl { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
-  .balance-box .result { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; }
+  .balance-box .result { font-family: 'Syne', system-ui, sans-serif; font-size: 16px; font-weight: 700; }
   .balance-box .result.neutral { color: var(--success); }
-  .balance-box .result.yo-paga { color: var(--accent); }
-  .balance-box .result.amigo-paga { color: var(--accent2); }
+  .balance-box .result.yo-paga { color: var(--yo); }
+  .balance-box .result.amigo-paga { color: var(--amigo); }
 
-  /* Resumen general */
-  .total-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .total-card { text-align: center; padding: 16px; border-radius: 12px; border: 1.5px solid var(--border); }
+  .total-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .total-card { text-align: center; padding: 18px 16px; border-radius: 12px; border: 1px solid var(--border); }
   .total-card.yo { border-color: #f8d0bc; background: #fff8f5; }
   .total-card.amigo { border-color: #bcd5f8; background: #f5f8ff; }
-  .total-card .persona { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
-  .total-card.yo .persona { color: var(--accent); }
-  .total-card.amigo .persona { color: var(--accent2); }
+  .total-card .persona { font-family: 'Syne', system-ui, sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+  .total-card.yo .persona { color: var(--yo); }
+  .total-card.amigo .persona { color: var(--amigo); }
   .total-card .spent { font-size: 12px; color: var(--muted); margin-bottom: 2px; }
-  .total-card .spent-val { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 4px; }
-  .total-card.yo .spent-val { color: var(--accent); }
-  .total-card.amigo .spent-val { color: var(--accent2); }
+  .total-card .spent-val { font-family: 'Syne', system-ui, sans-serif; font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; margin-bottom: 4px; }
+  .total-card.yo .spent-val { color: var(--yo); }
+  .total-card.amigo .spent-val { color: var(--amigo); }
   .total-card .indiv-line { font-size: 11px; color: var(--ars); margin-top: 6px; }
-  .global-balance { margin-top: 16px; padding: 16px; border-radius: 12px; background: var(--text); color: white; text-align: center; }
-  .global-balance .lbl { font-size: 12px; opacity: 0.6; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
-  .global-balance .res { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; }
+  .global-balance { margin-top: 18px; padding: 20px; border-radius: 12px; text-align: center; background: var(--ink); border: 1px solid #000; }
+  .global-balance .lbl { font-size: 12px; color: rgba(255,255,255,0.55); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.1em; }
+  .global-balance .res { font-family: 'Syne', system-ui, sans-serif; font-size: 18px; font-weight: 700; line-height: 1.4; color: #fff; }
 
-  /* Gráfico */
-  .chart-wrap { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
-  .chart-wrap canvas { width: 160px !important; height: 160px !important; flex-shrink: 0; }
-  .chart-legend { flex: 1; min-width: 140px; }
-  .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .chart-wrap { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; }
+  .chart-wrap canvas { width: 168px !important; height: 168px !important; flex-shrink: 0; }
+  .chart-legend { flex: 1; min-width: 160px; }
+  .legend-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
   .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
-  .legend-label { font-size: 13px; color: var(--text); flex: 1; }
-  .legend-val { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); }
+  .legend-label { font-size: 14px; color: var(--text-0); flex: 1; }
+  .legend-val { font-family: 'Syne', system-ui, sans-serif; font-size: 14px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
   .legend-pct { font-size: 11px; color: var(--muted); margin-left: 4px; }
 
-  /* Modal edición */
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
+  .modal-overlay { display: none; position: fixed; inset: 0; z-index: 100; align-items: center; justify-content: center; padding: 16px; background: rgba(0,0,0,0.45); backdrop-filter: blur(3px); }
   .modal-overlay.open { display: flex; }
-  .modal { background: white; border-radius: 16px; padding: 24px; width: 100%; max-width: 400px; }
-  .modal h3 { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+  .modal {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px; width: 100%; max-width: 400px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  }
+  .modal h3 { font-family: 'Syne', system-ui, sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 4px; }
   .modal label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px; margin-top: 12px; }
-  .modal select, .modal input { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text); background: var(--bg); outline: none; }
-  .modal-btns { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
-  .modal-btns button { flex: 1; min-width: 100px; padding: 12px; border-radius: 10px; border: none; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
-  .btn-cancel { background: var(--bg); color: var(--muted); border: 1.5px solid var(--border) !important; }
-  .btn-modal-danger { color: #c42a00 !important; border-color: #f8d0bc !important; }
-  .btn-save { background: var(--accent); color: white; }
+  .modal select, .modal input {
+    width: 100%; padding: 10px 12px; min-height: 44px;
+    border: 1px solid var(--border); border-radius: 10px;
+    font-size: 15px; color: var(--text); background: #fff; outline: none;
+    transition: border-color 0.12s, box-shadow 0.12s;
+  }
+  .modal select:focus, .modal input:focus { border-color: var(--info); box-shadow: 0 0 0 2px rgba(26, 122, 232, 0.2); }
+  .modal-btns { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+  .modal-btns button { flex: 1; min-width: 100px; padding: 11px; min-height: 44px; border-radius: 10px; border: none; font-size: 14px; cursor: pointer; transition: background 0.12s, color 0.12s, border-color 0.12s; }
+  .btn-cancel { background: var(--bg-0); color: var(--text-1) !important; border: 1px solid var(--border) !important; }
+  .btn-cancel:hover { background: #ebe6dc; color: var(--ink) !important; }
+  .btn-modal-danger { color: #b91c1c !important; border: 1px solid #f8d0d0 !important; background: #fff5f5 !important; }
+  .btn-modal-danger:hover { background: #fee2e2 !important; }
+  .btn-save { background: var(--accent); color: #fff; }
+  .btn-save:hover { background: var(--accent-hover); }
 
-  .empty-msg { text-align: center; color: var(--muted); font-size: 14px; padding: 20px 0; }
-  .btn-ver-ingresos { background: none; border: 1.5px solid var(--border); border-radius: 20px; padding: 5px 14px; font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: var(--muted); cursor: pointer; letter-spacing: 0.5px; transition: all 0.15s; display: block; margin: 6px auto 0; }
+  .empty-msg { text-align: center; color: var(--muted); font-size: 14px; padding: 24px 0; }
+  .btn-ver-ingresos {
+    background: #fff; border: 1px solid var(--border); border-radius: 999px; padding: 6px 16px; min-height: 40px;
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    cursor: pointer; letter-spacing: 0.04em; transition: all 0.12s; display: block; margin: 8px auto 0;
+  }
   .btn-ver-ingresos:hover { border-color: var(--success); color: var(--success); }
-  .name-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .name-inputs input { padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); background: var(--bg); outline: none; transition: border-color 0.2s; }
-  .name-inputs input:focus { border-color: var(--accent); background: white; }
+  .name-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .name-inputs input {
+    padding: 10px 12px; min-height: 44px; border: 1px solid var(--border); border-radius: 10px;
+    font-size: 15px; color: var(--text); background: #fff; outline: none; transition: border-color 0.12s, box-shadow 0.12s;
+  }
+  .name-inputs input:focus { border-color: var(--info); box-shadow: 0 0 0 2px rgba(26, 122, 232, 0.2); }
+  .field-label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px; }
 
   @media (max-width: 480px) {
-    header { padding: 20px 16px 16px; }
+    header { padding: 20px 16px 20px; }
     header h1 { font-size: 22px; }
     .container { padding: 16px 12px; }
-    .card { padding: 16px 14px; margin-bottom: 14px; }
+    .card { padding: 18px 14px; margin-bottom: 12px; }
     .form-row { grid-template-columns: 1fr 1fr; }
     .form-row > div:last-child { grid-column: 1 / -1; }
-    .form-row input, .form-row select, .form-row2 input, .form-row2 select { padding: 12px; font-size: 16px; }
-    .inv-metric .value { font-size: 16px; }
+    .form-row input, .form-row select, .form-row2 input, .form-row2 select { font-size: 16px; }
+    .inv-metric .value { font-size: 17px; }
     .inv-block input { font-size: 20px; }
     .day-summary { gap: 6px; }
     .sum-block .val { font-size: 15px; }
     .sum-block .lbl { font-size: 10px; }
     .expense-table th { font-size: 10px; padding: 0 4px 8px; }
-    .expense-table td { padding: 10px 4px; font-size: 12px; }
-    .total-card .spent-val { font-size: 18px; }
+    .expense-table td { padding: 10px 4px; font-size: 13px; }
+    .total-card .spent-val { font-size: 19px; }
     .balance-box .result { font-size: 14px; }
-    .btn-add { padding: 14px; font-size: 16px; }
+    .btn-add { min-height: 50px; font-size: 16px; }
     .chart-wrap { flex-direction: column; align-items: flex-start; }
   }
 
-  /* Ahorro */
-  .ahorro-panel { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+  .ahorro-panel { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
   .ahorro-total-block { flex: 1; min-width: 120px; }
-  .ahorro-total-block .lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-  .ahorro-total-block .val { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--success); }
-  .ahorro-total-block .val-ars { font-size: 13px; color: var(--ars); margin-top: 3px; font-weight: 600; }
-  .ahorro-input-block { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-  .ahorro-input-block input { width: 110px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text); background: var(--bg); outline: none; transition: border-color 0.2s; }
-  .ahorro-input-block input:focus { border-color: var(--success); background: white; }
-  .btn-ahorro-sum { padding: 10px 16px; background: var(--success); color: white; border: none; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity 0.15s; }
-  .btn-ahorro-sum:hover { opacity: 0.85; }
-  .btn-ahorro-rest { padding: 10px 16px; background: var(--bg); color: #c42a00; border: 1.5px solid #f8d0bc; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity 0.15s; }
-  .btn-ahorro-rest:hover { opacity: 0.75; }
+  .ahorro-total-block .lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+  .ahorro-total-block .val { font-family: 'Syne', system-ui, sans-serif; font-size: 30px; font-weight: 800; color: var(--success); font-variant-numeric: tabular-nums; }
+  .ahorro-total-block .val-ars { font-size: 13px; color: var(--ars); margin-top: 4px; font-weight: 600; }
+  .ahorro-input-block { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .ahorro-input-block input { width: 120px; padding: 10px 12px; min-height: 44px; border: 1px solid var(--border); border-radius: 10px; font-size: 15px; color: var(--text); background: #fff; outline: none; transition: border-color 0.12s, box-shadow 0.12s; }
+  .ahorro-input-block input:focus { border-color: var(--success); box-shadow: 0 0 0 2px rgba(21, 128, 61, 0.22); }
+  .btn-ahorro-sum { padding: 10px 16px; min-height: 44px; background: var(--success); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; transition: background 0.12s; }
+  .btn-ahorro-sum:hover { background: var(--success-hover); }
+  .btn-ahorro-rest { padding: 10px 16px; min-height: 44px; background: #fff; color: #b91c1c; border: 1px solid #f8d0d0; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; transition: background 0.12s; }
+  .btn-ahorro-rest:hover { background: #fff5f5; }
+
+  .earlier-day-btn { width: 100%; text-align: left; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border); background: #fff; color: var(--text); font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.12s, border-color 0.12s; }
+  .earlier-day-btn:hover { background: #f5f2eb; border-color: var(--info); }
 
 </style>
 </head>
@@ -272,12 +465,12 @@
 
 <header>
   <div>
-    <div style="font-size:12px;color:#888;letter-spacing:1.5px;font-family:'Syne',sans-serif;text-transform:uppercase;margin-bottom:4px;">Viaje</div>
+    <div class="header-kicker">Viaje</div>
     <h1>Gastos<br>del Viaje</h1>
   </div>
-  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
-    <div style="font-size:36px;line-height:1;">🇧🇷</div>
-    <button onclick="clearData()" style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.5px;padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,0.25);background:transparent;color:rgba(255,255,255,0.55);cursor:pointer;">Borrar todo</button>
+  <div class="header-actions">
+    <div class="header-flag" aria-hidden="true">🇧🇷</div>
+    <button type="button" class="btn-header-ghost" onclick="clearData()">Borrar todo</button>
   </div>
 </header>
 
@@ -287,12 +480,12 @@
     <div class="card-title">Viajeros</div>
     <div class="name-inputs">
       <div>
-        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Vos</label>
-        <input type="text" id="nameYo" placeholder="Tu nombre" oninput="updateNames()" value="Yo">
+        <label class="field-label" for="nameYo">Vos</label>
+        <input type="text" id="nameYo" placeholder="Tu nombre" oninput="updateNames()" value="Yo" autocomplete="name">
       </div>
       <div>
-        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Tu amigo/a</label>
-        <input type="text" id="nameAmigo" placeholder="Nombre amigo/a" oninput="updateNames()" value="Amigo">
+        <label class="field-label" for="nameAmigo">Tu amigo/a</label>
+        <input type="text" id="nameAmigo" placeholder="Nombre amigo/a" oninput="updateNames()" value="Amigo" autocomplete="name">
       </div>
     </div>
   </div>
@@ -301,15 +494,14 @@
     <div class="card-title">Tipo de cambio</div>
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
       <span style="font-size:14px;color:var(--muted);">1 BRL =</span>
-      <input type="number" id="tc-manual-val" placeholder="Ej: 250" step="0.01" min="0"
-        style="width:130px;padding:8px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--ars);background:var(--bg);outline:none;"
-        oninput="applyManualTC()" onfocus="this.style.borderColor='var(--ars)'" onblur="this.style.borderColor='var(--border)'">
+      <input type="number" id="tc-manual-val" class="input-tc" placeholder="Ej: 250" step="0.01" min="0"
+        oninput="applyManualTC()">
       <span style="font-size:14px;color:var(--muted);">ARS</span>
     </div>
     <div class="tc-status">
       <span class="tc-dot" id="tc-dot"></span>
       <span id="tc-msg">Ingresá el tipo de cambio</span>
-      <span id="tc-ars-equiv" style="margin-left:6px;color:var(--accent);font-family:'Syne',sans-serif;font-weight:700;font-size:12px;"></span>
+      <span id="tc-ars-equiv" class="tabular" style="margin-left:4px;color:var(--accent);font-family:'Syne',system-ui,sans-serif;font-weight:700;font-size:12px;"></span>
     </div>
   </div>
 
@@ -325,23 +517,26 @@
         <input type="number" id="aporte-amigo" placeholder="0" oninput="updateInv()" min="0">
       </div>
     </div>
-    <div style="border-top:1.5px solid var(--border);margin-top:18px;padding-top:16px;">
+    <div class="inv-divider">
       <div class="card-title" style="margin-bottom:10px;">Ingresos extra</div>
       <div id="ingresos-list" style="margin-bottom:12px;display:flex;flex-direction:column;gap:8px;"></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:end;">
-        <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Descripción</label>
-          <input type="text" id="ingreso-desc" placeholder="Ej: trabajo extra..." style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);outline:none;">
+      <div class="ingresos-grid">
+        <div class="ing-col-wide">
+          <label class="field-label" for="ingreso-desc">Descripción</label>
+          <input type="text" id="ingreso-desc" class="ingreso-field" placeholder="Ej: trabajo extra...">
         </div>
         <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Monto (R$)</label>
-          <input type="number" id="ingreso-monto" placeholder="0.00" min="0" step="0.01" style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);outline:none;">
+          <label class="field-label" for="ingreso-monto">Monto (R$)</label>
+          <input type="number" id="ingreso-monto" class="ingreso-field" placeholder="0.00" min="0" step="0.01">
         </div>
         <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Fecha</label>
-          <input type="date" id="ingreso-fecha" style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);outline:none;">
+          <label class="field-label" for="ingreso-fecha">Fecha</label>
+          <input type="date" id="ingreso-fecha" class="ingreso-field">
         </div>
-        <button onclick="addIngreso()" style="padding:9px 14px;background:#1a7a3a;color:white;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;">+ Sumar</button>
+        <div class="ing-col-btn">
+          <span class="field-label" style="visibility:hidden;">Añadir</span>
+          <button type="button" class="btn-primary" style="width:100%;" onclick="addIngreso()">+ Sumar</button>
+        </div>
       </div>
     </div>
     <div class="inv-summary" style="margin-top:18px;">
@@ -415,7 +610,7 @@
         <div class="spent">Total pagué</div>
         <div class="spent-val" id="total-pago-yo">R$0</div>
         <div style="font-size:12px;color:var(--muted);">Me corresponde</div>
-        <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--accent)" id="total-corr-yo">R$0</div>
+        <div class="tabular" style="font-family:'Syne',system-ui,sans-serif;font-size:14px;font-weight:700;color:var(--yo);" id="total-corr-yo">R$0</div>
         <div class="indiv-line" id="total-indiv-yo"></div>
       </div>
       <div class="total-card amigo">
@@ -423,7 +618,7 @@
         <div class="spent">Total pagó</div>
         <div class="spent-val" id="total-pago-amigo">R$0</div>
         <div style="font-size:12px;color:var(--muted);">Le corresponde</div>
-        <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--accent2)" id="total-corr-amigo">R$0</div>
+        <div class="tabular" style="font-family:'Syne',system-ui,sans-serif;font-size:14px;font-weight:700;color:var(--amigo);" id="total-corr-amigo">R$0</div>
         <div class="indiv-line" id="total-indiv-amigo"></div>
       </div>
     </div>
@@ -493,7 +688,7 @@ let dayLabels = ['Día 1'];
 let ahorros = 0;
 
 const CATS = ['Hospedaje','Comida','Transporte','Otros'];
-const CAT_COLORS = ['#1a7ae8','#e8521a','#1a7a3a','#6b3fa0'];
+const CAT_COLORS = ['#1a7ae8', '#e8521a', '#15803d', '#6b3fa0'];
 const CAT_ICONS = {'Hospedaje':'🏨','Comida':'🍽️','Transporte':'🚌','Otros':'📦'};
 const MAX_VISIBLE_DAY_TABS = 4;
 
@@ -695,14 +890,14 @@ function renderIngresosModalList() {
 }
 function ingresoRow(i) {
   const fechaStr = i.fecha ? fmtDate(i.fecha) : '';
-  return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#f0f7f0;border-radius:10px;border:1px solid #c8e6c8;">
+  return `<div class="ingreso-row">
     <div>
-      <span style="font-size:13px;color:#1a7a3a;">${escapeHtml(i.desc)}</span>
+      <span class="ingreso-desc">${escapeHtml(i.desc)}</span>
       ${fechaStr ? `<span style="font-size:11px;color:var(--muted);margin-left:6px;">${fechaStr}</span>` : ''}
     </div>
     <div style="display:flex;align-items:center;gap:8px;">
-      <span style="font-size:13px;font-weight:700;color:#1a7a3a;">+ R$ ${fmt(i.monto)}</span>
-      <button onclick="openEditIngreso(${i.id})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:0 2px;" title="Editar">✏️</button>
+      <span class="ingreso-monto">+ R$ ${fmt(i.monto)}</span>
+      <button type="button" class="btn-edit" onclick="openEditIngreso(${i.id})" title="Editar">✏️</button>
     </div>
   </div>`;
 }
@@ -899,9 +1094,9 @@ function dayTabActiveMarkup(i) {
       value="${escapeHtml(label)}"
       onchange="updateDayLabel(${i}, this.value)"
       onclick="event.stopPropagation()"
-      style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.5px;background:transparent;border:none;border-bottom:1.5px solid rgba(255,255,255,0.5);color:white;outline:none;text-align:center;width:100px;padding:0 0 1px;"
+      style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.5px;background:transparent;border:none;border-bottom:1.5px solid rgba(255,255,255,0.5);color:#fff;outline:none;text-align:center;width:100px;padding:0 0 1px;"
       title="Editá el nombre del día">
-    <span style="display:block;font-size:10px;opacity:0.65;cursor:pointer;" title="Cambiar fecha" onclick="event.stopPropagation();this.nextElementSibling.showPicker()">
+    <span style="display:block;font-size:10px;opacity:0.65;cursor:pointer;color:#fff;" title="Cambiar fecha" onclick="event.stopPropagation();this.nextElementSibling.showPicker()">
       ${fecha || 'sin fecha'}
     </span>
     <input type="date" value="${dayDates[i]||''}" onchange="updateDayDate(${i}, this.value)"
@@ -961,15 +1156,15 @@ function renderDayTabs() {
   const firstVisible = n > MAX_VISIBLE_DAY_TABS ? n - MAX_VISIBLE_DAY_TABS : 0;
   const hasEarlier = firstVisible > 0;
   let html = '';
+  if (hasEarlier) {
+    html += `<button type="button" class="btn-earlier-days" onclick="openEarlierDaysModal()">Días anteriores (${firstVisible}) ↗</button>`;
+  }
   if (currentDay < firstVisible) {
     html += dayTabActiveMarkup(currentDay);
   }
   for (let i = firstVisible; i < n; i++) {
     if (i === currentDay) html += dayTabActiveMarkup(i);
     else html += dayTabButtonMarkup(i);
-  }
-  if (hasEarlier) {
-    html += `<button type="button" class="btn-earlier-days" onclick="openEarlierDaysModal()">Días anteriores (${firstVisible}) ↗</button>`;
   }
   html += `<button type="button" class="btn-newday" onclick="addDay()">+ Día</button>`;
   document.getElementById('dayTabs').innerHTML = html;
@@ -1050,7 +1245,7 @@ function renderSummary() {
   document.getElementById('total-indiv-amigo').textContent = amigoIndivBRL > 0 ? `Individual: ${sym()} ${cv(amigoIndivBRL)}` : '';
 
   const liq = document.getElementById('liquidacion');
-  if (totalBRL === 0) { liq.textContent = 'Sin gastos compartidos aún'; liq.style.color = 'white'; }
+  if (totalBRL === 0) { liq.textContent = 'Sin gastos compartidos aún'; liq.style.color = 'rgba(255,255,255,0.55)'; }
   else if (Math.abs(diff) < 0.01) { liq.textContent = '✓ Todo en orden, sin deudas'; liq.style.color = '#7fffc4'; }
   else if (diff > 0) { liq.innerHTML = `${escapeHtml(nameAmigo)} le debe a ${escapeHtml(nameYo)} <strong>${sym()} ${cv(Math.abs(diff))}</strong>`; liq.style.color = '#9ec8ff'; }
   else { liq.innerHTML = `${escapeHtml(nameYo)} le debe a ${escapeHtml(nameAmigo)} <strong>${sym()} ${cv(Math.abs(diff))}</strong>`; liq.style.color = '#ffb89e'; }
