@@ -24,7 +24,7 @@
   .sync-dot.loading { background: #ffc84c; animation: pulse 1s infinite; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
   .tc-status { font-size: 12px; color: var(--muted); margin-top: 10px; display: flex; align-items: center; gap: 6px; }
-  .tc-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); display: inline-block; flex-shrink:0; }
+  .tc-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); display: inline-block; flex-shrink: 0; }
   .tc-dot.ok { background: var(--success); }
   .inv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .inv-block label { font-size: 13px; color: var(--muted); display: block; margin-bottom: 4px; }
@@ -69,6 +69,8 @@
   .day-tab:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
   .btn-newday { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 20px; border: 1.5px dashed var(--accent); background: transparent; color: var(--accent); cursor: pointer; transition: all 0.15s; letter-spacing: 0.5px; }
   .btn-newday:hover { background: var(--accent); color: white; }
+  .btn-earlier-days { display: inline-block; background: none; border: 1.5px solid var(--border); border-radius: 20px; padding: 5px 14px; font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: var(--muted); cursor: pointer; letter-spacing: 0.5px; transition: all 0.15s; align-self: center; }
+  .btn-earlier-days:hover { border-color: var(--accent2); color: var(--accent2); }
 
   /* Tabla */
   .expense-table { width: 100%; border-collapse: collapse; }
@@ -188,19 +190,34 @@
 </head>
 <body>
 
+<!-- Modal días anteriores (más de 4 días) -->
+<div class="modal-overlay" id="earlierDaysModal">
+  <div class="modal">
+    <h3>Días anteriores</h3>
+    <p id="earlier-days-hint" style="font-size:12px;color:var(--muted);margin-bottom:10px;">Tocá un día para ver y editar esos gastos.</p>
+    <div id="earlier-days-list" style="display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow-y:auto;margin-bottom:4px;"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeEarlierDaysModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal editar gasto -->
 <div class="modal-overlay" id="editModal">
   <div class="modal">
     <h3>Editar gasto</h3>
     <label>Descripción</label>
     <input type="text" id="edit-desc">
-    <label>Categoría</label>
-    <select id="edit-cat">
-      <option value="Hospedaje">🏨 Hospedaje</option>
-      <option value="Comida">🍽️ Comida</option>
-      <option value="Transporte">🚌 Transporte</option>
-      <option value="Otros">📦 Otros</option>
+    <label>Monto</label>
+    <input type="number" id="edit-monto" min="0" step="0.01" oninput="editModalUpdatePreview()">
+    <label>Moneda</label>
+    <select id="edit-moneda" onchange="editModalOnMonedaChange()">
+      <option value="BRL">R$ Reales</option>
+      <option value="ARS">$ Pesos</option>
     </select>
+    <div id="edit-conversion-preview" style="font-size:12px;color:var(--ars);min-height:18px;margin-top:4px;"></div>
+    <label>Categoría</label>
+    <select id="edit-cat"></select>
     <label>Tipo</label>
     <select id="edit-tipo">
       <option value="compartido">Compartido</option>
@@ -267,7 +284,7 @@
 <div class="container">
 
   <div class="card">
-    <div class="card-title">¿Cómo se llaman?</div>
+    <div class="card-title">Viajeros</div>
     <div class="name-inputs">
       <div>
         <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Vos</label>
@@ -366,12 +383,7 @@
     <div class="form-row2">
       <div>
         <label>Categoría</label>
-        <select id="f-cat">
-          <option value="Hospedaje">🏨 Hospedaje</option>
-          <option value="Comida">🍽️ Comida</option>
-          <option value="Transporte">🚌 Transporte</option>
-          <option value="Otros">📦 Otros</option>
-        </select>
+        <select id="f-cat"></select>
       </div>
       <div>
         <label>Tipo</label>
@@ -483,6 +495,14 @@ let ahorros = 0;
 const CATS = ['Hospedaje','Comida','Transporte','Otros'];
 const CAT_COLORS = ['#1a7ae8','#e8521a','#1a7a3a','#6b3fa0'];
 const CAT_ICONS = {'Hospedaje':'🏨','Comida':'🍽️','Transporte':'🚌','Otros':'📦'};
+const MAX_VISIBLE_DAY_TABS = 4;
+
+function fillCategorySelects() {
+  const optionsHtml = CATS.map(c => `<option value="${c}">${CAT_ICONS[c]} ${c}</option>`).join('');
+  document.getElementById('f-cat').innerHTML = optionsHtml;
+  document.getElementById('edit-cat').innerHTML = optionsHtml;
+}
+fillCategorySelects();
 
 // ── Sync ──────────────────────────────────────────────────────
 function setSyncStatus(state, msg) {
@@ -521,11 +541,12 @@ function loadFromData(data) {
       days.push(data.daysObj['day_' + i] || []);
     }
   } else { days = [[]]; }
-  // Migrar gastos viejos sin categoría/tipo
+  // Migrar gastos viejos sin categoría/tipo/moneda
   days = days.map(day => day.map(e => ({
     ...e,
     cat: e.cat || 'Otros',
-    tipo: e.tipo || 'compartido'
+    tipo: e.tipo || 'compartido',
+    moneda: e.moneda || 'BRL'
   })));
   currentDay = data.currentDay || 0;
   nameYo = data.nameYo || 'Yo';
@@ -739,16 +760,39 @@ window.deleteExpense = function(id) {
 }
 
 // ── Modal edición ─────────────────────────────────────────────
+function editModalOnMonedaChange() {
+  const sel = document.getElementById('edit-moneda');
+  sel.className = sel && sel.value === 'ARS' ? 'moneda-ars' : '';
+  editModalUpdatePreview();
+}
+window.editModalOnMonedaChange = editModalOnMonedaChange;
+
+function editModalUpdatePreview() {
+  const p = document.getElementById('edit-conversion-preview');
+  if (!p) return;
+  const mon = document.getElementById('edit-moneda').value;
+  const m = parseFloat(document.getElementById('edit-monto').value) || 0;
+  if (mon === 'ARS' && m > 0 && tcARS_BRL) p.textContent = `≈ R$ ${fmt(arsToBrl(m))} en reales`;
+  else if (mon === 'BRL' && m > 0 && tcARS_BRL) p.textContent = `≈ $ ${fmtARS(brlToArs(m))} en pesos`;
+  else p.textContent = '';
+}
+window.editModalUpdatePreview = editModalUpdatePreview;
+
 window.openEdit = function(id) {
   const e = days.flat().find(x => x.id === id);
   if (!e) return;
   editingId = id;
   document.getElementById('edit-desc').value = e.desc;
+  document.getElementById('edit-monto').value = e.monto;
+  const monSel = document.getElementById('edit-moneda');
+  monSel.value = e.moneda || 'BRL';
+  monSel.className = monSel.value === 'ARS' ? 'moneda-ars' : '';
   document.getElementById('edit-cat').value = e.cat || 'Otros';
   document.getElementById('edit-tipo').value = e.tipo || 'compartido';
   document.getElementById('edit-quien').value = e.quien;
   document.getElementById('edit-opt-yo').textContent = nameYo;
   document.getElementById('edit-opt-amigo').textContent = nameAmigo;
+  editModalUpdatePreview();
   document.getElementById('editModal').classList.add('open');
 }
 window.deleteFromModal = function() {
@@ -768,10 +812,16 @@ window.closeModal = function() {
 }
 window.saveEdit = function() {
   if (!editingId) return;
+  const monto = parseFloat(document.getElementById('edit-monto').value);
+  const moneda = document.getElementById('edit-moneda').value;
+  if (!monto || monto <= 0) { alert('Ingresá un monto válido'); return; }
+  if (moneda === 'ARS' && !tcARS_BRL) { alert('Ingresá primero el tipo de cambio para editar en pesos'); return; }
   for (let d of days) {
     const e = d.find(x => x.id === editingId);
     if (e) {
       e.desc = document.getElementById('edit-desc').value.trim() || e.desc;
+      e.monto = monto;
+      e.moneda = moneda;
       e.cat = document.getElementById('edit-cat').value;
       e.tipo = document.getElementById('edit-tipo').value;
       e.quien = document.getElementById('edit-quien').value;
@@ -840,35 +890,88 @@ function fmtDate(d) {
   return `${parseInt(day)} ${meses[parseInt(m)-1]}`;
 }
 
-function renderDayTabs() {
-  let html = '';
-  days.forEach((_, i) => {
-    const fecha = fmtDate(dayDates[i]);
+function dayTabActiveMarkup(i) {
+  const fecha = fmtDate(dayDates[i]);
+  const label = dayLabels[i] || `Día ${i + 1}`;
+  return `<div class="day-tab active" style="position:relative;line-height:1.2;padding:5px 10px 4px;display:inline-flex;flex-direction:column;align-items:center;gap:1px;">
+    <input
+      type="text"
+      value="${escapeHtml(label)}"
+      onchange="updateDayLabel(${i}, this.value)"
+      onclick="event.stopPropagation()"
+      style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.5px;background:transparent;border:none;border-bottom:1.5px solid rgba(255,255,255,0.5);color:white;outline:none;text-align:center;width:100px;padding:0 0 1px;"
+      title="Editá el nombre del día">
+    <span style="display:block;font-size:10px;opacity:0.65;cursor:pointer;" title="Cambiar fecha" onclick="event.stopPropagation();this.nextElementSibling.showPicker()">
+      ${fecha || 'sin fecha'}
+    </span>
+    <input type="date" value="${dayDates[i]||''}" onchange="updateDayDate(${i}, this.value)"
+      style="position:absolute;opacity:0;width:1px;height:1px;top:0;left:0;pointer-events:none;">
+  </div>`;
+}
+function dayTabButtonMarkup(i) {
+  const fecha = fmtDate(dayDates[i]);
+  const label = dayLabels[i] || `Día ${i + 1}`;
+  return `<button type="button" class="day-tab" onclick="selectDay(${i})" style="line-height:1.2;padding:6px 14px 5px;">
+    <span style="display:block;font-size:12px;">${escapeHtml(label)}</span>
+    <span style="display:block;font-size:10px;opacity:0.65;">${fecha || 'sin fecha'}</span>
+  </button>`;
+}
+
+function renderEarlierDaysList() {
+  const n = days.length;
+  const firstVisible = n > MAX_VISIBLE_DAY_TABS ? n - MAX_VISIBLE_DAY_TABS : 0;
+  const el = document.getElementById('earlier-days-list');
+  if (!el) return;
+  if (firstVisible === 0) { el.innerHTML = '<div class="empty-msg">No hay días anteriores</div>'; return; }
+  const blocks = [];
+  for (let i = 0; i < firstVisible; i++) {
     const label = dayLabels[i] || `Día ${i + 1}`;
-    if (i === currentDay) {
-      // Tab activo: label editable + date picker oculto para la fecha
-      html += `<div class="day-tab active" style="position:relative;line-height:1.2;padding:5px 10px 4px;display:inline-flex;flex-direction:column;align-items:center;gap:1px;">
-        <input
-          type="text"
-          value="${escapeHtml(label)}"
-          onchange="updateDayLabel(${i}, this.value)"
-          onclick="event.stopPropagation()"
-          style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.5px;background:transparent;border:none;border-bottom:1.5px solid rgba(255,255,255,0.5);color:white;outline:none;text-align:center;width:100px;padding:0 0 1px;"
-          title="Editá el nombre del día">
-        <span style="display:block;font-size:10px;opacity:0.65;cursor:pointer;" title="Cambiar fecha" onclick="event.stopPropagation();this.nextElementSibling.showPicker()">
-          ${fecha || 'sin fecha'}
-        </span>
-        <input type="date" value="${dayDates[i]||''}" onchange="updateDayDate(${i}, this.value)"
-          style="position:absolute;opacity:0;width:1px;height:1px;top:0;left:0;pointer-events:none;">
-      </div>`;
-    } else {
-      html += `<button class="day-tab" onclick="selectDay(${i})" style="line-height:1.2;padding:6px 14px 5px;">
-        <span style="display:block;font-size:12px;">${escapeHtml(label)}</span>
-        <span style="display:block;font-size:10px;opacity:0.65;">${fecha || 'sin fecha'}</span>
-      </button>`;
-    }
-  });
-  html += `<button class="btn-newday" onclick="addDay()">+ Día</button>`;
+    const fechaStr = fmtDate(dayDates[i]) || 'sin fecha';
+    const isCurrent = i === currentDay;
+    blocks.push(
+      `<div role="button" tabindex="0" onclick="selectDayFromModal(${i})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectDayFromModal(${i})}"
+        style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg);border-radius:10px;border:1.5px solid ${isCurrent ? 'var(--accent2)' : 'var(--border)'};cursor:pointer;">
+        <div>
+          <span style="font-size:14px;font-weight:700;font-family:'Syne',sans-serif;">${escapeHtml(label)}</span>
+          <span style="font-size:12px;color:var(--muted);margin-left:8px;">${escapeHtml(fechaStr)}</span>
+          ${isCurrent ? '<span style="font-size:11px;margin-left:8px;color:var(--accent2);">(viendo)</span>' : ''}
+        </div>
+        <span style="font-size:12px;color:var(--muted);">→</span>
+      </div>`
+    );
+  }
+  el.innerHTML = blocks.join('');
+}
+window.openEarlierDaysModal = function() {
+  renderEarlierDaysList();
+  document.getElementById('earlierDaysModal').classList.add('open');
+}
+window.closeEarlierDaysModal = function() {
+  document.getElementById('earlierDaysModal').classList.remove('open');
+}
+window.selectDayFromModal = function(i) {
+  if (i < 0 || i >= days.length) return;
+  currentDay = i;
+  closeEarlierDaysModal();
+  renderAll();
+}
+
+function renderDayTabs() {
+  const n = days.length;
+  const firstVisible = n > MAX_VISIBLE_DAY_TABS ? n - MAX_VISIBLE_DAY_TABS : 0;
+  const hasEarlier = firstVisible > 0;
+  let html = '';
+  if (currentDay < firstVisible) {
+    html += dayTabActiveMarkup(currentDay);
+  }
+  for (let i = firstVisible; i < n; i++) {
+    if (i === currentDay) html += dayTabActiveMarkup(i);
+    else html += dayTabButtonMarkup(i);
+  }
+  if (hasEarlier) {
+    html += `<button type="button" class="btn-earlier-days" onclick="openEarlierDaysModal()">Días anteriores (${firstVisible}) ↗</button>`;
+  }
+  html += `<button type="button" class="btn-newday" onclick="addDay()">+ Día</button>`;
   document.getElementById('dayTabs').innerHTML = html;
 }
 
@@ -881,7 +984,7 @@ function renderExpenses() {
   let html = `<table class="expense-table"><thead><tr><th>Descripción</th><th>Pagó</th><th style="text-align:right">Monto</th><th></th></tr></thead><tbody>`;
   expenses.forEach(e => {
     const bc = e.quien === 'yo' ? 'badge-yo' : 'badge-amigo';
-    const bn = e.quien === 'yo' ? nameYo : nameAmigo;
+    const bn = escapeHtml(e.quien === 'yo' ? nameYo : nameAmigo);
     const mb = e.moneda === 'ARS' ? `<span class="badge badge-moneda-ars">ARS</span>` : `<span class="badge badge-moneda-brl">BRL</span>`;
     const catB = `<span class="badge badge-cat">${CAT_ICONS[e.cat]||'📦'} ${e.cat||'Otros'}</span>`;
     const indivB = e.tipo === 'individual' ? `<span class="badge badge-indiv">Individual</span>` : '';
@@ -908,8 +1011,8 @@ function renderExpenses() {
   let bHtml = '', bClass = '';
   if (comp.length === 0) { bHtml = 'Sin gastos compartidos hoy'; bClass = 'neutral'; }
   else if (Math.abs(diff) < 0.01) { bHtml = '✓ Están empatados, sin deuda'; bClass = 'neutral'; }
-  else if (diff > 0) { bHtml = `${nameAmigo} le debe a ${nameYo}: <strong>${sym()} ${cv(Math.abs(diff))}</strong>`; bClass = 'amigo-paga'; }
-  else { bHtml = `${nameYo} le debe a ${nameAmigo}: <strong>${sym()} ${cv(Math.abs(diff))}</strong>`; bClass = 'yo-paga'; }
+  else if (diff > 0) { bHtml = `${escapeHtml(nameAmigo)} le debe a ${escapeHtml(nameYo)}: <strong>${sym()} ${cv(Math.abs(diff))}</strong>`; bClass = 'amigo-paga'; }
+  else { bHtml = `${escapeHtml(nameYo)} le debe a ${escapeHtml(nameAmigo)}: <strong>${sym()} ${cv(Math.abs(diff))}</strong>`; bClass = 'yo-paga'; }
 
   // Totales día (todos los gastos)
   const totalDiaYoBRL = expenses.filter(e => e.quien === 'yo').reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
@@ -917,8 +1020,8 @@ function renderExpenses() {
   const totalDiaBRL = expenses.reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
 
   sumDiv.innerHTML = `<div class="day-summary">
-    <div class="sum-block"><div class="lbl">${nameYo} pagó</div><div class="val yo">${sym()} ${cv(totalDiaYoBRL)}</div></div>
-    <div class="sum-block"><div class="lbl">${nameAmigo} pagó</div><div class="val amigo">${sym()} ${cv(totalDiaAmigoBRL)}</div></div>
+    <div class="sum-block"><div class="lbl">${escapeHtml(nameYo)} pagó</div><div class="val yo">${sym()} ${cv(totalDiaYoBRL)}</div></div>
+    <div class="sum-block"><div class="lbl">${escapeHtml(nameAmigo)} pagó</div><div class="val amigo">${sym()} ${cv(totalDiaAmigoBRL)}</div></div>
     <div class="sum-block"><div class="lbl">Total día</div><div class="val total">${sym()} ${cv(totalDiaBRL)}</div></div>
   </div>
   <div class="balance-box"><div class="lbl">Prorateo (compartidos) — cada uno paga ${sym()} ${cv(mitad)}</div><div class="result ${bClass}">${bHtml}</div></div>`;
@@ -949,8 +1052,8 @@ function renderSummary() {
   const liq = document.getElementById('liquidacion');
   if (totalBRL === 0) { liq.textContent = 'Sin gastos compartidos aún'; liq.style.color = 'white'; }
   else if (Math.abs(diff) < 0.01) { liq.textContent = '✓ Todo en orden, sin deudas'; liq.style.color = '#7fffc4'; }
-  else if (diff > 0) { liq.innerHTML = `${nameAmigo} le debe a ${nameYo} <strong>${sym()} ${cv(Math.abs(diff))}</strong>`; liq.style.color = '#9ec8ff'; }
-  else { liq.innerHTML = `${nameYo} le debe a ${nameAmigo} <strong>${sym()} ${cv(Math.abs(diff))}</strong>`; liq.style.color = '#ffb89e'; }
+  else if (diff > 0) { liq.innerHTML = `${escapeHtml(nameAmigo)} le debe a ${escapeHtml(nameYo)} <strong>${sym()} ${cv(Math.abs(diff))}</strong>`; liq.style.color = '#9ec8ff'; }
+  else { liq.innerHTML = `${escapeHtml(nameYo)} le debe a ${escapeHtml(nameAmigo)} <strong>${sym()} ${cv(Math.abs(diff))}</strong>`; liq.style.color = '#ffb89e'; }
 }
 
 function renderChart() {
