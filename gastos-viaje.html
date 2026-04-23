@@ -84,8 +84,6 @@
   .badge-moneda-ars { background: #f3eaff; color: var(--ars); font-size: 9px; padding: 1px 6px; margin-left: 3px; }
   .badge-indiv { background: #f3eaff; color: var(--ars); font-size: 9px; padding: 1px 6px; margin-left: 3px; }
   .badge-cat { background: var(--bg); color: var(--muted); border: 1px solid var(--border); font-size: 9px; padding: 1px 6px; margin-left: 3px; }
-  .btn-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 15px; padding: 2px 4px; border-radius: 6px; transition: color 0.15s; }
-  .btn-del:hover { color: #c42a00; }
   .btn-edit { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 15px; padding: 2px 4px; border-radius: 6px; transition: color 0.15s; }
   .btn-edit:hover { color: var(--accent2); }
 
@@ -138,9 +136,10 @@
   .modal h3 { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 16px; }
   .modal label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px; margin-top: 12px; }
   .modal select, .modal input { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text); background: var(--bg); outline: none; }
-  .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
-  .modal-btns button { flex: 1; padding: 12px; border-radius: 10px; border: none; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .modal-btns { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+  .modal-btns button { flex: 1; min-width: 100px; padding: 12px; border-radius: 10px; border: none; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
   .btn-cancel { background: var(--bg); color: var(--muted); border: 1.5px solid var(--border) !important; }
+  .btn-modal-danger { color: #c42a00 !important; border-color: #f8d0bc !important; }
   .btn-save { background: var(--accent); color: white; }
 
   .empty-msg { text-align: center; color: var(--muted); font-size: 14px; padding: 20px 0; }
@@ -214,7 +213,7 @@
     </select>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
-      <button class="btn-cancel" style="color:#c42a00;border-color:#f8d0bc !important;" onclick="deleteFromModal()">Borrar</button>
+      <button class="btn-cancel btn-modal-danger" onclick="deleteFromModal()">Borrar</button>
       <button class="btn-save" onclick="saveEdit()">Guardar</button>
     </div>
   </div>
@@ -243,7 +242,7 @@
     <input type="date" id="ei-fecha">
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeEditIngreso()">Cancelar</button>
-      <button class="btn-cancel" style="color:#c42a00;border-color:#f8d0bc !important;" onclick="deleteIngresoFromModal()">Borrar</button>
+      <button class="btn-cancel btn-modal-danger" onclick="deleteIngresoFromModal()">Borrar</button>
       <button class="btn-save" onclick="saveEditIngreso()">Guardar</button>
     </div>
   </div>
@@ -559,6 +558,9 @@ onSnapshot(docRef, (snap) => {
 });
 
 // ── Formato ───────────────────────────────────────────────────
+function escapeHtml(s) {
+  return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
 function fmt(n) { return n.toLocaleString('es-AR', {minimumFractionDigits:2, maximumFractionDigits:2}); }
 function fmtARS(n) { return n.toLocaleString('es-AR', {minimumFractionDigits:0, maximumFractionDigits:0}); }
 function arsToBrl(v) { return tcARS_BRL ? v * tcARS_BRL : 0; }
@@ -595,8 +597,6 @@ window.setTipo = function(t) {
 // ── Moneda display ────────────────────────────────────────────
 window.setCurrency = function(cur) {
   displayCurrency = cur;
-  document.getElementById('btn-brl').className = 'curr-btn' + (cur === 'BRL' ? ' active-brl' : '');
-  document.getElementById('btn-ars').className = 'curr-btn' + (cur === 'ARS' ? ' active-ars' : '');
   renderAll(); save();
 }
 
@@ -676,7 +676,7 @@ function ingresoRow(i) {
   const fechaStr = i.fecha ? fmtDate(i.fecha) : '';
   return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#f0f7f0;border-radius:10px;border:1px solid #c8e6c8;">
     <div>
-      <span style="font-size:13px;color:#1a7a3a;">${i.desc}</span>
+      <span style="font-size:13px;color:#1a7a3a;">${escapeHtml(i.desc)}</span>
       ${fechaStr ? `<span style="font-size:11px;color:var(--muted);margin-left:6px;">${fechaStr}</span>` : ''}
     </div>
     <div style="display:flex;align-items:center;gap:8px;">
@@ -849,7 +849,7 @@ function renderDayTabs() {
       html += `<div class="day-tab active" style="position:relative;line-height:1.2;padding:5px 10px 4px;display:inline-flex;flex-direction:column;align-items:center;gap:1px;">
         <input
           type="text"
-          value="${label.replace(/"/g, '&quot;')}"
+          value="${escapeHtml(label)}"
           onchange="updateDayLabel(${i}, this.value)"
           onclick="event.stopPropagation()"
           style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.5px;background:transparent;border:none;border-bottom:1.5px solid rgba(255,255,255,0.5);color:white;outline:none;text-align:center;width:100px;padding:0 0 1px;"
@@ -862,7 +862,7 @@ function renderDayTabs() {
       </div>`;
     } else {
       html += `<button class="day-tab" onclick="selectDay(${i})" style="line-height:1.2;padding:6px 14px 5px;">
-        <span style="display:block;font-size:12px;">${label}</span>
+        <span style="display:block;font-size:12px;">${escapeHtml(label)}</span>
         <span style="display:block;font-size:10px;opacity:0.65;">${fecha || 'sin fecha'}</span>
       </button>`;
     }
@@ -875,7 +875,7 @@ function renderExpenses() {
   const list = document.getElementById('expense-list');
   const sumDiv = document.getElementById('day-summary');
   const expenses = days[currentDay] || [];
-  if (expenses.length === 0) { list.innerHTML = `<div class="empty-msg">Todavía no hay gastos para ${dayLabels[currentDay] || 'este día'}</div>`; sumDiv.innerHTML = ''; return; }
+  if (expenses.length === 0) { list.innerHTML = `<div class="empty-msg">Todavía no hay gastos para ${escapeHtml(dayLabels[currentDay] || 'este día')}</div>`; sumDiv.innerHTML = ''; return; }
 
   let html = `<table class="expense-table"><thead><tr><th>Descripción</th><th>Pagó</th><th style="text-align:right">Monto</th><th></th></tr></thead><tbody>`;
   expenses.forEach(e => {
@@ -886,7 +886,7 @@ function renderExpenses() {
     const indivB = e.tipo === 'individual' ? `<span class="badge badge-indiv">Individual</span>` : '';
     const rowClass = e.tipo === 'individual' ? 'indiv-row' : '';
     html += `<tr class="${rowClass}">
-      <td>${e.desc} ${mb}${catB}${indivB}</td>
+      <td>${escapeHtml(e.desc)} ${mb}${catB}${indivB}</td>
       <td><span class="badge ${bc}">${bn}</span></td>
       <td style="text-align:right;font-family:'Syne',sans-serif;font-weight:600">${displayAmt(e.monto, e.moneda)}</td>
       <td style="white-space:nowrap">
