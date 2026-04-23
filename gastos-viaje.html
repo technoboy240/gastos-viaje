@@ -215,6 +215,14 @@
       <option value="compartido">Compartido</option>
       <option value="individual">Individual</option>
     </select>
+    <label>Moneda</label>
+    <select id="edit-moneda" onchange="onEditMonedaChange()">
+      <option value="BRL">R$ Reales</option>
+      <option value="ARS">$ Pesos</option>
+    </select>
+    <label id="edit-monto-lbl">Monto</label>
+    <input type="number" id="edit-monto" min="0" step="0.01" oninput="updateEditConversionPreview()">
+    <div id="edit-conversion-preview" style="font-size:12px;color:var(--ars);min-height:18px;margin-top:4px;"></div>
     <label>Pagó</label>
     <select id="edit-quien">
       <option value="yo" id="edit-opt-yo">Yo</option>
@@ -396,8 +404,8 @@
       <div>
         <label>Tipo</label>
         <div class="tipo-toggle">
-          <button class="tipo-btn active-comp" id="btn-comp" onclick="setTipo('compartido')">Compartido</button>
-          <button class="tipo-btn" id="btn-indiv" onclick="setTipo('individual')">Individual</button>
+          <button class="tipo-btn" id="btn-comp" onclick="setTipo('compartido')">Compartido</button>
+          <button class="tipo-btn active-indiv" id="btn-indiv" onclick="setTipo('individual')">Individual</button>
         </div>
       </div>
     </div>
@@ -491,7 +499,7 @@ let nameYo = 'Yo';
 let nameAmigo = 'Amigo';
 let tcARS_BRL = null;
 let displayCurrency = 'BRL';
-let tipoActual = 'compartido';
+let tipoActual = 'individual';
 let saveTimer = null;
 let editingId = null;
 let pieChartInstance = null;
@@ -619,6 +627,23 @@ window.setTipo = function(t) {
   tipoActual = t;
   document.getElementById('btn-comp').className = 'tipo-btn' + (t === 'compartido' ? ' active-comp' : '');
   document.getElementById('btn-indiv').className = 'tipo-btn' + (t === 'individual' ? ' active-indiv' : '');
+}
+
+window.onEditMonedaChange = function() {
+  const el = document.getElementById('edit-moneda');
+  el.className = el.value === 'ARS' ? 'moneda-ars' : '';
+  const lbl = document.getElementById('edit-monto-lbl');
+  if (lbl) lbl.textContent = el.value === 'ARS' ? 'Monto ($)' : 'Monto (R$)';
+  updateEditConversionPreview();
+}
+window.updateEditConversionPreview = function() {
+  const mon = document.getElementById('edit-moneda').value;
+  const m = parseFloat(document.getElementById('edit-monto').value) || 0;
+  const p = document.getElementById('edit-conversion-preview');
+  if (!p) return;
+  if (mon === 'ARS' && m > 0 && tcARS_BRL) p.textContent = `≈ R$ ${fmt(arsToBrl(m))} en reales`;
+  else if (mon === 'BRL' && m > 0 && tcARS_BRL) p.textContent = `≈ $ ${fmtARS(brlToArs(m))} en pesos`;
+  else p.textContent = '';
 }
 
 // ── Moneda display ────────────────────────────────────────────
@@ -806,6 +831,11 @@ window.openEdit = function(id) {
   document.getElementById('edit-desc').value = e.desc;
   document.getElementById('edit-cat').value = e.cat || 'Otros';
   document.getElementById('edit-tipo').value = e.tipo || 'compartido';
+  document.getElementById('edit-moneda').value = e.moneda || 'BRL';
+  onEditMonedaChange();
+  document.getElementById('edit-monto').value = e.monto;
+  document.getElementById('edit-conversion-preview').textContent = '';
+  updateEditConversionPreview();
   document.getElementById('edit-quien').value = e.quien;
   document.getElementById('edit-opt-yo').textContent = nameYo;
   document.getElementById('edit-opt-amigo').textContent = nameAmigo;
@@ -824,16 +854,24 @@ window.deleteFromModal = function() {
 
 window.closeModal = function() {
   document.getElementById('editModal').classList.remove('open');
+  const ep = document.getElementById('edit-conversion-preview');
+  if (ep) ep.textContent = '';
   editingId = null;
 }
 window.saveEdit = function() {
   if (!editingId) return;
+  const moneda = document.getElementById('edit-moneda').value;
+  const monto = parseFloat(document.getElementById('edit-monto').value);
+  if (!monto || monto <= 0) { alert('Ingresá un monto válido'); return; }
+  if (moneda === 'ARS' && !tcARS_BRL) { alert('Ingresá primero el tipo de cambio'); return; }
   for (let d of days) {
     const e = d.find(x => x.id === editingId);
     if (e) {
       e.desc = document.getElementById('edit-desc').value.trim() || e.desc;
       e.cat = document.getElementById('edit-cat').value;
       e.tipo = document.getElementById('edit-tipo').value;
+      e.moneda = moneda;
+      e.monto = monto;
       e.quien = document.getElementById('edit-quien').value;
       break;
     }
@@ -854,11 +892,13 @@ window.clearData = function() {
   document.getElementById('tc-manual-val').value = '';
   document.getElementById('tc-ars-equiv').textContent = '';
   setTCStatus('', 'Ingresá el tipo de cambio');
+  tipoActual = 'individual';
   renderAll(); save();
 }
 
 // ── Render ────────────────────────────────────────────────────
 function renderAll() {
+  setTipo(tipoActual);
   document.getElementById('opt-yo').textContent = nameYo;
   document.getElementById('opt-amigo').textContent = nameAmigo;
   document.getElementById('lbl-aporte-amigo').textContent = `Aporte ${nameAmigo} (R$)`;
