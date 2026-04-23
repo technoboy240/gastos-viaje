@@ -185,6 +185,14 @@
   .btn-ahorro-rest { padding: 10px 16px; background: var(--bg); color: #c42a00; border: 1.5px solid #f8d0bc; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity 0.15s; }
   .btn-ahorro-rest:hover { opacity: 0.75; }
 
+  .btn-mas-dias { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 20px; border: 1.5px solid var(--accent2); background: #f0f6ff; color: var(--accent2); cursor: pointer; transition: all 0.15s; letter-spacing: 0.5px; }
+  .btn-mas-dias:hover { background: var(--accent2); color: white; }
+  .dias-modal-list { display: flex; flex-direction: column; gap: 8px; max-height: 60vh; overflow-y: auto; margin-bottom: 4px; }
+  .dias-modal-row { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 10px 14px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--bg); font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); cursor: pointer; text-align: left; transition: border-color 0.15s, background 0.15s; }
+  .dias-modal-row:hover { border-color: var(--accent2); }
+  .dias-modal-row.activo { border-color: var(--text); background: #e8e8e8; font-weight: 600; }
+  .dias-modal-row .dias-meta { font-size: 11px; color: var(--muted); }
+
 </style>
 </head>
 <body>
@@ -227,6 +235,17 @@
     <div id="ingresos-modal-list" style="display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow-y:auto;margin-bottom:4px;"></div>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeIngresosModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: todos los días (si hay más de 4) -->
+<div class="modal-overlay" id="diasModal">
+  <div class="modal" style="max-width: 420px;">
+    <h3 id="dias-modal-title">Todos los días</h3>
+    <div class="dias-modal-list" id="dias-modal-list"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeDiasModal()">Cerrar</button>
     </div>
   </div>
 </div>
@@ -485,6 +504,16 @@ const CATS = ['Hospedaje','Comida','Transporte','Otros'];
 const CAT_COLORS = ['#1a7ae8','#e8521a','#1a7a3a','#6b3fa0'];
 const CAT_ICONS = {'Hospedaje':'🏨','Comida':'🍽️','Transporte':'🚌','Otros':'📦'};
 
+const MAX_INLINE_DAYS = 4;
+function escapeHtml(s) {
+  if (s == null || s === undefined) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 // ── Sync ──────────────────────────────────────────────────────
 function setSyncStatus(state, msg) {
   document.getElementById('sync-dot').className = 'sync-dot ' + state;
@@ -702,6 +731,37 @@ window.selectDay = function(i) { currentDay = i; renderDayTabs(); renderExpenses
 window.updateDayDate = function(i, val) { dayDates[i] = val; renderDayTabs(); save(); }
 window.updateDayLabel = function(i, val) { dayLabels[i] = val; save(); }
 
+function renderDiasModalList() {
+  const el = document.getElementById('dias-modal-list');
+  const title = document.getElementById('dias-modal-title');
+  if (!el) return;
+  if (title) title.textContent = 'Todos los días';
+  if (days.length === 0) { el.innerHTML = '<div class="empty-msg">No hay días</div>'; return; }
+  el.innerHTML = days.map((_, i) => {
+    const label = dayLabels[i] || `Día ${i + 1}`;
+    const fecha = fmtDate(dayDates[i]) || 'sin fecha';
+    const isAct = i === currentDay;
+    return `<button type="button" class="dias-modal-row${isAct ? ' activo' : ''}" onclick="selectDayFromModal(${i})">
+      <div><div>${escapeHtml(label)}</div><div class="dias-meta">${escapeHtml(fecha)}</div></div>
+      ${isAct ? '<span style="font-size:12px;">✓ Día activo</span>' : '<span style="font-size:12px;color:var(--muted);">Abrir</span>'}
+    </button>`;
+  }).join('');
+}
+
+window.openDiasModal = function() {
+  renderDiasModalList();
+  document.getElementById('diasModal').classList.add('open');
+}
+window.closeDiasModal = function() {
+  document.getElementById('diasModal').classList.remove('open');
+}
+window.selectDayFromModal = function(i) {
+  if (i < 0 || i >= days.length) return;
+  currentDay = i;
+  closeDiasModal();
+  renderAll();
+}
+
 // ── Formulario ────────────────────────────────────────────────
 window.onMonedaChange = function() {
   document.getElementById('f-moneda').className = document.getElementById('f-moneda').value === 'ARS' ? 'moneda-ars' : '';
@@ -839,35 +899,49 @@ function fmtDate(d) {
   return `${parseInt(day)} ${meses[parseInt(m)-1]}`;
 }
 
+function renderDayTabOne(i) {
+  const fecha = fmtDate(dayDates[i]);
+  const fechaDis = escapeHtml(fecha || 'sin fecha');
+  const label = dayLabels[i] || `Día ${i + 1}`;
+  const labelEsc = escapeHtml(label);
+  if (i === currentDay) {
+    return `<div class="day-tab active" style="position:relative;line-height:1.2;padding:5px 10px 4px;display:inline-flex;flex-direction:column;align-items:center;gap:1px;">
+      <input
+        type="text"
+        value="${labelEsc}"
+        onchange="updateDayLabel(${i}, this.value)"
+        onclick="event.stopPropagation()"
+        style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.5px;background:transparent;border:none;border-bottom:1.5px solid rgba(255,255,255,0.5);color:white;outline:none;text-align:center;width:100px;padding:0 0 1px;"
+        title="Editá el nombre del día">
+      <span style="display:block;font-size:10px;opacity:0.65;cursor:pointer;" title="Cambiar fecha" onclick="event.stopPropagation();this.nextElementSibling.showPicker()">
+        ${fechaDis}
+      </span>
+      <input type="date" value="${(dayDates[i] || '').replace(/"/g, '&quot;')}" onchange="updateDayDate(${i}, this.value)"
+        style="position:absolute;opacity:0;width:1px;height:1px;top:0;left:0;pointer-events:none;">
+    </div>`;
+  }
+  return `<button type="button" class="day-tab" onclick="selectDay(${i})" style="line-height:1.2;padding:6px 14px 5px;">
+    <span style="display:block;font-size:12px;">${labelEsc}</span>
+    <span style="display:block;font-size:10px;opacity:0.65;">${fechaDis}</span>
+  </button>`;
+}
+
 function renderDayTabs() {
+  const n = days.length;
+  let start = 0;
+  if (n > MAX_INLINE_DAYS) {
+    start = Math.max(0, Math.min(currentDay - 1, n - MAX_INLINE_DAYS));
+  }
+  const endExclusive = n > MAX_INLINE_DAYS ? Math.min(n, start + MAX_INLINE_DAYS) : n;
   let html = '';
-  days.forEach((_, i) => {
-    const fecha = fmtDate(dayDates[i]);
-    const label = dayLabels[i] || `Día ${i + 1}`;
-    if (i === currentDay) {
-      // Tab activo: label editable + date picker oculto para la fecha
-      html += `<div class="day-tab active" style="position:relative;line-height:1.2;padding:5px 10px 4px;display:inline-flex;flex-direction:column;align-items:center;gap:1px;">
-        <input
-          type="text"
-          value="${label.replace(/"/g, '&quot;')}"
-          onchange="updateDayLabel(${i}, this.value)"
-          onclick="event.stopPropagation()"
-          style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.5px;background:transparent;border:none;border-bottom:1.5px solid rgba(255,255,255,0.5);color:white;outline:none;text-align:center;width:100px;padding:0 0 1px;"
-          title="Editá el nombre del día">
-        <span style="display:block;font-size:10px;opacity:0.65;cursor:pointer;" title="Cambiar fecha" onclick="event.stopPropagation();this.nextElementSibling.showPicker()">
-          ${fecha || 'sin fecha'}
-        </span>
-        <input type="date" value="${dayDates[i]||''}" onchange="updateDayDate(${i}, this.value)"
-          style="position:absolute;opacity:0;width:1px;height:1px;top:0;left:0;pointer-events:none;">
-      </div>`;
-    } else {
-      html += `<button class="day-tab" onclick="selectDay(${i})" style="line-height:1.2;padding:6px 14px 5px;">
-        <span style="display:block;font-size:12px;">${label}</span>
-        <span style="display:block;font-size:10px;opacity:0.65;">${fecha || 'sin fecha'}</span>
-      </button>`;
-    }
-  });
-  html += `<button class="btn-newday" onclick="addDay()">+ Día</button>`;
+  for (let i = start; i < endExclusive; i++) {
+    html += renderDayTabOne(i);
+  }
+  if (n > MAX_INLINE_DAYS) {
+    const hidden = n - MAX_INLINE_DAYS;
+    html += `<button type="button" class="btn-mas-dias" onclick="openDiasModal()" title="Abrir el listado de todos los días">Ver ${hidden} día${hidden === 1 ? '' : 's'} más…</button>`;
+  }
+  html += `<button type="button" class="btn-newday" onclick="addDay()">+ Día</button>`;
   document.getElementById('dayTabs').innerHTML = html;
 }
 
