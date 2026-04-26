@@ -292,6 +292,21 @@
     cursor: pointer; transition: all 0.12s; letter-spacing: 0.03em;
   }
   .btn-newday:hover { background: var(--accent); color: #fff; border-style: solid; }
+  .day-tab-with-actions { display: inline-flex; align-items: center; gap: 2px; flex-shrink: 0; }
+  .day-tab-x {
+    flex-shrink: 0;
+    width: 40px; height: 40px; min-width: 40px; min-height: 40px; padding: 0; border-radius: 50%;
+    border: 1px solid rgba(185, 28, 28, 0.35);
+    background: #fff5f5; color: #b91c1c; font-size: 18px; line-height: 1; font-weight: 700;
+    cursor: pointer; transition: background 0.12s, border-color 0.12s, color 0.12s;
+  }
+  .day-tab-x:hover { background: #fee2e2; border-color: #ef4444; color: #991b1b; }
+  .earlier-day-row { position: relative; }
+  .earlier-day-x {
+    margin-left: 8px; flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; padding: 0; border: 1px solid #f8d0d0;
+    background: #fff5f5; color: #b91c1c; font-size: 20px; line-height: 1; font-weight: 700; cursor: pointer; transition: all 0.12s;
+  }
+  .earlier-day-x:hover { background: #fee2e2; border-color: #ef4444; }
   .btn-earlier-days {
     display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #fff; border: 1px solid var(--border); border-radius: 999px;
     padding: 6px 14px; min-height: 40px; font-size: 11px; font-weight: 700; color: var(--muted);
@@ -1050,6 +1065,10 @@ function ingresoRow(i) {
 window.updateInv = function() { renderInv(); save(); }
 
 // ── Días ──────────────────────────────────────────────────────
+function isDayDeletable(i) {
+  if (i < 0 || i >= days.length || days.length <= 1) return false;
+  return (days[i] || []).length === 0;
+}
 window.addDay = function() {
   days.push([]);
   const today = new Date().toISOString().split('T')[0];
@@ -1057,6 +1076,23 @@ window.addDay = function() {
   dayLabels.push(`Día ${days.length}`);
   currentDay = days.length - 1;
   renderAll(); save();
+}
+/** Borra el día en índice i solo si no tiene gastos (y queda al menos 1 día). */
+window.deleteDayAt = function(i) {
+  if (!isDayDeletable(i)) {
+    if (days.length <= 1) { alert('Tiene que quedar al menos 1 día.'); return; }
+    alert('Solo podés borrar días vacíos (sin gastos).');
+    return;
+  }
+  const label = dayLabels[i] || `Día ${i + 1}`;
+  if (!confirm(`¿Borrar "${label}"?`)) return;
+  days.splice(i, 1);
+  dayDates.splice(i, 1);
+  dayLabels.splice(i, 1);
+  if (i < currentDay) currentDay--;
+  else if (i === currentDay) currentDay = Math.min(i, days.length - 1);
+  renderAll();
+  save();
 }
 window.selectDay = function(i) { currentDay = i; renderDayTabs(); renderExpenses(); }
 window.updateDayDate = function(i, val) { dayDates[i] = val; renderDayTabs(); save(); }
@@ -1229,10 +1265,15 @@ function fmtDate(d) {
   return `${parseInt(day)} ${meses[parseInt(m)-1]}`;
 }
 
+function dayDeleteBtnMarkup(i) {
+  if (!isDayDeletable(i)) return '';
+  return `<button type="button" class="day-tab-x" title="Quitar este día" aria-label="Quitar día vacío" onclick="event.stopPropagation(); deleteDayAt(${i})">×</button>`;
+}
 function dayTabActiveMarkup(i) {
   const fecha = fmtDate(dayDates[i]);
   const label = dayLabels[i] || `Día ${i + 1}`;
-  return `<div class="day-tab active" style="position:relative;line-height:1.2;padding:5px 10px 4px;display:inline-flex;flex-direction:column;align-items:center;gap:1px;">
+  return `<div class="day-tab-with-actions" style="position:relative;">
+  <div class="day-tab active" style="position:relative;line-height:1.2;padding:5px 10px 4px;display:inline-flex;flex-direction:column;align-items:center;gap:1px;">
     <input
       type="text"
       value="${escapeHtml(label)}"
@@ -1245,15 +1286,16 @@ function dayTabActiveMarkup(i) {
     </span>
     <input type="date" value="${dayDates[i]||''}" onchange="updateDayDate(${i}, this.value)"
       style="position:absolute;opacity:0;width:1px;height:1px;top:0;left:0;pointer-events:none;">
-  </div>`;
+  </div>${dayDeleteBtnMarkup(i)}</div>`;
 }
 function dayTabButtonMarkup(i) {
   const fecha = fmtDate(dayDates[i]);
   const label = dayLabels[i] || `Día ${i + 1}`;
-  return `<button type="button" class="day-tab" onclick="selectDay(${i})" style="line-height:1.2;padding:6px 14px 5px;">
+  return `<div class="day-tab-with-actions">
+  <button type="button" class="day-tab" onclick="selectDay(${i})" style="line-height:1.2;padding:6px 14px 5px;">
     <span style="display:block;font-size:12px;">${escapeHtml(label)}</span>
     <span style="display:block;font-size:10px;opacity:0.65;">${fecha || 'sin fecha'}</span>
-  </button>`;
+  </button>${dayDeleteBtnMarkup(i)}</div>`;
 }
 
 function renderEarlierDaysList() {
@@ -1267,15 +1309,19 @@ function renderEarlierDaysList() {
     const label = dayLabels[i] || `Día ${i + 1}`;
     const fechaStr = fmtDate(dayDates[i]) || 'sin fecha';
     const isCurrent = i === currentDay;
+    const canDel = isDayDeletable(i);
     blocks.push(
-      `<div role="button" tabindex="0" onclick="selectDayFromModal(${i})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectDayFromModal(${i})}"
-        style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg);border-radius:10px;border:1.5px solid ${isCurrent ? 'var(--accent2)' : 'var(--border)'};cursor:pointer;">
+      `<div class="earlier-day-row" style="display:flex;align-items:center;gap:4px;padding:4px 4px 4px 4px;">
+      <div role="button" tabindex="0" onclick="selectDayFromModal(${i})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectDayFromModal(${i})}"
+        style="flex:1;min-width:0;display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg);border-radius:10px;border:1.5px solid ${isCurrent ? 'var(--accent2)' : 'var(--border)'};cursor:pointer;">
         <div>
           <span style="font-size:14px;font-weight:700;font-family:'Syne',sans-serif;">${escapeHtml(label)}</span>
           <span style="font-size:12px;color:var(--muted);margin-left:8px;">${escapeHtml(fechaStr)}</span>
           ${isCurrent ? '<span style="font-size:11px;margin-left:8px;color:var(--accent2);">(viendo)</span>' : ''}
         </div>
         <span style="font-size:12px;color:var(--muted);">→</span>
+      </div>
+      ${canDel ? `<button type="button" class="earlier-day-x" title="Quitar día vacío" aria-label="Quitar día vacío" onclick="event.stopPropagation(); deleteDayAtFromModal(${i})">×</button>` : ''}
       </div>`
     );
   }
@@ -1293,6 +1339,13 @@ window.selectDayFromModal = function(i) {
   currentDay = i;
   closeEarlierDaysModal();
   renderAll();
+}
+window.deleteDayAtFromModal = function(i) {
+  deleteDayAt(i);
+  renderEarlierDaysList();
+  const n = days.length;
+  const firstVisible = n > MAX_VISIBLE_DAY_TABS ? n - MAX_VISIBLE_DAY_TABS : 0;
+  if (firstVisible === 0) closeEarlierDaysModal();
 }
 
 function renderDayTabs() {
