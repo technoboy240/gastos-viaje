@@ -224,6 +224,11 @@
   }
   select.moneda-ars { border-color: #d4b8f0 !important; color: var(--ars) !important; }
 
+  .money-conv-preview {
+    font-size: 12px; color: var(--ars); min-height: 18px; margin-top: 4px;
+    padding-left: 2px; line-height: 1.35;
+  }
+
   .tipo-toggle { display: flex; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
   .tipo-btn {
     flex: 1; padding: 10px 8px; min-height: 44px; border: none;
@@ -557,7 +562,7 @@
       <option value="BRL">R$ Reales</option>
       <option value="ARS">$ Pesos</option>
     </select>
-    <div id="edit-conversion-preview" style="font-size:12px;color:var(--ars);min-height:18px;margin-top:4px;"></div>
+    <div id="edit-conversion-preview" class="money-conv-preview"></div>
     <label>Categoría</label>
     <select id="edit-cat"></select>
     <label>Tipo</label>
@@ -596,7 +601,8 @@
     <label>Descripción</label>
     <input type="text" id="ei-desc">
     <label>Monto (R$)</label>
-    <input type="number" id="ei-monto" min="0" step="0.01">
+    <input type="number" id="ei-monto" min="0" step="0.01" oninput="updateEiMontoPreview()">
+    <div id="preview-ei-monto" class="money-conv-preview"></div>
     <label>Fecha</label>
     <input type="date" id="ei-fecha">
     <div class="modal-btns">
@@ -659,11 +665,13 @@
     <div class="inv-grid">
       <div class="inv-block">
         <label>Tu aporte (R$)</label>
-        <input type="number" id="aporte-yo" placeholder="0" oninput="updateInv()" min="0">
+        <input type="number" id="aporte-yo" placeholder="0" oninput="updateInv()" min="0" step="0.01">
+        <div id="preview-aporte-yo" class="money-conv-preview"></div>
       </div>
       <div class="inv-block">
         <label id="lbl-aporte-amigo">Aporte amigo (R$)</label>
-        <input type="number" id="aporte-amigo" placeholder="0" oninput="updateInv()" min="0">
+        <input type="number" id="aporte-amigo" placeholder="0" oninput="updateInv()" min="0" step="0.01">
+        <div id="preview-aporte-amigo" class="money-conv-preview"></div>
       </div>
     </div>
     <div class="inv-divider">
@@ -676,7 +684,8 @@
         </div>
         <div>
           <label class="field-label" for="ingreso-monto">Monto (R$)</label>
-          <input type="number" id="ingreso-monto" class="ingreso-field" placeholder="0.00" min="0" step="0.01">
+          <input type="number" id="ingreso-monto" class="ingreso-field" placeholder="0.00" min="0" step="0.01" oninput="updateIngresoMontoPreview()">
+          <div id="preview-ingreso-extra" class="money-conv-preview"></div>
         </div>
         <div>
           <label class="field-label" for="ingreso-fecha">Fecha</label>
@@ -737,7 +746,7 @@
         </div>
       </div>
     </div>
-    <div id="conversion-preview" style="font-size:12px;color:var(--ars);margin-bottom:8px;min-height:18px;padding-left:2px;"></div>
+    <div id="conversion-preview" class="money-conv-preview" style="margin-bottom:8px;padding-left:2px;"></div>
     <button class="btn-add" onclick="addExpense()">+ Agregar gasto</button>
 
     <div style="margin-top:18px;">
@@ -802,7 +811,8 @@
         <div class="val-ars" id="ahorro-total-ars"></div>
       </div>
       <div class="ahorro-input-block">
-        <input type="number" id="ahorro-input" placeholder="R$ 0.00" min="0" step="0.01">
+        <input type="number" id="ahorro-input" placeholder="R$ 0.00" min="0" step="0.01" oninput="updateAhorroInputPreview()">
+        <div id="preview-ahorro-input" class="money-conv-preview"></div>
         <div class="ahorro-btns">
           <button type="button" class="btn-ahorro-sum" onclick="ahorroOperar(1)">+ Sumar</button>
           <button type="button" class="btn-ahorro-rest" onclick="ahorroOperar(-1)">− Restar</button>
@@ -948,6 +958,25 @@ function displayAmt(m, mon) {
 function sym() { return displayCurrency === 'BRL' ? 'R$' : '$'; }
 function cv(v) { return displayCurrency === 'BRL' ? fmt(v) : fmtARS(brlToArs(v)); }
 
+/** Equivalencia en la otra moneda (misma lógica que el registro de gastos). */
+function otherCurrencyPreviewLine(m, mon) {
+  if (!tcARS_BRL) return '';
+  const amt = typeof m === 'number' ? m : parseFloat(m);
+  if (!amt || amt <= 0 || Number.isNaN(amt)) return '';
+  if (mon === 'ARS') return `≈ R$ ${fmt(arsToBrl(amt))} en reales`;
+  return `≈ $ ${fmtARS(brlToArs(amt))} en pesos`;
+}
+function setMoneyPreviewEl(id, text) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = text;
+}
+function refreshInvestmentAportePreviews() {
+  const yi = parseFloat(document.getElementById('aporte-yo').value) || 0;
+  const ai = parseFloat(document.getElementById('aporte-amigo').value) || 0;
+  setMoneyPreviewEl('preview-aporte-yo', otherCurrencyPreviewLine(yi, 'BRL'));
+  setMoneyPreviewEl('preview-aporte-amigo', otherCurrencyPreviewLine(ai, 'BRL'));
+}
+
 // ── TC ────────────────────────────────────────────────────────
 function setTCStatus(state, msg) {
   document.getElementById('tc-dot').className = 'tc-dot ' + state;
@@ -995,6 +1024,7 @@ window.addIngreso = function() {
   document.getElementById('ingreso-desc').value = '';
   document.getElementById('ingreso-monto').value = '';
   document.getElementById('ingreso-fecha').value = '';
+  window.updateIngresoMontoPreview();
   renderInv(); save();
 }
 
@@ -1011,10 +1041,12 @@ window.openEditIngreso = function(id) {
   document.getElementById('ei-monto').value = ing.monto;
   document.getElementById('ei-fecha').value = ing.fecha || '';
   document.getElementById('editIngresoModal').classList.add('open');
+  window.updateEiMontoPreview();
 }
 window.closeEditIngreso = function() {
   document.getElementById('editIngresoModal').classList.remove('open');
   editingIngresoId = null;
+  setMoneyPreviewEl('preview-ei-monto', '');
 }
 window.saveEditIngreso = function() {
   if (!editingIngresoId) return;
@@ -1101,15 +1133,12 @@ window.updateDayLabel = function(i, val) { dayLabels[i] = val; save(); }
 // ── Formulario ────────────────────────────────────────────────
 window.onMonedaChange = function() {
   document.getElementById('f-moneda').className = document.getElementById('f-moneda').value === 'ARS' ? 'moneda-ars' : '';
-  updateConversionPreview();
+  window.updateConversionPreview();
 }
 window.updateConversionPreview = function() {
   const mon = document.getElementById('f-moneda').value;
   const m = parseFloat(document.getElementById('f-monto').value) || 0;
-  const p = document.getElementById('conversion-preview');
-  if (mon === 'ARS' && m > 0 && tcARS_BRL) p.textContent = `≈ R$ ${fmt(arsToBrl(m))} en reales`;
-  else if (mon === 'BRL' && m > 0 && tcARS_BRL) p.textContent = `≈ $ ${fmtARS(brlToArs(m))} en pesos`;
-  else p.textContent = '';
+  document.getElementById('conversion-preview').textContent = otherCurrencyPreviewLine(m, mon);
 }
 
 window.addExpense = function() {
@@ -1147,11 +1176,30 @@ function editModalUpdatePreview() {
   if (!p) return;
   const mon = document.getElementById('edit-moneda').value;
   const m = parseFloat(document.getElementById('edit-monto').value) || 0;
-  if (mon === 'ARS' && m > 0 && tcARS_BRL) p.textContent = `≈ R$ ${fmt(arsToBrl(m))} en reales`;
-  else if (mon === 'BRL' && m > 0 && tcARS_BRL) p.textContent = `≈ $ ${fmtARS(brlToArs(m))} en pesos`;
-  else p.textContent = '';
+  p.textContent = otherCurrencyPreviewLine(m, mon);
 }
 window.editModalUpdatePreview = editModalUpdatePreview;
+
+window.updateIngresoMontoPreview = function() {
+  const m = parseFloat(document.getElementById('ingreso-monto').value) || 0;
+  setMoneyPreviewEl('preview-ingreso-extra', otherCurrencyPreviewLine(m, 'BRL'));
+};
+window.updateAhorroInputPreview = function() {
+  const m = parseFloat(document.getElementById('ahorro-input').value) || 0;
+  setMoneyPreviewEl('preview-ahorro-input', otherCurrencyPreviewLine(m, 'BRL'));
+};
+window.updateEiMontoPreview = function() {
+  const m = parseFloat(document.getElementById('ei-monto').value) || 0;
+  setMoneyPreviewEl('preview-ei-monto', otherCurrencyPreviewLine(m, 'BRL'));
+};
+function refreshAllMoneyConversionPreviews() {
+  refreshInvestmentAportePreviews();
+  window.updateIngresoMontoPreview();
+  window.updateAhorroInputPreview();
+  window.updateEiMontoPreview();
+  window.updateConversionPreview();
+  editModalUpdatePreview();
+}
 
 window.openEdit = function(id) {
   const e = days.flat().find(x => x.id === id);
@@ -1233,6 +1281,7 @@ function renderAll() {
   document.getElementById('btn-brl').className = 'curr-btn' + (displayCurrency === 'BRL' ? ' active-brl' : '');
   document.getElementById('btn-ars').className = 'curr-btn' + (displayCurrency === 'ARS' ? ' active-ars' : '');
   renderDayTabs(); renderExpenses(); renderSummary(); renderInv(); renderChart(); renderAhorro();
+  refreshAllMoneyConversionPreviews();
 }
 
 function renderInv() {
@@ -1251,11 +1300,16 @@ function renderInv() {
   document.getElementById('inv-progress').style.background = pct > 90 ? '#c42a00' : pct > 70 ? '#c47a00' : 'var(--accent)';
 
   const listEl = document.getElementById('ingresos-list');
-  if (ingresos.length === 0) { listEl.innerHTML = ''; return; }
-  const visibles = ingresos.slice(-3);
-  const hayMas = ingresos.length > 3;
-  listEl.innerHTML = visibles.map(i => ingresoRow(i)).join('') +
-    (hayMas ? `<button class="btn-ver-ingresos" onclick="openIngresosModal()">Ver todos (${ingresos.length}) ↗</button>` : '');
+  if (ingresos.length === 0) {
+    listEl.innerHTML = '';
+  } else {
+    const visibles = ingresos.slice(-3);
+    const hayMas = ingresos.length > 3;
+    listEl.innerHTML = visibles.map(i => ingresoRow(i)).join('') +
+      (hayMas ? `<button class="btn-ver-ingresos" onclick="openIngresosModal()">Ver todos (${ingresos.length}) ↗</button>` : '');
+  }
+  refreshInvestmentAportePreviews();
+  window.updateIngresoMontoPreview();
 }
 
 function fmtDate(d) {
@@ -1499,6 +1553,7 @@ window.ahorroOperar = function(signo) {
   ahorros += signo * val;
   if (ahorros < 0) ahorros = 0;
   document.getElementById('ahorro-input').value = '';
+  window.updateAhorroInputPreview();
   renderAhorro(); save();
 }
 
