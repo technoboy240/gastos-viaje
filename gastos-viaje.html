@@ -48,7 +48,8 @@
     color: var(--text);
     min-height: 100vh;
     min-height: 100dvh;
-    padding-bottom: max(72px, env(safe-area-inset-bottom, 0px) + 40px);
+    /* Espacio extra para la banda de sync fija abajo (--sync-strip) */
+    padding-bottom: max(116px, env(safe-area-inset-bottom, 0px) + 84px);
     padding-left: max(0px, env(safe-area-inset-left, 0px));
     padding-right: max(0px, env(safe-area-inset-right, 0px));
     touch-action: manipulation;
@@ -118,11 +119,33 @@
     margin-bottom: 16px;
   }
   .sync-bar {
-    display: flex; align-items: center; gap: 10px; padding: 10px max(12px, env(safe-area-inset-left, 0px)) 10px max(12px, env(safe-area-inset-right, 0px));
-    background: #ece8e0;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding:
+      8px max(14px, env(safe-area-inset-left, 0px))
+      max(10px, env(safe-area-inset-bottom, 0px))
+      max(14px, env(safe-area-inset-right, 0px));
+    background: rgba(247, 244, 238, 0.94);
     color: var(--text-1);
-    font-size: 12px; font-family: 'Syne', system-ui, sans-serif; letter-spacing: 0.03em;
-    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    font-family: 'Syne', system-ui, sans-serif;
+    letter-spacing: 0.05em;
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.06);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .sync-bar:has(.sync-dot.err) {
+    border-top-color: rgba(239, 68, 68, 0.45);
+    background: rgba(254, 242, 242, 0.96);
+    color: #7f1d1d;
   }
   .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #9ca3af; flex-shrink: 0; }
   .sync-dot.ok { background: var(--success); }
@@ -180,18 +203,6 @@
   }
   .ingreso-row .ingreso-desc { font-size: 13px; color: var(--success); }
   .ingreso-row .ingreso-monto { font-size: 13px; font-weight: 700; color: var(--success); }
-  .inv-summary { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 18px; }
-  @media (min-width: 380px) {
-    .inv-summary { grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-  }
-  .inv-metric { text-align: center; }
-  .inv-metric .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
-  .inv-metric .value { font-family: 'Syne', system-ui, sans-serif; font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
-  .inv-metric .value.good { color: var(--success); }
-  .inv-metric .value.warn { color: var(--warn); }
-  .inv-metric .value.bad { color: var(--danger); }
-  .progress-bar { height: 8px; background: #e5e0d7; border-radius: 6px; margin-top: 16px; overflow: hidden; }
-  .progress-fill { height: 100%; border-radius: 6px; background: var(--accent); transition: width 0.35s ease, background 0.2s; }
 
   .form-row { display: grid; grid-template-columns: 1fr; gap: 12px; align-items: end; margin-bottom: 12px; }
   @media (min-width: 560px) {
@@ -472,7 +483,6 @@
     header h1 { font-size: 22px; }
     .card { padding: 16px 14px; margin-bottom: 12px; }
     .form-row input, .form-row select, .form-row2 input, .form-row2 select { font-size: 16px; }
-    .inv-metric .value { font-size: 17px; }
     .inv-block input { font-size: 20px; }
     .sum-block .val { font-size: 16px; }
     .sum-block .lbl { font-size: 10px; }
@@ -533,9 +543,64 @@
   .earlier-day-btn { width: 100%; text-align: left; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border); background: #fff; color: var(--text); font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.12s, border-color 0.12s; }
   .earlier-day-btn:hover { background: #f5f2eb; border-color: var(--info); }
 
+  /* Pantalla de login (Firebase Auth) */
+  .auth-screen {
+    position: fixed; inset: 0; z-index: 500;
+    display: flex; align-items: center; justify-content: center;
+    padding: max(12px, env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px));
+    background: linear-gradient(160deg, #2a2a2a 0%, var(--ink) 100%);
+  }
+  .auth-screen[hidden] { display: none !important; }
+  .auth-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 24px 20px; width: 100%; max-width: 380px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  }
+  .auth-kicker {
+    font-family: 'Syne', system-ui, sans-serif; font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.14em; color: var(--muted); margin-bottom: 8px;
+  }
+  .auth-title {
+    font-family: 'Syne', system-ui, sans-serif; font-size: 22px; font-weight: 800;
+    letter-spacing: -0.4px; color: var(--text); margin-bottom: 18px; line-height: 1.15;
+  }
+  .auth-card label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px; margin-top: 12px; }
+  .auth-card label:first-of-type { margin-top: 0; }
+  .auth-card input {
+    width: 100%; padding: 10px 12px; min-height: 44px;
+    border: 1px solid var(--border); border-radius: 10px; font-size: 16px;
+    color: var(--text); background: #fff; outline: none;
+    transition: border-color 0.12s, box-shadow 0.12s;
+  }
+  .auth-card input:focus { border-color: var(--info); box-shadow: 0 0 0 2px rgba(26, 122, 232, 0.2); }
+  .btn-auth-submit {
+    width: 100%; margin-top: 20px; padding: 12px; min-height: 48px; border: none; border-radius: 10px;
+    background: var(--accent); color: #fff; font-family: 'Syne', system-ui, sans-serif;
+    font-weight: 700; font-size: 15px; cursor: pointer; transition: background 0.12s;
+  }
+  .btn-auth-submit:hover { background: var(--accent-hover); }
+  .btn-auth-submit:disabled { opacity: 0.55; cursor: not-allowed; }
+  .auth-error { color: var(--danger); font-size: 13px; margin-top: 12px; line-height: 1.35; }
+
 </style>
 </head>
 <body>
+
+<!-- Login: Firebase Console → Authentication: activar Email/Password y crear usuario con el correo definido como AUTH_EMAIL en el script (mismo que la contraseña que elijas). Firestore: aplicar reglas que exijan request.auth (ver comentario en el script). -->
+<div id="auth-screen" class="auth-screen" aria-modal="true" role="dialog" aria-labelledby="auth-title">
+  <div class="auth-card">
+    <p class="auth-kicker">Gastos del viaje</p>
+    <h2 id="auth-title" class="auth-title">Iniciar sesión</h2>
+    <form id="auth-form">
+      <label for="auth-user">Usuario</label>
+      <input id="auth-user" name="username" type="text" autocomplete="username" value="magus" required autocapitalize="none">
+      <label for="auth-pass">Contraseña</label>
+      <input id="auth-pass" type="password" autocomplete="current-password" required>
+      <p id="auth-error" class="auth-error" role="alert" hidden></p>
+      <button type="submit" class="btn-auth-submit" id="auth-submit">Entrar</button>
+    </form>
+  </div>
+</div>
 
 <!-- Modal: días no mostrados en la fila (cuando hay más de 3 días recientes) -->
 <div class="modal-overlay" id="earlierDaysModal">
@@ -613,11 +678,6 @@
   </div>
 </div>
 
-<div class="sync-bar">
-  <span class="sync-dot" id="sync-dot"></span>
-  <span id="sync-msg">Conectando con la nube...</span>
-</div>
-
 <header>
   <div>
     <div class="header-kicker">Viaje</div>
@@ -625,6 +685,7 @@
   </div>
   <div class="header-actions">
     <div class="header-flag" aria-hidden="true">🇧🇷</div>
+    <button type="button" class="btn-header-ghost" onclick="window.doSignOut()">Salir</button>
     <button type="button" class="btn-header-ghost" onclick="clearData()">Borrar todo</button>
   </div>
 </header>
@@ -697,12 +758,6 @@
         </div>
       </div>
     </div>
-    <div class="inv-summary" style="margin-top:18px;">
-      <div class="inv-metric"><div class="label">Total</div><div class="value" id="inv-total">R$0</div></div>
-      <div class="inv-metric"><div class="label">Gastado</div><div class="value warn" id="inv-gastado">R$0</div></div>
-      <div class="inv-metric"><div class="label">Restante</div><div class="value good" id="inv-restante">R$0</div></div>
-    </div>
-    <div class="progress-bar"><div class="progress-fill" id="inv-progress" style="width:0%"></div></div>
   </div>
 
   <div class="card">
@@ -823,10 +878,30 @@
 
 </div>
 
+<div class="sync-bar" id="sync-bar" role="status" aria-live="polite" aria-atomic="true">
+  <span class="sync-dot" id="sync-dot"></span>
+  <span id="sync-msg">Conectando con la nube...</span>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+/*
+ * Firestore (consola Firebase → Firestore → Reglas): restringir datos a sesión iniciada.
+ * Ejemplo solo para este usuario (sustituí EMAIL por AUTH_EMAIL del código):
+ *
+ * rules_version = '2';
+ * service cloud.firestore {
+ *   match /databases/{database}/documents {
+ *     match /viaje/datos {
+ *       allow read, write: if request.auth != null && request.auth.token.email == 'magus@gastos-brasil.app';
+ *     }
+ *   }
+ * }
+ */
 
 const firebaseConfig = {
   apiKey: "AIzaSyCQ6luJfoXP_1Ov_guQwrgokQA23v_sGy0",
@@ -838,8 +913,34 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const db = getFirestore(app);
 const docRef = doc(db, "viaje", "datos");
+
+/** Usuario pantalla login → mismo correo alta en Firebase Auth (Email/contraseña). */
+const AUTH_LOGIN = 'magus';
+const AUTH_EMAIL = 'magus@gastos-brasil.app';
+
+let unsubDoc = null;
+
+function detachFirestoreSync() {
+  if (unsubDoc) {
+    unsubDoc();
+    unsubDoc = null;
+  }
+}
+
+function attachFirestoreSync() {
+  detachFirestoreSync();
+  unsubDoc = onSnapshot(docRef, (snap) => {
+    setSyncStatus('ok', 'Sincronizado ✓');
+    if (snap.exists()) loadFromData(snap.data());
+    else renderAll();
+  }, (err) => {
+    console.error('Firestore snapshot error:', err);
+    setSyncStatus('err', 'Sin conexión — o sin permiso (revisá reglas)');
+  });
+}
 
 let days = [[]];
 let currentDay = 0;
@@ -933,14 +1034,72 @@ function loadFromData(data) {
   renderAll();
 }
 
-onSnapshot(docRef, (snap) => {
-  setSyncStatus('ok', 'Sincronizado ✓');
-  if (snap.exists()) loadFromData(snap.data());
-  else renderAll();
-}, (err) => {
-  console.error('Firestore snapshot error:', err);
-  setSyncStatus('err', 'Sin conexión — chequeá internet');
+const authScreen = document.getElementById('auth-screen');
+const authForm = document.getElementById('auth-form');
+const authError = document.getElementById('auth-error');
+const authSubmit = document.getElementById('auth-submit');
+
+function setAuthError(msg) {
+  if (!msg) {
+    authError.hidden = true;
+    authError.textContent = '';
+    return;
+  }
+  authError.hidden = false;
+  authError.textContent = msg;
+}
+
+authForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  setAuthError('');
+  const userInput = document.getElementById('auth-user').value.trim().toLowerCase();
+  const pass = document.getElementById('auth-pass').value;
+  if (userInput !== AUTH_LOGIN) {
+    setAuthError('Usuario o contraseña incorrectos');
+    return;
+  }
+  authSubmit.disabled = true;
+  try {
+    await signInWithEmailAndPassword(auth, AUTH_EMAIL, pass);
+  } catch (err) {
+    const code = err && err.code;
+    if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found' || code === 'auth/invalid-email') {
+      setAuthError('Usuario o contraseña incorrectos');
+    } else if (code === 'auth/too-many-requests') {
+      setAuthError('Demasiados intentos. Esperá unos minutos.');
+    } else {
+      setAuthError('No se pudo iniciar sesión. Probá de nuevo.');
+    }
+    console.error(err);
+  } finally {
+    authSubmit.disabled = false;
+  }
 });
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    authScreen.hidden = true;
+    setSyncStatus('loading', 'Conectando...');
+    attachFirestoreSync();
+  } else {
+    detachFirestoreSync();
+    authScreen.hidden = false;
+    setSyncStatus('err', 'Iniciá sesión para sincronizar');
+    document.getElementById('auth-pass').value = '';
+    setAuthError('');
+    renderAll();
+  }
+});
+
+window.doSignOut = async function () {
+  try {
+    detachFirestoreSync();
+    await signOut(auth);
+  } catch (e) {
+    console.error(e);
+  }
+  location.reload();
+};
 
 // ── Formato ───────────────────────────────────────────────────
 function escapeHtml(s) {
@@ -1285,20 +1444,6 @@ function renderAll() {
 }
 
 function renderInv() {
-  const yo = parseFloat(document.getElementById('aporte-yo').value) || 0;
-  const amigo = parseFloat(document.getElementById('aporte-amigo').value) || 0;
-  const totalIngresos = ingresos.reduce((s, i) => s + i.monto, 0);
-  const total = yo + amigo + totalIngresos;
-  const gastado = days.flat().reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
-  const restante = total - gastado;
-  const pct = total > 0 ? Math.min((gastado / total) * 100, 100) : 0;
-  document.getElementById('inv-total').textContent = `${sym()} ${cv(total)}`;
-  document.getElementById('inv-gastado').textContent = `${sym()} ${cv(gastado)}`;
-  document.getElementById('inv-restante').textContent = `${sym()} ${cv(restante)}`;
-  document.getElementById('inv-restante').className = `value ${restante < 0 ? 'bad' : restante < total * 0.2 ? 'warn' : 'good'}`;
-  document.getElementById('inv-progress').style.width = pct + '%';
-  document.getElementById('inv-progress').style.background = pct > 90 ? '#c42a00' : pct > 70 ? '#c47a00' : 'var(--accent)';
-
   const listEl = document.getElementById('ingresos-list');
   if (ingresos.length === 0) {
     listEl.innerHTML = '';
