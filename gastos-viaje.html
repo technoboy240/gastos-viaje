@@ -80,12 +80,27 @@
     letter-spacing: 0.2em; font-family: 'Syne', system-ui, sans-serif;
     text-transform: uppercase; margin-bottom: 6px; font-weight: 600;
   }
-  .header-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
-  .header-flag { font-size: 36px; line-height: 1; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.25)); }
+  .header-actions {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .header-flag {
+    font-size: 28px;
+    line-height: 1;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.25));
+    display: inline-block;
+    user-select: none;
+    margin-right: 4px;
+  }
   .btn-header-ghost {
     font-family: 'Syne', system-ui, sans-serif;
-    font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
-    padding: 8px 14px; min-height: 40px; border-radius: 999px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.05em;
+    padding: 6px 11px; min-height: 34px; border-radius: 999px;
     border: 1px solid rgba(255,255,255,0.28);
     background: rgba(255,255,255,0.06);
     color: rgba(255,255,255,0.7);
@@ -492,7 +507,7 @@
     .total-card .spent-val { font-size: 20px; }
     .balance-box .result { font-size: 15px; }
     .btn-add { min-height: 52px; font-size: 16px; }
-    .btn-header-ghost { min-height: 44px; padding: 10px 16px; }
+    .btn-header-ghost { min-height: 38px; padding: 7px 12px; font-size: 10px; }
     .btn-primary, .btn-ahorro-sum, .btn-ahorro-rest, .btn-save { min-height: 48px; }
     .curr-btn, .day-tab, .btn-newday, .btn-earlier-days { min-height: 48px; }
     .global-balance .res { font-size: 16px; }
@@ -684,9 +699,9 @@
     <h1>Gastos<br>del Viaje</h1>
   </div>
   <div class="header-actions">
-    <div class="header-flag" aria-hidden="true">🇧🇷</div>
+    <span class="header-flag" aria-hidden="true" title="Brasil">🇧🇷</span>
     <button type="button" class="btn-header-ghost" onclick="window.doSignOut()">Salir</button>
-    <button type="button" class="btn-header-ghost" onclick="clearData()">Borrar todo</button>
+    <button type="button" class="btn-header-ghost" onclick="clearData()" title="Pedirá confirmación (escribir BORRAR)">Borrar todo</button>
   </div>
 </header>
 
