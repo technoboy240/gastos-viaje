@@ -852,6 +852,23 @@
     <div id="day-summary"></div>
   </div>
 
+  <div class="card" id="card-gastos-mes">
+    <div class="card-title">Gastos por mes</div>
+    <div id="month-expense-visible"></div>
+    <div id="month-expense-accordion-wrap" hidden>
+      <div class="resumen-accordion__intro" style="margin-top:10px;">
+        <button type="button" class="resumen-accordion__trigger" id="month-accordion-btn" aria-expanded="false" aria-controls="month-accordion-panel" onclick="window.toggleMesesAnteriores()">
+          <span class="resumen-accordion__title" id="month-accordion-title">Meses anteriores</span>
+          <span class="resumen-accordion__chev" aria-hidden="true">▶</span>
+        </button>
+        <p class="resumen-accordion__hint" id="month-accordion-hint">Tocá para ver otros meses</p>
+      </div>
+      <div class="resumen-accordion__panel" id="month-accordion-panel" role="region" aria-labelledby="month-accordion-btn" hidden>
+        <div id="month-expense-earlier" style="padding-top:4px;"></div>
+      </div>
+    </div>
+  </div>
+
   <div class="card">
     <div class="card-title">Gastos por categoría</div>
     <div class="chart-wrap">
@@ -998,6 +1015,8 @@ const CATS = ['Hospedaje','Comida','Transporte','Otros'];
 const CAT_COLORS = ['#1a7ae8', '#e8521a', '#15803d', '#6b3fa0'];
 const CAT_ICONS = {'Hospedaje':'🏨','Comida':'🍽️','Transporte':'🚌','Otros':'📦'};
 const MAX_VISIBLE_DAY_TABS = 3;
+const MAX_VISIBLE_MONTH_ROWS = 3;
+const MONTH_NAMES_FULL = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
 function fillCategorySelects() {
   const optionsHtml = CATS.map(c => `<option value="${c}">${CAT_ICONS[c]} ${c}</option>`).join('');
@@ -1476,7 +1495,7 @@ function renderAll() {
   document.getElementById('lbl-total-amigo').textContent = nameAmigo.toUpperCase();
   document.getElementById('btn-brl').className = 'curr-btn' + (displayCurrency === 'BRL' ? ' active-brl' : '');
   document.getElementById('btn-ars').className = 'curr-btn' + (displayCurrency === 'ARS' ? ' active-ars' : '');
-  renderDayTabs(); renderExpenses(); renderSummary(); renderInv(); renderChart(); renderAhorro();
+  renderDayTabs(); renderExpenses(); renderSummary(); renderInv(); renderMonthlyExpenses(); renderChart(); renderAhorro();
   refreshAllMoneyConversionPreviews();
 }
 
@@ -1688,6 +1707,101 @@ function renderSummary() {
   else { liq.innerHTML = `${escapeHtml(nameYo)} le debe a ${escapeHtml(nameAmigo)} <strong>${sym()} ${cv(Math.abs(diff))}</strong>`; liq.style.color = '#ffb89e'; }
 }
 
+function monthKeyFromDate(dateStr) {
+  if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return null;
+  return dateStr.slice(0, 7);
+}
+
+function monthLabelFromKey(monthKey, allKeys) {
+  const m = parseInt(monthKey.slice(5, 7), 10);
+  const name = MONTH_NAMES_FULL[m - 1] || monthKey;
+  const years = new Set(allKeys.map(k => k.slice(0, 4)));
+  if (years.size > 1) return `${name} ${monthKey.slice(0, 4)}`;
+  return name;
+}
+
+/** Totales por mes (solo días con fecha y al menos un gasto). Orden cronológico ascendente. */
+function buildMonthlyExpenseRows(daysArr, datesArr) {
+  const totals = new Map();
+  for (let i = 0; i < daysArr.length; i++) {
+    const expenses = daysArr[i] || [];
+    if (expenses.length === 0) continue;
+    const monthKey = monthKeyFromDate(datesArr[i]);
+    if (!monthKey) continue;
+    const sum = expenses.reduce((s, e) => s + toBRL(e.monto, e.moneda), 0);
+    totals.set(monthKey, (totals.get(monthKey) || 0) + sum);
+  }
+  const keys = [...totals.keys()].sort((a, b) => a.localeCompare(b));
+  return keys.map(key => ({
+    key,
+    label: monthLabelFromKey(key, keys),
+    totalBRL: totals.get(key)
+  }));
+}
+
+function monthExpenseRowHtml(row) {
+  return `<div class="legend-item">
+    <span class="legend-label">${escapeHtml(row.label)}</span>
+    <span class="legend-val tabular">${sym()} ${cv(row.totalBRL)}</span>
+  </div>`;
+}
+
+function renderMonthlyExpenses() {
+  const visibleEl = document.getElementById('month-expense-visible');
+  const earlierEl = document.getElementById('month-expense-earlier');
+  const accWrap = document.getElementById('month-expense-accordion-wrap');
+  const accTitle = document.getElementById('month-accordion-title');
+  if (!visibleEl || !earlierEl || !accWrap) return;
+
+  const rows = buildMonthlyExpenseRows(days, dayDates);
+  if (rows.length === 0) {
+    visibleEl.innerHTML = `<div style="color:var(--muted);font-size:13px;">Aún no hay gastos con fecha de día asignada</div>`;
+    earlierEl.innerHTML = '';
+    accWrap.hidden = true;
+    closeMesesAnterioresAccordion();
+    return;
+  }
+
+  const visibleRows = rows.length > MAX_VISIBLE_MONTH_ROWS ? rows.slice(-MAX_VISIBLE_MONTH_ROWS) : rows;
+  const earlierRows = rows.length > MAX_VISIBLE_MONTH_ROWS ? rows.slice(0, rows.length - MAX_VISIBLE_MONTH_ROWS) : [];
+
+  visibleEl.innerHTML = visibleRows.map(monthExpenseRowHtml).join('');
+
+  if (earlierRows.length > 0) {
+    accWrap.hidden = false;
+    earlierEl.innerHTML = earlierRows.map(monthExpenseRowHtml).join('');
+    if (accTitle) accTitle.textContent = `Meses anteriores (${earlierRows.length})`;
+  } else {
+    accWrap.hidden = true;
+    earlierEl.innerHTML = '';
+    closeMesesAnterioresAccordion();
+  }
+}
+
+function closeMesesAnterioresAccordion() {
+  const btn = document.getElementById('month-accordion-btn');
+  const panel = document.getElementById('month-accordion-panel');
+  const hint = document.getElementById('month-accordion-hint');
+  if (!btn || !panel) return;
+  btn.setAttribute('aria-expanded', 'false');
+  panel.hidden = true;
+  if (hint) hint.textContent = 'Tocá para ver otros meses';
+}
+
+window.toggleMesesAnteriores = function() {
+  const btn = document.getElementById('month-accordion-btn');
+  const panel = document.getElementById('month-accordion-panel');
+  const hint = document.getElementById('month-accordion-hint');
+  if (!btn || !panel) return;
+  const open = btn.getAttribute('aria-expanded') === 'true';
+  const next = !open;
+  btn.setAttribute('aria-expanded', String(next));
+  panel.hidden = !next;
+  if (hint) {
+    hint.textContent = next ? 'Tocá para ocultar otros meses' : 'Tocá para ver otros meses';
+  }
+};
+
 function renderChart() {
   const all = days.flat();
   const totals = CATS.map(cat => all.filter(e => (e.cat || 'Otros') === cat).reduce((s, e) => s + toBRL(e.monto, e.moneda), 0));
@@ -1752,6 +1866,31 @@ function renderAhorro() {
     arsEl.textContent = '';
   }
 }
+
+function runMonthlyExpenseSelfTests() {
+  const rows = buildMonthlyExpenseRows(
+    [[{ monto: 100, moneda: 'BRL' }], [{ monto: 50, moneda: 'BRL' }]],
+    ['2026-03-10', '2026-04-01']
+  );
+  console.assert(rows.length === 2, 'monthly: two months');
+  console.assert(rows[0].label === 'Marzo' && rows[1].label === 'Abril', 'monthly: labels');
+  console.assert(Math.abs(rows[0].totalBRL - 100) < 0.001, 'monthly: march total');
+
+  const skipNoDate = buildMonthlyExpenseRows([[{ monto: 10, moneda: 'BRL' }]], ['']);
+  console.assert(skipNoDate.length === 0, 'monthly: skip days without date');
+
+  const skipEmpty = buildMonthlyExpenseRows([[]], ['2026-05-01']);
+  console.assert(skipEmpty.length === 0, 'monthly: skip empty days');
+
+  const multiYear = buildMonthlyExpenseRows(
+    [[{ monto: 1, moneda: 'BRL' }], [{ monto: 2, moneda: 'BRL' }]],
+    ['2025-03-01', '2026-03-01']
+  );
+  console.assert(multiYear[0].label.includes('2025') && multiYear[1].label.includes('2026'), 'monthly: year suffix');
+
+  console.log('[selftest] monthly expenses OK');
+}
+if (new URLSearchParams(location.search).has('selftest')) runMonthlyExpenseSelfTests();
 
 window.toggleResumenViaje = function() {
   const btn = document.getElementById('resumen-accordion-btn');
