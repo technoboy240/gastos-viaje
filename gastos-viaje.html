@@ -2950,17 +2950,12 @@
       const expenses = days[currentDay] || [];
       if (expenses.length === 0) { list.innerHTML = `<div class="empty-msg">Todavía no hay gastos para ${escapeHtml(dayLabels[currentDay] || 'este día')}</div>`; sumDiv.innerHTML = ''; return; }
 
-      let html = `<div class="table-scroll"><table class="expense-table"><thead><tr><th>Descripción</th><th>Pagó</th><th style="text-align:right">Monto</th><th></th></tr></thead><tbody>`;
+      let html = `<div class="table-scroll"><table class="expense-table"><thead><tr><th>Descripción</th><th style="text-align:right">Monto</th><th></th></tr></thead><tbody>`;
       expenses.forEach(e => {
-        const bc = e.quien === 'yo' ? 'badge-yo' : 'badge-amigo';
-        const bn = escapeHtml(e.quien === 'yo' ? nameYo : nameAmigo);
         const mb = e.moneda === 'ARS' ? `<span class="badge badge-moneda-ars">ARS</span>` : `<span class="badge badge-moneda-brl">BRL</span>`;
         const catB = `<span class="badge badge-cat">${CAT_ICONS[e.cat] || '📦'} ${e.cat || 'Otros'}</span>`;
-        const indivB = '';
-        const rowClass = e.tipo === 'individual' ? 'indiv-row' : '';
-        html += `<tr class="${rowClass}">
-      <td>${escapeHtml(e.desc)} ${mb}${catB}${indivB}</td>
-      <td><span class="badge ${bc}">${bn}</span></td>
+        html += `<tr>
+      <td>${escapeHtml(e.desc)} ${mb}${catB}</td>
       <td style="text-align:right;font-family:'Syne',sans-serif;font-weight:600">${displayAmt(e.monto, e.moneda)}</td>
       <td style="white-space:nowrap">
         <button class="btn-edit" onclick="openEdit(${e.id})">✏️</button>
