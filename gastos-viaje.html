@@ -434,22 +434,7 @@
       }
     }
 
-    .form-row2 {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-      align-items: end;
-      margin-bottom: 12px;
-    }
-
-    @media (min-width: 480px) {
-      .form-row2 {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    .form-row label,
-    .form-row2 label {
+    .form-row label {
       font-size: 12px;
       color: var(--muted);
       display: block;
@@ -458,8 +443,6 @@
 
     .form-row input,
     .form-row select,
-    .form-row2 input,
-    .form-row2 select,
     .ingreso-field {
       width: 100%;
       padding: 10px 12px;
@@ -481,8 +464,6 @@
 
     .form-row input:focus,
     .form-row select:focus,
-    .form-row2 input:focus,
-    .form-row2 select:focus,
     .ingreso-field:focus {
       border-color: var(--info);
       background: #fff;
@@ -501,38 +482,6 @@
       margin-top: 4px;
       padding-left: 2px;
       line-height: 1.35;
-    }
-
-    .tipo-toggle {
-      display: flex;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    .tipo-btn {
-      flex: 1;
-      padding: 10px 8px;
-      min-height: 44px;
-      border: none;
-      background: var(--bg-0);
-      color: var(--muted);
-      font-family: 'Syne', system-ui, sans-serif;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.12s, color 0.12s;
-      letter-spacing: 0.04em;
-    }
-
-    .tipo-btn.active-comp {
-      background: var(--info);
-      color: #fff;
-    }
-
-    .tipo-btn.active-indiv {
-      background: var(--ars);
-      color: #fff;
     }
 
     .btn,
@@ -572,7 +521,6 @@
     .btn-save:focus-visible,
     .curr-btn:focus-visible,
     .day-tab:focus-visible,
-    .tipo-btn:focus-visible,
     .btn-header-ghost:focus-visible {
       outline: none;
       box-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(26, 122, 232, 0.45);
@@ -775,54 +723,8 @@
       border-color: var(--accent);
     }
 
-    .day-tab-x {
-      flex-shrink: 0;
-      width: 40px;
-      height: 40px;
-      min-width: 40px;
-      min-height: 40px;
-      padding: 0;
-      border-radius: 50%;
-      border: 1px solid rgba(185, 28, 28, 0.35);
-      background: #fff5f5;
-      color: #b91c1c;
-      font-size: 18px;
-      line-height: 1;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.12s, border-color 0.12s, color 0.12s;
-    }
-
-    .day-tab-x:hover {
-      background: #fee2e2;
-      border-color: #ef4444;
-      color: #991b1b;
-    }
-
     .earlier-day-row {
       position: relative;
-    }
-
-    .earlier-day-x {
-      margin-left: 8px;
-      flex-shrink: 0;
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      padding: 0;
-      border: 1px solid #f8d0d0;
-      background: #fff5f5;
-      color: #b91c1c;
-      font-size: 20px;
-      line-height: 1;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.12s;
-    }
-
-    .earlier-day-x:hover {
-      background: #fee2e2;
-      border-color: #ef4444;
     }
 
     .btn-earlier-days {
@@ -927,14 +829,6 @@
     }
 
     .badge-moneda-ars {
-      background: #f3eaff;
-      color: var(--ars);
-      font-size: 9px;
-      padding: 1px 6px;
-      margin-left: 3px;
-    }
-
-    .badge-indiv {
       background: #f3eaff;
       color: var(--ars);
       font-size: 9px;
@@ -1448,46 +1342,40 @@
       color: var(--success);
     }
 
-    .name-inputs {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      gap: 10px;
-      align-items: start;
-    }
-
-    .name-inputs>div {
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-    }
-
-    .name-inputs input {
-      box-sizing: border-box;
-      width: 100%;
-      max-width: 100%;
-      min-width: 0;
-      padding: 10px 12px;
-      min-height: 44px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      font-size: 15px;
-      color: var(--text);
-      background: #fff;
-      outline: none;
-      transition: border-color 0.12s, box-shadow 0.12s;
-    }
-
-    .name-inputs input:focus {
-      border-color: var(--info);
-      box-shadow: 0 0 0 2px rgba(26, 122, 232, 0.2);
-    }
-
     .field-label {
       font-size: 12px;
       color: var(--muted);
       display: block;
       margin-bottom: 4px;
+    }
+
+    .btn-delete-round {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      min-height: 40px;
+      padding: 0;
+      border-radius: 50%;
+      border: 1px solid rgba(185, 28, 28, 0.35);
+      background: #fff5f5;
+      color: #b91c1c;
+      font-size: 18px;
+      line-height: 1;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.12s, border-color 0.12s, color 0.12s;
+    }
+
+    .btn-delete-round:hover {
+      background: #fee2e2;
+      border-color: #ef4444;
+      color: #991b1b;
+    }
+
+    .btn-delete-round.square {
+      border-radius: 10px;
+      margin-left: 8px;
     }
 
     @media (max-width: 639px) {
@@ -1501,9 +1389,7 @@
       }
 
       .form-row input,
-      .form-row select,
-      .form-row2 input,
-      .form-row2 select {
+      .form-row select {
         font-size: 16px;
       }
 
@@ -1584,23 +1470,6 @@
       .modal input {
         font-size: 16px;
       }
-
-      .name-inputs {
-        gap: 6px;
-      }
-
-      .name-inputs .field-label {
-        font-size: 10px;
-        margin-bottom: 2px;
-      }
-
-      .name-inputs input {
-        font-size: 13px;
-        padding: 6px 6px;
-        min-height: 40px;
-        border-radius: 8px;
-      }
-
       .btn-edit {
         min-width: 44px;
         min-height: 44px;
@@ -1941,18 +1810,7 @@
       <div id="edit-conversion-preview" class="money-conv-preview"></div>
       <label>Categoría</label>
       <select id="edit-cat"></select>
-      <div style="display: none;">
-        <label>Tipo</label>
-        <select id="edit-tipo">
-          <option value="compartido">Compartido</option>
-          <option value="individual">Individual</option>
-        </select>
-        <label>Pagó</label>
-        <select id="edit-quien">
-          <option value="yo" id="edit-opt-yo">Yo</option>
-          <option value="amigo" id="edit-opt-amigo">Amigo</option>
-        </select>
-      </div>
+
       <div class="modal-btns">
         <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
         <button class="btn-cancel btn-modal-danger" onclick="deleteFromModal()">Borrar</button>
@@ -2006,21 +1864,6 @@
 
   <div class="container">
 
-    <div class="card" style="display: none;">
-      <div class="card-title">Viajeros</div>
-      <div class="name-inputs">
-        <div>
-          <label class="field-label" for="nameYo">Vos</label>
-          <input type="text" id="nameYo" placeholder="Tu nombre" oninput="updateNames()" value="Yo" autocomplete="name">
-        </div>
-        <div>
-          <label class="field-label" for="nameAmigo">Tu amigo</label>
-          <input type="text" id="nameAmigo" placeholder="Nombre amigo" oninput="updateNames()" value="Amigo"
-            autocomplete="name">
-        </div>
-      </div>
-    </div>
-
     <div class="card">
       <div class="card-title">Tipo de cambio</div>
       <div class="tc-line">
@@ -2044,11 +1887,6 @@
           <label>Tu aporte (R$)</label>
           <input type="number" id="aporte-yo" placeholder="0" oninput="updateInv()" min="0" step="0.01">
           <div id="preview-aporte-yo" class="money-conv-preview"></div>
-        </div>
-        <div class="inv-block" style="display: none;">
-          <label id="lbl-aporte-amigo">Aporte amigo (R$)</label>
-          <input type="number" id="aporte-amigo" placeholder="0" oninput="updateInv()" min="0" step="0.01">
-          <div id="preview-aporte-amigo" class="money-conv-preview"></div>
         </div>
       </div>
       <div class="inv-divider">
@@ -2082,10 +1920,7 @@
       <div class="day-tabs" id="dayTabs"></div>
 
       <div class="form-row">
-        <select id="f-quien" style="display: none;">
-          <option value="yo" id="opt-yo" selected>Yo</option>
-          <option value="amigo" id="opt-amigo">Amigo</option>
-        </select>
+
         <div>
           <label>Moneda</label>
           <select id="f-moneda" onchange="onMonedaChange()">
@@ -2106,15 +1941,7 @@
           <input type="text" id="f-desc" placeholder="Ej: almuerzo, taxi...">
         </div>
       </div>
-      <div class="form-row2" style="display: none;">
-        <div>
-          <label>Tipo</label>
-          <div class="tipo-toggle">
-            <button class="tipo-btn" id="btn-comp" onclick="setTipo('compartido')">Compartido</button>
-            <button class="tipo-btn active-indiv" id="btn-indiv" onclick="setTipo('individual')">Individual</button>
-          </div>
-        </div>
-      </div>
+
       <div id="conversion-preview" class="money-conv-preview" style="margin-bottom:8px;padding-left:2px;"></div>
       <button class="btn-add" onclick="addExpense()">+ Agregar gasto</button>
 
@@ -2351,7 +2178,6 @@
             tcARS_BRL: tcARS_BRL || null,
             ingresos, dayDates, dayLabels,
             aporteYo: document.getElementById('aporte-yo').value || '',
-            aporteAmigo: document.getElementById('aporte-amigo').value || '',
             ahorros,
             ajusteDeuda
           });
@@ -2388,10 +2214,7 @@
       dayLabels = data.dayLabels || days.map((_, i) => `Día ${i + 1}`);
       ahorros = data.ahorros || 0;
       ajusteDeuda = data.ajusteDeuda || 0;
-      document.getElementById('nameYo').value = nameYo;
-      document.getElementById('nameAmigo').value = nameAmigo;
       if (data.aporteYo) document.getElementById('aporte-yo').value = data.aporteYo;
-      if (data.aporteAmigo) document.getElementById('aporte-amigo').value = data.aporteAmigo;
       if (tcARS_BRL) {
         document.getElementById('tc-manual-val').value = (1 / tcARS_BRL).toFixed(2);
         document.getElementById('tc-ars-equiv').textContent = `→ 1 ARS = R$ ${tcARS_BRL.toFixed(4)}`;
@@ -2497,9 +2320,7 @@
     }
     function refreshInvestmentAportePreviews() {
       const yi = parseFloat(document.getElementById('aporte-yo').value) || 0;
-      const ai = parseFloat(document.getElementById('aporte-amigo').value) || 0;
       setMoneyPreviewEl('preview-aporte-yo', otherCurrencyPreviewLine(yi, 'BRL'));
-      setMoneyPreviewEl('preview-aporte-amigo', otherCurrencyPreviewLine(ai, 'BRL'));
     }
 
     // ── TC ────────────────────────────────────────────────────────
@@ -2516,25 +2337,14 @@
       renderAll(); save();
     }
 
-    // ── Tipo compartido/individual ────────────────────────────────
+    // ── Tipo (siempre individual) ─────────────────────────────────
     window.setTipo = function (t) {
       tipoActual = t;
-      const btnComp = document.getElementById('btn-comp');
-      const btnIndiv = document.getElementById('btn-indiv');
-      if (btnComp) btnComp.className = 'tipo-btn' + (t === 'compartido' ? ' active-comp' : '');
-      if (btnIndiv) btnIndiv.className = 'tipo-btn' + (t === 'individual' ? ' active-indiv' : '');
     }
 
     // ── Moneda display ────────────────────────────────────────────
     window.setCurrency = function (cur) {
       displayCurrency = cur;
-      renderAll(); save();
-    }
-
-    // ── Nombres ───────────────────────────────────────────────────
-    window.updateNames = function () {
-      nameYo = document.getElementById('nameYo').value || 'Yo';
-      nameAmigo = document.getElementById('nameAmigo').value || 'Amigo';
       renderAll(); save();
     }
 
@@ -2669,7 +2479,7 @@
     }
 
     window.addExpense = function () {
-      const quien = document.getElementById('f-quien').value;
+      const quien = 'yo';
       const moneda = document.getElementById('f-moneda').value;
       const monto = parseFloat(document.getElementById('f-monto').value);
       const desc = document.getElementById('f-desc').value.trim();
@@ -2707,22 +2517,17 @@
     }
     window.editModalUpdatePreview = editModalUpdatePreview;
 
-    window.updateIngresoMontoPreview = function () {
-      const m = parseFloat(document.getElementById('ingreso-monto').value) || 0;
-      setMoneyPreviewEl('preview-ingreso-extra', otherCurrencyPreviewLine(m, 'BRL'));
-    };
-    window.updateAhorroInputPreview = function () {
-      const m = parseFloat(document.getElementById('ahorro-input').value) || 0;
-      setMoneyPreviewEl('preview-ahorro-input', otherCurrencyPreviewLine(m, 'BRL'));
-    };
-    window.updateEiMontoPreview = function () {
-      const m = parseFloat(document.getElementById('ei-monto').value) || 0;
-      setMoneyPreviewEl('preview-ei-monto', otherCurrencyPreviewLine(m, 'BRL'));
-    };
-    window.updateDeudaAjusteInputPreview = function () {
-      const m = parseFloat(document.getElementById('deuda-ajuste-input').value) || 0;
-      setMoneyPreviewEl('preview-deuda-ajuste-input', otherCurrencyPreviewLine(m, 'BRL'));
-    };
+    /** Función genérica para actualizar previews de conversión de moneda */
+    function updateMoneyPreview(inputId, previewId, currency = 'BRL') {
+      const m = parseFloat(document.getElementById(inputId).value) || 0;
+      setMoneyPreviewEl(previewId, otherCurrencyPreviewLine(m, currency));
+    }
+
+    window.updateIngresoMontoPreview = () => updateMoneyPreview('ingreso-monto', 'preview-ingreso-extra');
+    window.updateAhorroInputPreview = () => updateMoneyPreview('ahorro-input', 'preview-ahorro-input');
+    window.updateEiMontoPreview = () => updateMoneyPreview('ei-monto', 'preview-ei-monto');
+    window.updateDeudaAjusteInputPreview = () => updateMoneyPreview('deuda-ajuste-input', 'preview-deuda-ajuste-input');
+
     function refreshAllMoneyConversionPreviews() {
       refreshInvestmentAportePreviews();
       window.updateIngresoMontoPreview();
@@ -2732,7 +2537,6 @@
       editModalUpdatePreview();
       window.updateDeudaAjusteInputPreview();
     }
-
     window.openEdit = function (id) {
       const e = days.flat().find(x => x.id === id);
       if (!e) return;
@@ -2743,10 +2547,6 @@
       monSel.value = e.moneda || 'BRL';
       monSel.className = monSel.value === 'ARS' ? 'moneda-ars' : '';
       document.getElementById('edit-cat').value = e.cat || 'Otros';
-      document.getElementById('edit-tipo').value = e.tipo || 'compartido';
-      document.getElementById('edit-quien').value = e.quien;
-      document.getElementById('edit-opt-yo').textContent = nameYo;
-      document.getElementById('edit-opt-amigo').textContent = nameAmigo;
       editModalUpdatePreview();
       document.getElementById('editModal').classList.add('open');
     }
@@ -2778,8 +2578,6 @@
           e.monto = monto;
           e.moneda = moneda;
           e.cat = document.getElementById('edit-cat').value;
-          e.tipo = document.getElementById('edit-tipo').value;
-          e.quien = document.getElementById('edit-quien').value;
           break;
         }
       }
@@ -2792,22 +2590,15 @@
       const confirmText = prompt('Para borrar todos los datos escribí "BORRAR" en mayúsculas:');
       if (confirmText !== 'BORRAR') return;
       days = [[]]; currentDay = 0; tcARS_BRL = null; nameYo = 'Yo'; nameAmigo = 'Amigo'; ingresos = []; dayDates = ['']; dayLabels = ['Día 1']; ahorros = 0; ajusteDeuda = 0;
-      document.getElementById('nameYo').value = 'Yo';
-      document.getElementById('nameAmigo').value = 'Amigo';
       document.getElementById('aporte-yo').value = '';
-      document.getElementById('aporte-amigo').value = '';
       document.getElementById('tc-manual-val').value = '';
       document.getElementById('tc-ars-equiv').textContent = '';
       setTCStatus('', 'Ingresá el tipo de cambio');
-      setTipo('individual');
       renderAll(); save();
     }
 
     // ── Render ────────────────────────────────────────────────────
     function renderAll() {
-      document.getElementById('opt-yo').textContent = nameYo;
-      document.getElementById('opt-amigo').textContent = nameAmigo;
-      document.getElementById('lbl-aporte-amigo').textContent = `Aporte ${nameAmigo} (R$)`;
       document.getElementById('lbl-total-yo').textContent = nameYo.toUpperCase();
       document.getElementById('lbl-total-amigo').textContent = nameAmigo.toUpperCase();
       document.getElementById('btn-brl').className = 'curr-btn' + (displayCurrency === 'BRL' ? ' active-brl' : '');
@@ -2839,7 +2630,7 @@
 
     function dayDeleteBtnMarkup(i) {
       if (!isDayDeletable(i)) return '';
-      return `<button type="button" class="day-tab-x" title="Quitar este día" aria-label="Quitar día vacío" onclick="event.stopPropagation(); deleteDayAt(${i})">×</button>`;
+      return `<button type="button" class="btn-delete-round" title="Quitar este día" aria-label="Quitar día vacío" onclick="event.stopPropagation(); deleteDayAt(${i})">×</button>`;
     }
     function dayTabActiveMarkup(i) {
       const fecha = fmtDate(dayDates[i]);
@@ -2894,7 +2685,7 @@
         </div>
         <span style="font-size:12px;color:var(--muted);">→</span>
       </div>
-      ${canDel ? `<button type="button" class="earlier-day-x" title="Quitar día vacío" aria-label="Quitar día vacío" onclick="event.stopPropagation(); deleteDayAtFromModal(${i})">×</button>` : ''}
+      ${canDel ? `<button type="button" class="btn-delete-round square" title="Quitar día vacío" aria-label="Quitar día vacío" onclick="event.stopPropagation(); deleteDayAtFromModal(${i})">×</button>` : ''}
       </div>`
         );
       }
