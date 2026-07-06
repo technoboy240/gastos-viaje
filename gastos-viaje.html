@@ -821,47 +821,66 @@
     }
 
     .badge-moneda-brl {
-      background: #fff0eb;
-      color: var(--accent);
-      font-size: 9px;
-      padding: 1px 6px;
-      margin-left: 3px;
+      display: none;
     }
 
     .badge-moneda-ars {
       background: #f3eaff;
       color: var(--ars);
-      font-size: 9px;
-      padding: 1px 6px;
-      margin-left: 3px;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 999px;
+      margin-left: 4px;
+      vertical-align: middle;
     }
 
     .badge-cat {
-      background: var(--bg-0);
+      background: var(--bg-2);
       color: var(--text-1);
       border: 1px solid var(--border);
-      font-size: 9px;
-      padding: 1px 6px;
-      margin-left: 3px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-left: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      vertical-align: middle;
+    }
+
+    .expense-desc-cell {
+      padding: 10px 8px;
+    }
+
+    .expense-desc {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-0);
     }
 
     .btn-edit {
       background: transparent;
       border: 1px solid transparent;
-      color: var(--text-1);
+      color: var(--text-2);
       cursor: pointer;
-      font-size: 15px;
-      padding: 4px 8px;
-      min-width: 36px;
-      min-height: 36px;
-      border-radius: 8px;
-      transition: color 0.12s, background 0.12s, border-color 0.12s;
+      font-size: 12px;
+      padding: 3px 5px;
+      min-width: 28px;
+      min-height: 28px;
+      border-radius: 6px;
+      transition: all 0.12s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .btn-edit:hover {
       color: var(--info);
-      background: #f0f7ff;
-      border-color: #c8d9f0;
+      background: #e8f2fe;
+      border-color: #cbdcf8;
+      transform: scale(1.05);
     }
 
     .day-summary {
@@ -1471,9 +1490,9 @@
         font-size: 16px;
       }
       .btn-edit {
-        min-width: 44px;
-        min-height: 44px;
-        font-size: 18px;
+        min-width: 32px;
+        min-height: 32px;
+        font-size: 13px;
       }
     }
 
@@ -2743,13 +2762,13 @@
 
       let html = `<div class="table-scroll"><table class="expense-table"><thead><tr><th>Descripción</th><th style="text-align:right">Monto</th><th></th></tr></thead><tbody>`;
       expenses.forEach(e => {
-        const mb = e.moneda === 'ARS' ? `<span class="badge badge-moneda-ars">ARS</span>` : `<span class="badge badge-moneda-brl">BRL</span>`;
+        const mb = e.moneda === 'ARS' ? `<span class="badge badge-moneda-ars">ARS</span>` : '';
         const catB = `<span class="badge badge-cat">${CAT_ICONS[e.cat] || '📦'} ${e.cat || 'Otros'}</span>`;
         html += `<tr>
-      <td>${escapeHtml(e.desc)} ${mb}${catB}</td>
-      <td style="text-align:right;font-family:'Syne',sans-serif;font-weight:600">${displayAmt(e.monto, e.moneda)}</td>
-      <td style="white-space:nowrap">
-        <button class="btn-edit" onclick="openEdit(${e.id})">✏️</button>
+      <td class="expense-desc-cell"><span class="expense-desc">${escapeHtml(e.desc)}</span>${mb}${catB}</td>
+      <td style="text-align:right;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;" class="tabular">${displayAmt(e.monto, e.moneda)}</td>
+      <td style="white-space:nowrap;width:32px;text-align:right;">
+        <button class="btn-edit" onclick="openEdit(${e.id})" title="Editar gasto">✏️</button>
       </td>
     </tr>`;
       });
