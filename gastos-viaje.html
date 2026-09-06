@@ -28,6 +28,7 @@
       --warn: #c47a00;
       --danger: #c42a00;
       --ars: #6b3fa0;
+      --usd: #059669;
       --bg: var(--bg-0);
       --card: var(--bg-1);
       --text: var(--text-0);
@@ -332,6 +333,11 @@
       box-shadow: 0 0 0 2px rgba(107, 63, 160, 0.22);
     }
 
+    .input-tc.input-tc-usd:focus {
+      border-color: var(--usd) !important;
+      box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.22);
+    }
+
     .inv-divider {
       border-top: 1px solid var(--border);
       margin-top: 20px;
@@ -340,12 +346,12 @@
 
     .ingresos-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr auto;
+      grid-template-columns: 1fr;
       gap: 10px;
       align-items: end;
     }
 
-    @media (max-width: 639px) {
+    @media (max-width: 559px) {
       .ingresos-grid {
         grid-template-columns: 1fr;
       }
@@ -354,9 +360,13 @@
       .ingresos-grid .ing-col-btn {
         grid-column: 1 / -1;
       }
+
+      .ingresos-grid .ing-col-btn .field-label {
+        display: none;
+      }
     }
 
-    @media (min-width: 640px) and (max-width: 900px) {
+    @media (min-width: 560px) {
       .ingresos-grid {
         grid-template-columns: 1fr 1fr;
       }
@@ -366,21 +376,12 @@
       }
 
       .ingresos-grid .ing-col-btn {
-        grid-column: 1 / -1;
-      }
-    }
-
-    @media (min-width: 901px) {
-      .ingresos-grid {
-        grid-template-columns: 1fr 1fr 1fr auto;
-      }
-
-      .ingresos-grid .ing-col-wide {
         grid-column: auto;
       }
 
-      .ingresos-grid .ing-col-btn {
-        grid-column: auto;
+      .ingresos-grid .ing-col-btn .field-label {
+        display: block;
+        visibility: hidden;
       }
     }
 
@@ -473,6 +474,11 @@
     select.moneda-ars {
       border-color: #d4b8f0 !important;
       color: var(--ars) !important;
+    }
+
+    select.moneda-usd {
+      border-color: #a7f3d0 !important;
+      color: var(--usd) !important;
     }
 
     .money-conv-preview {
@@ -599,6 +605,12 @@
       background: var(--ars);
       color: #fff;
       border-color: var(--ars);
+    }
+
+    .curr-btn.active-usd {
+      background: var(--usd);
+      color: #fff;
+      border-color: var(--usd);
     }
 
     /* Días: fila 1 = solo "Días anteriores"; fila 2 = últimos 3 días + +Día */
@@ -827,6 +839,17 @@
     .badge-moneda-ars {
       background: #f3eaff;
       color: var(--ars);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 999px;
+      margin-left: 4px;
+      vertical-align: middle;
+    }
+
+    .badge-moneda-usd {
+      background: #ecfdf5;
+      color: var(--usd);
       font-size: 10px;
       font-weight: 700;
       padding: 2px 7px;
@@ -1823,8 +1846,9 @@
       <input type="number" id="edit-monto" min="0" step="0.01" oninput="editModalUpdatePreview()">
       <label>Moneda</label>
       <select id="edit-moneda" onchange="editModalOnMonedaChange()">
-        <option value="BRL">R$ Reales</option>
-        <option value="ARS">$ Pesos</option>
+        <option value="BRL">🇧🇷 R$ Reales</option>
+        <option value="ARS">🇦🇷 $ Pesos</option>
+        <option value="USD">🇺🇸 U$D Dólares</option>
       </select>
       <div id="edit-conversion-preview" class="money-conv-preview"></div>
       <label>Categoría</label>
@@ -1856,8 +1880,14 @@
       <h3>Editar ingreso</h3>
       <label>Descripción</label>
       <input type="text" id="ei-desc">
-      <label>Monto (R$)</label>
+      <label>Monto</label>
       <input type="number" id="ei-monto" min="0" step="0.01" oninput="updateEiMontoPreview()">
+      <label>Moneda</label>
+      <select id="ei-moneda" onchange="editIngresoOnMonedaChange()">
+        <option value="BRL">🇧🇷 R$ Reales</option>
+        <option value="ARS">🇦🇷 $ Pesos</option>
+        <option value="USD">🇺🇸 U$D Dólares</option>
+      </select>
       <div id="preview-ei-monto" class="money-conv-preview"></div>
       <label>Fecha</label>
       <input type="date" id="ei-fecha">
@@ -1885,17 +1915,36 @@
 
     <div class="card">
       <div class="card-title">Tipo de cambio</div>
-      <div class="tc-line">
-        <span style="font-size:14px;color:var(--muted);">1 BRL =</span>
-        <input type="number" id="tc-manual-val" class="input-tc" placeholder="Ej: 250" step="0.01" min="0"
-          oninput="applyManualTC()">
-        <span style="font-size:14px;color:var(--muted);">ARS</span>
-      </div>
-      <div class="tc-status">
-        <span class="tc-dot" id="tc-dot"></span>
-        <span id="tc-msg">Ingresá el tipo de cambio</span>
-        <span id="tc-ars-equiv" class="tabular"
-          style="margin-left:4px;color:var(--accent);font-family:'Syne',system-ui,sans-serif;font-weight:700;font-size:12px;"></span>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div>
+          <div class="tc-line">
+            <span style="font-size:14px;color:var(--muted);">1 BRL 🇧🇷 =</span>
+            <input type="number" id="tc-manual-val" class="input-tc" placeholder="Ej: 250" step="0.01" min="0"
+              oninput="applyManualTC()">
+            <span style="font-size:14px;color:var(--muted);">ARS 🇦🇷</span>
+          </div>
+          <div class="tc-status">
+            <span class="tc-dot" id="tc-dot"></span>
+            <span id="tc-msg">Ingresá el tipo de cambio ARS</span>
+            <span id="tc-ars-equiv" class="tabular"
+              style="margin-left:4px;color:var(--accent);font-family:'Syne',system-ui,sans-serif;font-weight:700;font-size:12px;"></span>
+          </div>
+        </div>
+
+        <div style="border-top:1px dashed var(--border);padding-top:12px;">
+          <div class="tc-line">
+            <span style="font-size:14px;color:var(--muted);">1 USD 🇺🇸 =</span>
+            <input type="number" id="tc-usd-val" class="input-tc input-tc-usd" placeholder="Ej: 5.50" step="0.01" min="0"
+              oninput="applyManualTCUSD()">
+            <span style="font-size:14px;color:var(--muted);">BRL 🇧🇷</span>
+          </div>
+          <div class="tc-status">
+            <span class="tc-dot" id="tc-usd-dot"></span>
+            <span id="tc-usd-msg">Ingresá el tipo de cambio USD</span>
+            <span id="tc-usd-equiv" class="tabular"
+              style="margin-left:4px;color:var(--usd);font-family:'Syne',system-ui,sans-serif;font-weight:700;font-size:12px;"></span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1917,7 +1966,15 @@
             <input type="text" id="ingreso-desc" class="ingreso-field" placeholder="Ej: trabajo extra...">
           </div>
           <div>
-            <label class="field-label" for="ingreso-monto">Monto (R$)</label>
+            <label class="field-label" for="ingreso-moneda">Moneda</label>
+            <select id="ingreso-moneda" class="ingreso-field" onchange="onIngresoMonedaChange()">
+              <option value="BRL">🇧🇷 R$ Reales</option>
+              <option value="ARS">🇦🇷 $ Pesos</option>
+              <option value="USD">🇺🇸 U$D Dólares</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label" for="ingreso-monto">Monto</label>
             <input type="number" id="ingreso-monto" class="ingreso-field" placeholder="0.00" min="0" step="0.01"
               oninput="updateIngresoMontoPreview()">
             <div id="preview-ingreso-extra" class="money-conv-preview"></div>
@@ -1943,8 +2000,9 @@
         <div>
           <label>Moneda</label>
           <select id="f-moneda" onchange="onMonedaChange()">
-            <option value="BRL">R$ Reales</option>
-            <option value="ARS">$ Pesos</option>
+            <option value="BRL">🇧🇷 R$ Reales</option>
+            <option value="ARS">🇦🇷 $ Pesos</option>
+            <option value="USD">🇺🇸 U$D Dólares</option>
           </select>
         </div>
         <div>
@@ -1967,8 +2025,9 @@
       <div style="margin-top:18px;">
         <div class="currency-toggle">
           <span>Ver en:</span>
-          <button class="curr-btn active-brl" id="btn-brl" onclick="setCurrency('BRL')">R$ Reales</button>
-          <button class="curr-btn" id="btn-ars" onclick="setCurrency('ARS')">$ Pesos</button>
+          <button class="curr-btn active-brl" id="btn-brl" onclick="setCurrency('BRL')">🇧🇷 R$ Reales</button>
+          <button class="curr-btn" id="btn-ars" onclick="setCurrency('ARS')">🇦🇷 $ Pesos</button>
+          <button class="curr-btn" id="btn-usd" onclick="setCurrency('USD')">🇺🇸 U$D Dólares</button>
         </div>
       </div>
       <div id="expense-list"></div>
@@ -2154,6 +2213,7 @@
     let nameYo = 'Yo';
     let nameAmigo = 'Amigo';
     let tcARS_BRL = null;
+    let tcUSD_BRL = null;
     let displayCurrency = 'BRL';
     let tipoActual = 'individual';
     let saveTimer = null;
@@ -2195,6 +2255,7 @@
           await setDoc(docRef, {
             daysObj, daysCount: days.length, currentDay, nameYo, nameAmigo, displayCurrency,
             tcARS_BRL: tcARS_BRL || null,
+            tcUSD_BRL: tcUSD_BRL || null,
             ingresos, dayDates, dayLabels,
             aporteYo: document.getElementById('aporte-yo').value || '',
             ahorros,
@@ -2228,7 +2289,11 @@
       nameAmigo = data.nameAmigo || 'Amigo';
       displayCurrency = data.displayCurrency || 'BRL';
       tcARS_BRL = data.tcARS_BRL || null;
-      ingresos = data.ingresos || [];
+      tcUSD_BRL = data.tcUSD_BRL || null;
+      ingresos = (data.ingresos || []).map(i => ({
+        ...i,
+        moneda: i.moneda || 'BRL'
+      }));
       dayDates = data.dayDates || days.map(() => '');
       dayLabels = data.dayLabels || days.map((_, i) => `Día ${i + 1}`);
       ahorros = data.ahorros || 0;
@@ -2238,6 +2303,11 @@
         document.getElementById('tc-manual-val').value = (1 / tcARS_BRL).toFixed(2);
         document.getElementById('tc-ars-equiv').textContent = `→ 1 ARS = R$ ${tcARS_BRL.toFixed(4)}`;
         setTCStatus('ok', 'Tipo de cambio cargado');
+      }
+      if (tcUSD_BRL) {
+        document.getElementById('tc-usd-val').value = tcUSD_BRL;
+        document.getElementById('tc-usd-equiv').textContent = `→ 1 BRL = U$D ${(1 / tcUSD_BRL).toFixed(4)}`;
+        setTCUSDStatus('ok', 'Tipo de cambio cargado');
       }
       renderAll();
     }
@@ -2315,23 +2385,63 @@
     }
     function fmt(n) { return n.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
     function fmtARS(n) { return n.toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }); }
+    function fmtUSD(n) { return n.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
     function arsToBrl(v) { return tcARS_BRL ? v * tcARS_BRL : 0; }
     function brlToArs(v) { return tcARS_BRL ? v / tcARS_BRL : 0; }
-    function toBRL(m, mon) { return mon === 'BRL' ? m : arsToBrl(m); }
-    function displayAmt(m, mon) {
-      if (displayCurrency === 'BRL') return `R$ ${fmt(mon === 'BRL' ? m : arsToBrl(m))}`;
-      return `$ ${fmtARS(mon === 'ARS' ? m : brlToArs(m))}`;
+    function usdToBrl(v) { return tcUSD_BRL ? v * tcUSD_BRL : 0; }
+    function brlToUsd(v) { return tcUSD_BRL ? v / tcUSD_BRL : 0; }
+    function toBRL(m, mon) {
+      if (mon === 'ARS') return arsToBrl(m);
+      if (mon === 'USD') return usdToBrl(m);
+      return m;
     }
-    function sym() { return displayCurrency === 'BRL' ? 'R$' : '$'; }
-    function cv(v) { return displayCurrency === 'BRL' ? fmt(v) : fmtARS(brlToArs(v)); }
+    function displayAmt(m, mon) {
+      const mBRL = toBRL(m, mon);
+      if (displayCurrency === 'BRL') return `R$ ${fmt(mBRL)}`;
+      if (displayCurrency === 'ARS') return `$ ${fmtARS(brlToArs(mBRL))}`;
+      if (displayCurrency === 'USD') return `U$D ${fmtUSD(brlToUsd(mBRL))}`;
+      return `R$ ${fmt(mBRL)}`;
+    }
+    function sym() {
+      if (displayCurrency === 'BRL') return 'R$';
+      if (displayCurrency === 'ARS') return '$';
+      if (displayCurrency === 'USD') return 'U$D';
+      return 'R$';
+    }
+    function cv(v) {
+      if (displayCurrency === 'BRL') return fmt(v);
+      if (displayCurrency === 'ARS') return fmtARS(brlToArs(v));
+      if (displayCurrency === 'USD') return fmtUSD(brlToUsd(v));
+      return fmt(v);
+    }
 
-    /** Equivalencia en la otra moneda (misma lógica que el registro de gastos). */
+    /** Equivalencia en las otras monedas según los tipos de cambio disponibles. */
     function otherCurrencyPreviewLine(m, mon) {
-      if (!tcARS_BRL) return '';
       const amt = typeof m === 'number' ? m : parseFloat(m);
       if (!amt || amt <= 0 || Number.isNaN(amt)) return '';
-      if (mon === 'ARS') return `≈ R$ ${fmt(arsToBrl(amt))} en reales`;
-      return `≈ $ ${fmtARS(brlToArs(amt))} en pesos`;
+
+      if (mon === 'USD') {
+        if (!tcUSD_BRL) return '';
+        const brl = usdToBrl(amt);
+        let txt = `≈ R$ ${fmt(brl)} en reales`;
+        if (tcARS_BRL) txt += ` · $ ${fmtARS(brlToArs(brl))} en pesos`;
+        return txt;
+      }
+
+      if (mon === 'ARS') {
+        if (!tcARS_BRL) return '';
+        const brl = arsToBrl(amt);
+        let txt = `≈ R$ ${fmt(brl)} en reales`;
+        if (tcUSD_BRL) txt += ` · U$D ${fmtUSD(brlToUsd(brl))} en dólares`;
+        return txt;
+      }
+
+      // BRL
+      const parts = [];
+      if (tcARS_BRL) parts.push(`$ ${fmtARS(brlToArs(amt))} en pesos`);
+      if (tcUSD_BRL) parts.push(`U$D ${fmtUSD(brlToUsd(amt))} en dólares`);
+      if (parts.length === 0) return '';
+      return `≈ ${parts.join(' · ')}`;
     }
     function setMoneyPreviewEl(id, text) {
       const el = document.getElementById(id);
@@ -2342,6 +2452,13 @@
       setMoneyPreviewEl('preview-aporte-yo', otherCurrencyPreviewLine(yi, 'BRL'));
     }
 
+    function updateMonedaClass(el) {
+      if (!el) return;
+      el.classList.remove('moneda-ars', 'moneda-usd');
+      if (el.value === 'ARS') el.classList.add('moneda-ars');
+      else if (el.value === 'USD') el.classList.add('moneda-usd');
+    }
+
     // ── TC ────────────────────────────────────────────────────────
     function setTCStatus(state, msg) {
       document.getElementById('tc-dot').className = 'tc-dot ' + state;
@@ -2349,12 +2466,33 @@
     }
     window.applyManualTC = function () {
       const val = parseFloat(document.getElementById('tc-manual-val').value);
-      if (!val || val <= 0) { tcARS_BRL = null; setTCStatus('', 'Ingresá el tipo de cambio'); document.getElementById('tc-ars-equiv').textContent = ''; return; }
+      if (!val || val <= 0) { tcARS_BRL = null; setTCStatus('', 'Ingresá el tipo de cambio ARS'); document.getElementById('tc-ars-equiv').textContent = ''; return; }
       tcARS_BRL = 1 / val;
       document.getElementById('tc-ars-equiv').textContent = `→ 1 ARS = R$ ${tcARS_BRL.toFixed(4)}`;
       setTCStatus('ok', 'Tipo de cambio listo');
       renderAll(); save();
     }
+
+    function setTCUSDStatus(state, msg) {
+      const dot = document.getElementById('tc-usd-dot');
+      const txt = document.getElementById('tc-usd-msg');
+      if (dot) dot.className = 'tc-dot ' + state;
+      if (txt) txt.textContent = msg;
+    }
+    window.applyManualTCUSD = function () {
+      const val = parseFloat(document.getElementById('tc-usd-val').value);
+      if (!val || val <= 0) {
+        tcUSD_BRL = null;
+        setTCUSDStatus('', 'Ingresá el tipo de cambio USD');
+        document.getElementById('tc-usd-equiv').textContent = '';
+        renderAll(); save();
+        return;
+      }
+      tcUSD_BRL = val;
+      document.getElementById('tc-usd-equiv').textContent = `→ 1 BRL = U$D ${(1 / tcUSD_BRL).toFixed(4)}`;
+      setTCUSDStatus('ok', 'Tipo de cambio listo');
+      renderAll(); save();
+    };
 
     // ── Tipo (siempre individual) ─────────────────────────────────
     window.setTipo = function (t) {
@@ -2370,24 +2508,32 @@
     // ── Ingresos extra ────────────────────────────────────────────
     let editingIngresoId = null;
 
+    window.onIngresoMonedaChange = function () {
+      updateMonedaClass(document.getElementById('ingreso-moneda'));
+      window.updateIngresoMontoPreview();
+    };
+
     window.addIngreso = function () {
       const desc = document.getElementById('ingreso-desc').value.trim();
       const monto = parseFloat(document.getElementById('ingreso-monto').value);
+      const moneda = document.getElementById('ingreso-moneda') ? document.getElementById('ingreso-moneda').value : 'BRL';
       const fecha = document.getElementById('ingreso-fecha').value || '';
       if (!monto || monto <= 0) { alert('Ingresá un monto válido'); return; }
       if (!desc) { alert('Agregá una descripción'); return; }
-      ingresos.push({ desc, monto, fecha, id: Date.now() });
+      if (moneda === 'ARS' && !tcARS_BRL) { alert('Ingresá primero el tipo de cambio para pesos'); return; }
+      if (moneda === 'USD' && !tcUSD_BRL) { alert('Ingresá primero el tipo de cambio para dólares'); return; }
+      ingresos.push({ desc, monto, moneda, fecha, id: Date.now() });
       document.getElementById('ingreso-desc').value = '';
       document.getElementById('ingreso-monto').value = '';
       document.getElementById('ingreso-fecha').value = '';
       window.updateIngresoMontoPreview();
       renderInv(); save();
-    }
+    };
 
     window.deleteIngreso = function (id) {
       ingresos = ingresos.filter(i => i.id !== id);
       renderInv(); renderIngresosModalList(); save();
-    }
+    };
 
     window.openEditIngreso = function (id) {
       const ing = ingresos.find(i => i.id === id);
@@ -2395,55 +2541,89 @@
       editingIngresoId = id;
       document.getElementById('ei-desc').value = ing.desc;
       document.getElementById('ei-monto').value = ing.monto;
+      const monSel = document.getElementById('ei-moneda');
+      if (monSel) {
+        monSel.value = ing.moneda || 'BRL';
+        updateMonedaClass(monSel);
+      }
       document.getElementById('ei-fecha').value = ing.fecha || '';
       document.getElementById('editIngresoModal').classList.add('open');
       window.updateEiMontoPreview();
-    }
+    };
+
     window.closeEditIngreso = function () {
       document.getElementById('editIngresoModal').classList.remove('open');
       editingIngresoId = null;
       setMoneyPreviewEl('preview-ei-monto', '');
-    }
+      const monSel = document.getElementById('ei-moneda');
+      if (monSel) {
+        monSel.value = 'BRL';
+        updateMonedaClass(monSel);
+      }
+    };
+
+    window.editIngresoOnMonedaChange = function () {
+      updateMonedaClass(document.getElementById('ei-moneda'));
+      window.updateEiMontoPreview();
+    };
+
     window.saveEditIngreso = function () {
       if (!editingIngresoId) return;
       const ing = ingresos.find(i => i.id === editingIngresoId);
       if (ing) {
-        ing.desc = document.getElementById('ei-desc').value.trim() || ing.desc;
-        ing.monto = parseFloat(document.getElementById('ei-monto').value) || ing.monto;
-        ing.fecha = document.getElementById('ei-fecha').value || '';
+        const desc = document.getElementById('ei-desc').value.trim();
+        const monto = parseFloat(document.getElementById('ei-monto').value);
+        const moneda = document.getElementById('ei-moneda') ? document.getElementById('ei-moneda').value : 'BRL';
+        const fecha = document.getElementById('ei-fecha').value || '';
+        if (!monto || monto <= 0) { alert('Ingresá un monto válido'); return; }
+        if (!desc) { alert('Agregá una descripción'); return; }
+        if (moneda === 'ARS' && !tcARS_BRL) { alert('Ingresá primero el tipo de cambio para pesos'); return; }
+        if (moneda === 'USD' && !tcUSD_BRL) { alert('Ingresá primero el tipo de cambio para dólares'); return; }
+        ing.desc = desc;
+        ing.monto = monto;
+        ing.moneda = moneda;
+        ing.fecha = fecha;
       }
       closeEditIngreso();
       renderInv(); renderIngresosModalList(); save();
-    }
+    };
+
     window.deleteIngresoFromModal = function () {
       if (!editingIngresoId) return;
       if (!confirm('¿Borrar este ingreso?')) return;
       ingresos = ingresos.filter(i => i.id !== editingIngresoId);
       closeEditIngreso();
       renderInv(); renderIngresosModalList(); save();
-    }
+    };
+
     window.openIngresosModal = function () {
       renderIngresosModalList();
       document.getElementById('ingresosModal').classList.add('open');
-    }
+    };
+
     window.closeIngresosModal = function () {
       document.getElementById('ingresosModal').classList.remove('open');
-    }
+    };
+
     function renderIngresosModalList() {
       const el = document.getElementById('ingresos-modal-list');
       if (!el) return;
       if (ingresos.length === 0) { el.innerHTML = '<div class="empty-msg">Sin ingresos extra</div>'; return; }
       el.innerHTML = ingresos.map(i => ingresoRow(i)).join('');
     }
+
     function ingresoRow(i) {
       const fechaStr = i.fecha ? fmtDate(i.fecha) : '';
+      let mb = '';
+      if (i.moneda === 'ARS') mb = `<span class="badge badge-moneda-ars">🇦🇷 ARS</span>`;
+      else if (i.moneda === 'USD') mb = `<span class="badge badge-moneda-usd">🇺🇸 USD</span>`;
       return `<div class="ingreso-row">
     <div>
-      <span class="ingreso-desc">${escapeHtml(i.desc)}</span>
+      <span class="ingreso-desc">${escapeHtml(i.desc)}</span>${mb}
       ${fechaStr ? `<span style="font-size:11px;color:var(--muted);margin-left:6px;">${fechaStr}</span>` : ''}
     </div>
     <div style="display:flex;align-items:center;gap:8px;">
-      <span class="ingreso-monto">+ R$ ${fmt(i.monto)}</span>
+      <span class="ingreso-monto">+ ${displayAmt(i.monto, i.moneda || 'BRL')}</span>
       <button type="button" class="btn-edit" onclick="openEditIngreso(${i.id})" title="Editar">✏️</button>
     </div>
   </div>`;
@@ -2488,14 +2668,14 @@
 
     // ── Formulario ────────────────────────────────────────────────
     window.onMonedaChange = function () {
-      document.getElementById('f-moneda').className = document.getElementById('f-moneda').value === 'ARS' ? 'moneda-ars' : '';
+      updateMonedaClass(document.getElementById('f-moneda'));
       window.updateConversionPreview();
-    }
+    };
     window.updateConversionPreview = function () {
       const mon = document.getElementById('f-moneda').value;
       const m = parseFloat(document.getElementById('f-monto').value) || 0;
       document.getElementById('conversion-preview').textContent = otherCurrencyPreviewLine(m, mon);
-    }
+    };
 
     window.addExpense = function () {
       const quien = 'yo';
@@ -2506,23 +2686,23 @@
       const tipo = tipoActual;
       if (!monto || monto <= 0) { alert('Ingresá un monto válido'); return; }
       if (!desc) { alert('Agregá una descripción'); return; }
-      if (moneda === 'ARS' && !tcARS_BRL) { alert('Ingresá primero el tipo de cambio'); return; }
+      if (moneda === 'ARS' && !tcARS_BRL) { alert('Ingresá primero el tipo de cambio para pesos'); return; }
+      if (moneda === 'USD' && !tcUSD_BRL) { alert('Ingresá primero el tipo de cambio para dólares'); return; }
       days[currentDay].push({ quien, monto, moneda, desc, cat, tipo, id: Date.now() });
       document.getElementById('f-monto').value = '';
       document.getElementById('f-desc').value = '';
       document.getElementById('conversion-preview').textContent = '';
       renderAll(); save();
-    }
+    };
 
     window.deleteExpense = function (id) {
       days[currentDay] = days[currentDay].filter(e => e.id !== id);
       renderAll(); save();
-    }
+    };
 
     // ── Modal edición ─────────────────────────────────────────────
     function editModalOnMonedaChange() {
-      const sel = document.getElementById('edit-moneda');
-      sel.className = sel && sel.value === 'ARS' ? 'moneda-ars' : '';
+      updateMonedaClass(document.getElementById('edit-moneda'));
       editModalUpdatePreview();
     }
     window.editModalOnMonedaChange = editModalOnMonedaChange;
@@ -2542,9 +2722,19 @@
       setMoneyPreviewEl(previewId, otherCurrencyPreviewLine(m, currency));
     }
 
-    window.updateIngresoMontoPreview = () => updateMoneyPreview('ingreso-monto', 'preview-ingreso-extra');
+    window.updateIngresoMontoPreview = function () {
+      const sel = document.getElementById('ingreso-moneda');
+      const mon = sel ? sel.value : 'BRL';
+      const m = parseFloat(document.getElementById('ingreso-monto').value) || 0;
+      setMoneyPreviewEl('preview-ingreso-extra', otherCurrencyPreviewLine(m, mon));
+    };
     window.updateAhorroInputPreview = () => updateMoneyPreview('ahorro-input', 'preview-ahorro-input');
-    window.updateEiMontoPreview = () => updateMoneyPreview('ei-monto', 'preview-ei-monto');
+    window.updateEiMontoPreview = function () {
+      const sel = document.getElementById('ei-moneda');
+      const mon = sel ? sel.value : 'BRL';
+      const m = parseFloat(document.getElementById('ei-monto').value) || 0;
+      setMoneyPreviewEl('preview-ei-monto', otherCurrencyPreviewLine(m, mon));
+    };
     window.updateDeudaAjusteInputPreview = () => updateMoneyPreview('deuda-ajuste-input', 'preview-deuda-ajuste-input');
 
     function refreshAllMoneyConversionPreviews() {
@@ -2564,11 +2754,11 @@
       document.getElementById('edit-monto').value = e.monto;
       const monSel = document.getElementById('edit-moneda');
       monSel.value = e.moneda || 'BRL';
-      monSel.className = monSel.value === 'ARS' ? 'moneda-ars' : '';
+      updateMonedaClass(monSel);
       document.getElementById('edit-cat').value = e.cat || 'Otros';
       editModalUpdatePreview();
       document.getElementById('editModal').classList.add('open');
-    }
+    };
     window.deleteFromModal = function () {
       if (!editingId) return;
       if (!confirm('¿Borrar este gasto?')) return;
@@ -2578,18 +2768,19 @@
       }
       closeModal();
       renderAll(); save();
-    }
+    };
 
     window.closeModal = function () {
       document.getElementById('editModal').classList.remove('open');
       editingId = null;
-    }
+    };
     window.saveEdit = function () {
       if (!editingId) return;
       const monto = parseFloat(document.getElementById('edit-monto').value);
       const moneda = document.getElementById('edit-moneda').value;
       if (!monto || monto <= 0) { alert('Ingresá un monto válido'); return; }
-      if (moneda === 'ARS' && !tcARS_BRL) { alert('Ingresá primero el tipo de cambio para editar en pesos'); return; }
+      if (moneda === 'ARS' && !tcARS_BRL) { alert('Ingresá primero el tipo de cambio para pesos'); return; }
+      if (moneda === 'USD' && !tcUSD_BRL) { alert('Ingresá primero el tipo de cambio para dólares'); return; }
       for (let d of days) {
         const e = d.find(x => x.id === editingId);
         if (e) {
@@ -2602,19 +2793,22 @@
       }
       closeModal();
       renderAll(); save();
-    }
+    };
 
     // ── Borrar todo ───────────────────────────────────────────────
     window.clearData = function () {
       const confirmText = prompt('Para borrar todos los datos escribí "BORRAR" en mayúsculas:');
       if (confirmText !== 'BORRAR') return;
-      days = [[]]; currentDay = 0; tcARS_BRL = null; nameYo = 'Yo'; nameAmigo = 'Amigo'; ingresos = []; dayDates = ['']; dayLabels = ['Día 1']; ahorros = 0; ajusteDeuda = 0;
+      days = [[]]; currentDay = 0; tcARS_BRL = null; tcUSD_BRL = null; nameYo = 'Yo'; nameAmigo = 'Amigo'; ingresos = []; dayDates = ['']; dayLabels = ['Día 1']; ahorros = 0; ajusteDeuda = 0;
       document.getElementById('aporte-yo').value = '';
       document.getElementById('tc-manual-val').value = '';
       document.getElementById('tc-ars-equiv').textContent = '';
-      setTCStatus('', 'Ingresá el tipo de cambio');
+      setTCStatus('', 'Ingresá el tipo de cambio ARS');
+      document.getElementById('tc-usd-val').value = '';
+      document.getElementById('tc-usd-equiv').textContent = '';
+      setTCUSDStatus('', 'Ingresá el tipo de cambio USD');
       renderAll(); save();
-    }
+    };
 
     // ── Render ────────────────────────────────────────────────────
     function renderAll() {
@@ -2622,6 +2816,8 @@
       document.getElementById('lbl-total-amigo').textContent = nameAmigo.toUpperCase();
       document.getElementById('btn-brl').className = 'curr-btn' + (displayCurrency === 'BRL' ? ' active-brl' : '');
       document.getElementById('btn-ars').className = 'curr-btn' + (displayCurrency === 'ARS' ? ' active-ars' : '');
+      const btnUsd = document.getElementById('btn-usd');
+      if (btnUsd) btnUsd.className = 'curr-btn' + (displayCurrency === 'USD' ? ' active-usd' : '');
       renderDayTabs(); renderExpenses(); renderSummary(); renderInv(); renderMonthlyExpenses(); renderChart(); renderAhorro();
       refreshAllMoneyConversionPreviews();
     }
@@ -2762,7 +2958,9 @@
 
       let html = `<div class="table-scroll"><table class="expense-table"><thead><tr><th>Descripción</th><th style="text-align:right">Monto</th><th></th></tr></thead><tbody>`;
       expenses.forEach(e => {
-        const mb = e.moneda === 'ARS' ? `<span class="badge badge-moneda-ars">ARS</span>` : '';
+        let mb = '';
+        if (e.moneda === 'ARS') mb = `<span class="badge badge-moneda-ars">🇦🇷 ARS</span>`;
+        else if (e.moneda === 'USD') mb = `<span class="badge badge-moneda-usd">🇺🇸 USD</span>`;
         const catB = `<span class="badge badge-cat">${CAT_ICONS[e.cat] || '📦'} ${e.cat || 'Otros'}</span>`;
         html += `<tr>
       <td class="expense-desc-cell"><span class="expense-desc">${escapeHtml(e.desc)}</span>${mb}${catB}</td>
@@ -3000,10 +3198,14 @@
       if (!el) return;
       el.textContent = `R$ ${fmt(ahorros)}`;
       const arsEl = document.getElementById('ahorro-total-ars');
-      if (tcARS_BRL && ahorros > 0) {
-        arsEl.textContent = `≈ $ ${fmtARS(brlToArs(ahorros))} ARS`;
-      } else if (!tcARS_BRL) {
-        arsEl.textContent = 'Cargá el tipo de cambio para ver en ARS';
+      if (!arsEl) return;
+      if (ahorros > 0) {
+        const parts = [];
+        if (tcARS_BRL) parts.push(`$ ${fmtARS(brlToArs(ahorros))} ARS`);
+        if (tcUSD_BRL) parts.push(`U$D ${fmtUSD(brlToUsd(ahorros))} USD`);
+        arsEl.textContent = parts.length > 0 ? `≈ ${parts.join(' · ')}` : 'Cargá el tipo de cambio para ver en otras monedas';
+      } else if (!tcARS_BRL && !tcUSD_BRL) {
+        arsEl.textContent = 'Cargá el tipo de cambio para ver en otras monedas';
       } else {
         arsEl.textContent = '';
       }
