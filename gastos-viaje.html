@@ -2225,9 +2225,29 @@
     let ahorros = 0;
     let ajusteDeuda = 0;
 
-    const CATS = ['Hospedaje', 'Comida', 'Transporte', 'Otros'];
-    const CAT_COLORS = ['#1a7ae8', '#e8521a', '#15803d', '#6b3fa0'];
-    const CAT_ICONS = { 'Hospedaje': '🏨', 'Comida': '🍽️', 'Transporte': '🚌', 'Otros': '📦' };
+    const CATS = ['Hospedaje', 'Comida', 'Transporte', 'Exceso', 'Peluquería', 'Otros'];
+    const CAT_COLORS = ['#1a7ae8', '#e8521a', '#15803d', '#dc2626', '#ec4899', '#6b3fa0'];
+    const CAT_ICONS = {
+      'Hospedaje': '🏨',
+      'Comida': '🍽️',
+      'Transporte': '🚌',
+      'Exceso': '😵‍💫',
+      'Peluquería': '💇🏾‍♂️',
+      'Otros': '📦'
+    };
+
+    function normalizeCat(cat) {
+      if (!cat) return 'Otros';
+      const c = String(cat).trim();
+      if (CATS.includes(c)) return c;
+      const lower = c.toLowerCase();
+      if (lower.startsWith('exceso')) return 'Exceso';
+      if (lower.startsWith('peluqu')) return 'Peluquería';
+      if (lower.startsWith('hosped')) return 'Hospedaje';
+      if (lower.startsWith('comid')) return 'Comida';
+      if (lower.startsWith('transp')) return 'Transporte';
+      return 'Otros';
+    }
     const MAX_VISIBLE_DAY_TABS = 3;
     const MAX_VISIBLE_MONTH_ROWS = 3;
     const MONTH_NAMES_FULL = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
@@ -2280,7 +2300,7 @@
       // Migrar gastos viejos sin categoría/tipo/moneda
       days = days.map(day => day.map(e => ({
         ...e,
-        cat: e.cat || 'Otros',
+        cat: normalizeCat(e.cat),
         tipo: e.tipo || 'compartido',
         moneda: e.moneda || 'BRL'
       })));
@@ -2682,7 +2702,7 @@
       const moneda = document.getElementById('f-moneda').value;
       const monto = parseFloat(document.getElementById('f-monto').value);
       const desc = document.getElementById('f-desc').value.trim();
-      const cat = document.getElementById('f-cat').value;
+      const cat = normalizeCat(document.getElementById('f-cat').value);
       const tipo = tipoActual;
       if (!monto || monto <= 0) { alert('Ingresá un monto válido'); return; }
       if (!desc) { alert('Agregá una descripción'); return; }
@@ -2755,7 +2775,7 @@
       const monSel = document.getElementById('edit-moneda');
       monSel.value = e.moneda || 'BRL';
       updateMonedaClass(monSel);
-      document.getElementById('edit-cat').value = e.cat || 'Otros';
+      document.getElementById('edit-cat').value = normalizeCat(e.cat);
       editModalUpdatePreview();
       document.getElementById('editModal').classList.add('open');
     };
@@ -2787,7 +2807,7 @@
           e.desc = document.getElementById('edit-desc').value.trim() || e.desc;
           e.monto = monto;
           e.moneda = moneda;
-          e.cat = document.getElementById('edit-cat').value;
+          e.cat = normalizeCat(document.getElementById('edit-cat').value);
           break;
         }
       }
@@ -2961,7 +2981,8 @@
         let mb = '';
         if (e.moneda === 'ARS') mb = `<span class="badge badge-moneda-ars">🇦🇷 ARS</span>`;
         else if (e.moneda === 'USD') mb = `<span class="badge badge-moneda-usd">🇺🇸 USD</span>`;
-        const catB = `<span class="badge badge-cat">${CAT_ICONS[e.cat] || '📦'} ${e.cat || 'Otros'}</span>`;
+        const catName = normalizeCat(e.cat);
+        const catB = `<span class="badge badge-cat">${CAT_ICONS[catName] || '📦'} ${catName}</span>`;
         html += `<tr>
       <td class="expense-desc-cell"><span class="expense-desc">${escapeHtml(e.desc)}</span>${mb}${catB}</td>
       <td style="text-align:right;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;" class="tabular">${displayAmt(e.monto, e.moneda)}</td>
@@ -3144,7 +3165,7 @@
 
     function renderChart() {
       const all = days.flat();
-      const totals = CATS.map(cat => all.filter(e => (e.cat || 'Otros') === cat).reduce((s, e) => s + toBRL(e.monto, e.moneda), 0));
+      const totals = CATS.map(cat => all.filter(e => normalizeCat(e.cat) === cat).reduce((s, e) => s + toBRL(e.monto, e.moneda), 0));
       const grandTotal = totals.reduce((a, b) => a + b, 0);
 
       const legend = document.getElementById('chartLegend');
